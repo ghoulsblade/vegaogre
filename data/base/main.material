@@ -1,0 +1,108 @@
+//###########################################
+// TEMPLATES
+//###########################################
+
+material guibasemat
+{
+	technique
+	{
+		pass
+		{
+			ambient  1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0
+			
+			// ambient vertexcolour
+			// diffuse vertexcolour
+			
+			cull_hardware none
+			cull_software none
+
+			scene_blend alpha_blend
+			
+			lighting off
+			depth_write off
+			depth_check off
+			
+			// alpha_rejection greater_equal 255
+
+			texture_unit
+			{
+				filtering point point none
+				tex_address_mode clamp
+				
+				//texture guibase.png 2d 0
+				//colour_op_ex modulate src_texture src_diffuse 
+				//alpha_op_ex  source1 src_texture src_texture
+			}
+		}
+	}
+}
+
+material guibasemat_plaincolor
+{
+	technique
+	{
+		pass
+		{
+			ambient  1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0
+			
+			// ambient vertexcolour
+			// diffuse vertexcolour
+			
+			cull_hardware none
+			cull_software none
+
+			scene_blend alpha_blend
+			
+			// lighting off
+			depth_write off
+			depth_check off
+		}
+	}
+}
+
+// GUI BASE TEMPLATE
+material guibase
+{
+	technique
+	{
+		pass
+		{
+			ambient  1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0
+			
+			cull_hardware none
+			cull_software none
+
+			scene_blend alpha_blend
+			
+			lighting off
+			depth_write off
+
+			texture_unit
+			{
+				texture guibase.png 2d 0
+				tex_address_mode clamp
+				filtering none
+			}
+		}
+	}
+}
+
+material rtt_base : guibase
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				filtering anisotropic 
+				max_anisotropy 8
+				texture guibase.png
+				tex_address_mode clamp
+			}
+		}
+	}
+}
