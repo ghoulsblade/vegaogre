@@ -29,11 +29,7 @@ void	VegaOgre_RegisterLuaPlugin	() {
 		}
 		
 		void	RegisterLua_Classes			(lua_State*	L) {
-			LuaRegisterData(L);
-			LuaRegisterBuilder(L);
-			cSpriteManager::LuaRegister(L);
-			cManualArtMaterialLoader::LuaRegister(L);
-			cSprite::LuaRegister(L);
+			//~ cSomeCoolClass::LuaRegister(L);
 		}
 	};
 	

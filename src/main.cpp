@@ -20,7 +20,7 @@ int			main		(int argc, char* argv[]) {
 
 	printf("MAIN_WORKING_DIR=%s\n",(const char*)MAIN_WORKING_DIR);
 	
-	std::string s 
+	std::string s;
 	s += "Whoops, we crashed, sorry about that =(\n";
 	s += "Please see README.txt";
 	//~ s += "If this error remains after running the updater and you think this is a bug\n";

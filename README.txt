@@ -23,3 +23,8 @@ uses artwork (models,images,sounds,musik...) from VegaStrike,
 to compile on linux :  run ./installdeps.ubuntu.sh (follow some manual instructions) ./makeclean.sh ./premakelinux.sh
 
 to compile on win :  no guide available at the moment, please use contact email if there is interest
+
+== compile troubleshooting ==
+
+* linux : fmod problem ? try ./makeclean.sh && ./premake.linux --nosound
+	

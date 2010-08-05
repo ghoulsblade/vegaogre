@@ -1,8 +1,10 @@
 .svn
-.log
+*.log
+*.a
+*.make
 
+/bin/vegaogre
+
+/obj
+/Makefile
 /mylugre
-
-lugre/lib/paged_geometry/examples/media/trees/OgreMeshUpgrade.log
-lugre/lib/paged_geometry/examples/media/trees/OgreXMLConverter.log
-lugre/lib/paged_geometry/OgreMeshUpgrade.log
