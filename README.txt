@@ -11,7 +11,7 @@ contact : ghoulsblade@schattenkind.net
 
 tech : light c++ framework + heavy lua scripting, using lugre (lua+ogre) framework : http://lugre.schattenkind.net/
 
-code repos : gitosis@zwischenwelt.org:vegaogre.git
+code repos : gitosis@zwischenwelt.org:vegaogre.git		(will be made public readonly as soon as i find out how *g*, please use contact email in the meantime)
 
 license : code : some GPL version, not sure yet if v2,v3 or "v3 or later"
 
