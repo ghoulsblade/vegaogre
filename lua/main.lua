@@ -41,6 +41,11 @@ function CollectOgreResLocs ()
     --~ OgreAddResLoc(string.gsub(gTempPath,"/$","")			,"FileSystem","General") -- remove trailing slash ?
     OgreAddResLoc(mydatapath.."base/ui"                     ,"FileSystem","General")
 	
+	for k,subpath in ipairs({"units/vessels/llama"}) do 
+    --~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
+	end
+    OgreAddResLoc(mydatapath.."units/vessels/llama"	         ,"FileSystem","General")
+	
 
     print("OgreInitResLocs...")
     OgreInitResLocs()
@@ -149,6 +154,16 @@ function Main ()
 	os.exit(0)
 end
 
+function ShipTest ()
+	if (not gMyShipTest) then 
+		local gfx = CreateRootGfx3D()
+		gfx:SetMesh("llama.mesh")
+		gMyShipTest = gfx
+	end
+	local ang = math.pi * gMyTicks/1000
+	gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+end
+
 function MainStep ()
 	gFrameCounter = gFrameCounter + 1
 	
@@ -166,6 +181,7 @@ function MainStep ()
 	
     NotifyListener("Hook_PreRenderOneFrame")
 	
+	ShipTest()
 	
 	-- RENDER !
     Client_RenderOneFrame()
