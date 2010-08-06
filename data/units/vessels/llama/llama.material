@@ -5,16 +5,19 @@ material tex0_0
 	{
 		pass
 		{
-			ambient 0.100000 0.100000 0.100000 1.000000
-			diffuse 0.800000 0.800000 0.800000 1.000000
-			specular 0.500000 0.500000 0.500000 1.000000 7.500000
-			emissive 0.000000 0.000000 0.000000 1.000000
+			ambient 0.0 0.0 0.0
+			diffuse 1.0 1.0 1.0
+			specular 1.0 1.0 1.0 10
+			//ambient 0.100000 0.100000 0.100000 1.000000
+			//diffuse 0.800000 0.800000 0.800000 1.000000
+			//specular 0.500000 0.500000 0.500000 1.000000 7.500000
+			//emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
 				texture llama_connector.jpg
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op alpha_blend
+				// colour_op alpha_blend
 			}
 		}
 	}
@@ -26,16 +29,19 @@ material tex1_0
 	{
 		pass
 		{
-			ambient 0.100000 0.100000 0.100000 1.000000
-			diffuse 0.800000 0.800000 0.800000 1.000000
-			specular 0.500000 0.500000 0.500000 1.000000 7.500000
-			emissive 0.000000 0.000000 0.000000 1.000000
+			ambient 0.0 0.0 0.0
+			diffuse 1.0 1.0 1.0
+			specular 1.0 1.0 1.0 10
+			//ambient 0.100000 0.100000 0.100000 1.000000
+			//diffuse 0.800000 0.800000 0.800000 1.000000
+			//specular 0.500000 0.500000 0.500000 1.000000 7.500000
+			//emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
 				texture llama_catamaran.jpg
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op alpha_blend
+				// colour_op alpha_blend
 			}
 		}
 	}
@@ -47,38 +53,39 @@ material tex2_0
 	{
 		pass
 		{
-			ambient 0.100000 0.100000 0.100000 1.000000
-			diffuse 0.800000 0.800000 0.800000 1.000000
-			specular 0.500000 0.500000 0.500000 1.000000 7.500000
-			emissive 0.000000 0.000000 0.000000 1.000000
+			ambient 0.0 0.0 0.0
+			diffuse 1.0 1.0 1.0
+			specular 1.0 1.0 1.0 10
+			//ambient 0.100000 0.100000 0.100000 1.000000
+			//diffuse 0.800000 0.800000 0.800000 1.000000
+			//specular 0.500000 0.500000 0.500000 1.000000 7.500000
+			//emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
 				texture llama_body.jpg
 				tex_address_mode wrap
 				filtering trilinear
-				colour_op alpha_blend
+				// colour_op alpha_blend
 			}
 		}
 	}
 }
 material tex3_0
 {
-	receive_shadows on
 	technique
 	{
 		pass
 		{
-			ambient 0.100000 0.100000 0.100000 1.000000
-			diffuse 0.800000 0.800000 0.800000 1.000000
-			specular 0.000000 0.000000 0.000000 1.000000 7.500000
-			emissive 0.000000 0.000000 0.000000 1.000000
-			texture_unit
-			{
-				texture blink.ani
-				tex_address_mode wrap
-				filtering trilinear
-				colour_op alpha_blend
-			}
+			depth_write off
+			colour_write off
+			ambient 0.0 0.0 0.0 1
+			diffuse 1.0 1.0 1.0 1
+			specular 1.0 1.0 1.0 1 10
+			//ambient 0.100000 0.100000 0.100000 1.000000
+			//diffuse 0.800000 0.800000 0.800000 1.000000
+			//specular 0.000000 0.000000 0.000000 1.000000 7.500000
+			//emissive 0.000000 0.000000 0.000000 1.000000
+			//texture blink.ani
 		}
 	}
 }

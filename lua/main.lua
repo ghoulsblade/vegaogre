@@ -117,10 +117,10 @@ function MySpaceInit ()
 	
 	-- light 
     Client_ClearLights()
-	local x,y,z = 0.1,.7,0.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
-	local e = 1		local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
-	local e = .2	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
-	local e = 0.1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+	local x,y,z = .1,-.7,-.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
+	local e = .6	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
+	local e = .0	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
+	local e = .1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 
 	gMaxFPS = 40
 end
@@ -131,7 +131,7 @@ function ShipTestStep ()
 		gMyShipTest = gfx
 		gMyShipTest:SetNormaliseNormals(true)
 	end
-	local ang = math.pi * gMyTicks/1000 * 0.3
+	local ang = math.pi * gMyTicks/1000 * 0.05
 	gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	
 	
@@ -140,6 +140,17 @@ function ShipTestStep ()
 		local vp = GetMainViewport()
 		GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
 	end
+	local ang = math.pi * gMyTicks/1000 * 0.11
+	
+	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	local bMoveCam = gKeyPressed[key_mouse_left]
+	local speedfactor = math.pi / 1000 -- 1000pix = pi radians
+	local bFlipUpAxis = false
+	local cam = GetMainCam()
+	StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
+	local ox,oy,oz = 0,0,0
+	local dist = 20
+	StepThirdPersonCam (cam,dist,ox,oy,oz)
 end
 
 --###############################
