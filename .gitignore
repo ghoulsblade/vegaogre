@@ -3,6 +3,8 @@
 *.a
 *.make
 
+/bin/ogre.cfg
+	
 /obj
 /Makefile
 /mylugre

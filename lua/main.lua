@@ -44,7 +44,8 @@ function CollectOgreResLocs ()
 	for k,subpath in ipairs({"units/vessels/llama"}) do 
     --~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
 	end
-    OgreAddResLoc(mydatapath.."units/vessels/llama"	         ,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."units/vessels/llama"				,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."textures/backgrounds"			,"FileSystem","General")
 	
 
     print("OgreInitResLocs...")
@@ -95,6 +96,50 @@ function LoadingProfile (sCurAction,bIsPreOgre) end
 function NotifyMainWindowResized (w,h) 
 	NotifyListener("Hook_MainWindowResized",w,h) -- warning, only use this to mark as changed, might be called more than once per frame
 end
+RegisterListener("Hook_MainWindowResized",function () gbNeedCorrectAspectRatio = true end)
+
+
+-- test stuff
+
+function MySpaceInit ()
+	local gNumberOfStars = 10000 
+	local gStarsDist = 9000 
+	local gStarColorFactor = 0.5 -- somewhat colorful stars
+	gStarField = CreateRootGfx3D()
+	gStarField:SetStarfield(gNumberOfStars,gStarsDist,gStarColorFactor,"starbase")
+	
+    Client_SetSkybox("bluesky")
+	
+    local cam = GetMainCam()
+    cam:SetFOVy(gfDeg2Rad*45)
+    --~ cam:SetNearClipDistance(0.01) -- old : 1
+    --~ cam:SetFarClipDistance(2000) -- ogre defaul : 100000
+	
+	-- light 
+    Client_ClearLights()
+	local x,y,z = 0,.7,0.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
+	local e = 1		local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
+	local e = .2	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
+	local e = 0.1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+
+	gMaxFPS = 40
+end
+function ShipTestStep ()
+	if (not gMyShipTest) then 
+		local gfx = CreateRootGfx3D()
+		gfx:SetMesh("llama.mesh")
+		gMyShipTest = gfx
+	end
+	local ang = math.pi * gMyTicks/1000 * 0.3
+	gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	
+	
+    if (gbNeedCorrectAspectRatio) then
+		gbNeedCorrectAspectRatio = false
+		local vp = GetMainViewport()
+		GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
+	end
+end
 
 --###############################
 --###        MAINLOOP         ###
@@ -144,6 +189,8 @@ function Main ()
 	
     --~ StartMainMenu()
 	
+	MySpaceInit()
+	
 	-- mainloop
     while (Client_IsAlive()) do 
         MainStep() 
@@ -152,16 +199,6 @@ function Main ()
     NotifyListener("Hook_Terminate")
 	-- avoid ogre shutdown crash, so users aren't scared by weird error message after closing
 	os.exit(0)
-end
-
-function ShipTest ()
-	if (not gMyShipTest) then 
-		local gfx = CreateRootGfx3D()
-		gfx:SetMesh("llama.mesh")
-		gMyShipTest = gfx
-	end
-	local ang = math.pi * gMyTicks/1000
-	gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 end
 
 function MainStep ()
@@ -181,7 +218,7 @@ function MainStep ()
 	
     NotifyListener("Hook_PreRenderOneFrame")
 	
-	ShipTest()
+	ShipTestStep()
 	
 	-- RENDER !
     Client_RenderOneFrame()
@@ -193,7 +230,7 @@ function MainStep ()
     
     if (gMaxFPS) then 
         local iMinTimeBetweenFrames = 1000/gMaxFPS
-        Client_USleep(max(1,iMinTimeBetweenFrames - iTimeSinceLastFrame))
+        Client_USleep(max(1,iMinTimeBetweenFrames - (iTimeSinceLastFrame or 0)))
     else
         Client_USleep(1) -- just 1 millisecond, but gives other processes a chance to do something
     end
