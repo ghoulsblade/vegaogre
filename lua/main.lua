@@ -120,7 +120,7 @@ function MySpaceInit ()
 	local x,y,z = .1,-.7,-.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
 	local e = .9	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
 	local e = .0	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
-	local e = .1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+	local e = .2	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 
 	gMaxFPS = 40
 end
@@ -143,7 +143,7 @@ function ShipTestStep ()
 	local ang = math.pi * gMyTicks/1000 * 0.11
 	
 	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
-	local bMoveCam = gKeyPressed[key_mouse_left]
+	local bMoveCam = gKeyPressed[key_mouse_middle]
 	local speedfactor = math.pi / 1000 -- 1000pix = pi radians
 	local bFlipUpAxis = false
 	local cam = GetMainCam()
