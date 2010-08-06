@@ -56,9 +56,12 @@ function GuiTest_DragDrop ()
 		w1:CreateContentChild("ItemIcon",{x=5+(i%6)*50, y=40+math.floor(i/6)*50, image=v, tooltip=tooltip })
 	end
 	
-	for i=0,8 do 
-		w2:CreateContentChild("EquipSlot",{x=5+(i%6)*50, y=40+math.floor(i/6)*50, col={} })
-	end
+	local ox,ex = 5,50
+	local oy,ey = 40,50
+	for i=0,4-1 do w2:CreateContentChild("EquipSlot",{x=ox+0*ex, y=oy+i*ey, type="weapon" }) end
+	for i=0,3-1 do w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+i*ey, type="equip"}) end
+	for i=0,3-1 do w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+i*ey, type="shield"}) end
+	for i=0,1-1 do w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+i*ey, type="engine"}) end
 	
 	
 	

@@ -38,15 +38,16 @@ function GetPlainColourMat (r,g,b,a) return GetHuedMat("plaincolor_base",r,g,b,r
 -- paramters : basematname, ambient-rgb, diffuse-rgba,
 -- diffuse defaults to ambient if not given, diffuse-alpha defaults to 1
 gHuedMatCache = {}
-function GetHuedMat (basematname, ar,ag,ab, dr,dg,db,da)
+function GetHuedMat (basematname, ar,ag,ab, dr,dg,db,da, texpath)
 	dr = dr or ar
 	dg = dg or ag
 	db = db or ab
 	da = da or 1
-	local name = sprintf("%s__%f_%f_%f__%f_%f_%f_%f",basematname,ar,ag,ab, dr,dg,db,da)
+	local name = sprintf("%s__%f_%f_%f__%f_%f_%f_%f_%s",basematname,ar,ag,ab, dr,dg,db,da,texpath and texpath or "")
 	local cache = gHuedMatCache[name]
 	if (cache) then return cache end
 	cache = CloneMaterial(basematname)
+	if (texpath) then SetTexture(cache,texpath,0,0,0) end
 	SetAmbient(cache,0,0,ar,ag,ab)
 	SetDiffuse(cache,0,0,dr,dg,db,da)
 	if (da ~= 1) then SetSceneBlend(cache,0,0,1) end

@@ -5,7 +5,8 @@
 gMouseCorrectionX = 5
 gMouseCorrectionY = 5
 
-function GetPlainTextureGUIMat (texname) return GetTexturedMat("guibasemat",texname) end
+function GetPlainTextureGUIMat		(texname) return GetTexturedMat("guibasemat",texname) end
+function GetPlainTextureGUIMatCol	(texname,r,g,b) return GetHuedMat("guibasemat", r,g,b, r,g,b,1, texname) end
 
 gFocusWidget = nil
 function GetFocusWidget		() return gFocusWidget end
