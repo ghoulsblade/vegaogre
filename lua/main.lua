@@ -118,7 +118,7 @@ function MySpaceInit ()
 	-- light 
     Client_ClearLights()
 	local x,y,z = .1,-.7,-.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
-	local e = .6	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
+	local e = .9	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
 	local e = .0	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
 	local e = .1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 
