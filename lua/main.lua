@@ -117,7 +117,7 @@ function MySpaceInit ()
 	
 	-- light 
     Client_ClearLights()
-	local x,y,z = 0,.7,0.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
+	local x,y,z = 0.1,.7,0.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
 	local e = 1		local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
 	local e = .2	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
 	local e = 0.1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
@@ -129,6 +129,7 @@ function ShipTestStep ()
 		local gfx = CreateRootGfx3D()
 		gfx:SetMesh("llama.mesh")
 		gMyShipTest = gfx
+		gMyShipTest:SetNormaliseNormals(true)
 	end
 	local ang = math.pi * gMyTicks/1000 * 0.3
 	gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
