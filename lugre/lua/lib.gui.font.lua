@@ -3,7 +3,7 @@
 
 -- creates and returns a font object for an ogre font that can be used by the flow layouter to create text
 -- call after ogre init
-function CreateFont_Ogre (sFontName)
+function CreateFont_Ogre (sFontName,iFontSize)
 	local sMatName,tGlyphTable = ExportOgreFont(sFontName)
 	--~ print("CreateFont_Ogre",sFontName,sMatName,tGlyphTable)
 	--~ for k,glyph in pairs(tGlyphTable) do print("glyph",k,sprintf("%c",k),glyph.left,glyph.top) end
@@ -21,7 +21,9 @@ function CreateFont_Ogre (sFontName)
 	myfont.zeroglyph	= myfont.tGlyphTable[kCharCode_SpaceWidthChar] -- take the width of the glyph 0 (zero) for space
 	myfont.tSpaceAspect	= myfont.zeroglyph and myfont.zeroglyph.aspectRatio or 1
 	
-	myfont.GetDefaultFontSize	= function (self) return 24 end
+	iFontSize = iFontSize or 24
+	
+	myfont.GetDefaultFontSize	= function (self) return iFontSize end
 	myfont.GetSpaceWidth		= function (self,fontsize) return self.tSpaceAspect * fontsize end
 	myfont.GetLineHeight		= function (self,fontsize) return fontsize end
 	myfont.GetGlyphInfo			= function (self,iCharCode,fontsize) 
