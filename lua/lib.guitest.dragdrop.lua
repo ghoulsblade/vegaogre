@@ -14,17 +14,11 @@ function GuiTest_DragDrop ()
 		--~ margin_right		= 12,
 		--~ margin_bottom		= 12,
 	--~ }
-
 	--~ local d = GetDesktopWidget():CreateChild("Border",params)
-	
 	--~ local w = d:CreateContentChild("Border",params)
 	--~ w:SetLeftTop(0,0)
 	--~ w:SetSize(100,100)
 
-	
-	
-	--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<UOText x=20 y=20 text='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890' />")
-	--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<UOButton x=20 y=50 gump_id_normal=2015 gump_id_pressed=2016 />")
 	
 	--~ local texname,w,h,xoff,yoff = kGUITest_BorderTestTex,80,80,0,0
 	--~ local u0,v0,w0,w1,w2,h0,h1,h2, tcx,tcy = 0,0, 4,8,4, 4,8,4, 32,32
@@ -50,11 +44,4 @@ function GuiTest_DragDrop ()
 																"</Window>")	
 	
 	
-	
-	
-	--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Button x=110 y=20 label='ghouly on the run!' />")
-	
-	
-	--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<UOButton x=20 y=50 gump_id_normal=2015 gump_id_pressed=2016>"..
-																--~ "<UOText x=10 y=5 text='hello world !!!11eins!elf!' /></UOButton>")
 end
