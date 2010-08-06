@@ -47,8 +47,8 @@ function ShipTestStep ()
 	local bFlipUpAxis = false
 	local cam = GetMainCam()
 	StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
-	local ox,oy,oz = 0,0,0
-	local dist = 20
+	local ox,oy,oz = 0,3,0
+	local dist = 15
 	StepThirdPersonCam (cam,dist,ox,oy,oz)
 end
 

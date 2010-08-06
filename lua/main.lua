@@ -40,8 +40,7 @@ function CollectOgreResLocs ()
 	
     OgreAddResLoc(mydatapath.."."                           ,"FileSystem","General")
     OgreAddResLoc(mydatapath.."base"                        ,"FileSystem","General")
-    --~ OgreAddResLoc(string.gsub(gTempPath,"/$","")			,"FileSystem","General") -- remove trailing slash ?
-    OgreAddResLoc(mydatapath.."base/ui"                     ,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."icons_equip"					,"FileSystem","General")
 	
 	for k,subpath in ipairs({"units/vessels/llama"}) do 
     --~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
@@ -143,6 +142,8 @@ function Main ()
 
     NotifyListener("Hook_PreLoad")
     --~ PreLoad()
+	
+	dofile(libpath .. "widget.itemicon.lua")
 	
     --~ BindGeneralKeys()
 
