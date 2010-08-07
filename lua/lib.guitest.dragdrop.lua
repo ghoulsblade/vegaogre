@@ -1,5 +1,7 @@
-floor = math.floor
-ceil = math.ceil
+floor	= math.floor
+ceil	= math.ceil
+min		= math.min
+max		= math.max
 
 function InitGuiThemes ()
 	gVegaWidgetFont = CreateFont_Ogre("TrebuchetMSBold",14)

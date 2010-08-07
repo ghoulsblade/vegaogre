@@ -29,6 +29,7 @@ function cItemIcon:Init (parentwidget, params)
 	self.back = self:_CreateChild("Image",{gfxparam_init=btn_back1})
 	self.icon = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat(params.image),w,h)})
 	self.frame = self:_CreateChild("Image",{gfxparam_init=btn_midtrans})
+	--~ self:SetConsumeChildHit(true)  -- not needed due to child events passing through if unhandled
 end
 
 function cItemIcon:on_mouse_left_drag_start		() self:StartDragDrop() end
@@ -121,6 +122,7 @@ end
 
 -- ***** ***** ***** ***** ***** ScrollPaneB
 
+
 cScrollPaneB		= RegisterWidgetClass("ScrollPaneB","Group")
 
 local plainborder				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
@@ -138,18 +140,27 @@ local spritebutton_4x4_mods		= {	gfxparam_in_down	= MakeSpritePanelParam_Mod_Tex
 								}
 
 function cScrollPaneB:Init (parentwidget, params)
-	self:SetSize(params.w,params.h)
 	self:SetIgnoreBBoxHit(false)
 	local w,h = params.w,params.h
 	local e,b = 16,3
-	self.content	= self:_CreateChild("Group")
+	self.clipped	= self:_CreateChild("Group")
+	self.content	= self.clipped:_CreateChild("Group")
 	self.frame		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder2,{w=w-e,h=h})})
+	self.frame:SetIgnoreBBoxHit(true) -- pass through to childs of content
 	self.bar		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder,{w=e,h=h,h=h-2*e+2*b})}) self.bar:SetPos(w-e,e-b)
 	self.btn_up		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_up		,x=w-e,y=0,w=e,h=e}		,spritebutton_4x4_mods))
 	self.btn_dn		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_down		,x=w-e,y=h-e,w=e,h=e}	,spritebutton_4x4_mods))
-	self.content:SetClip(0,0,w,h)
+	local d = 16
+	self.scroll_y = 0
+	self.scroll_x = 0
+	self.btn_up.on_mouse_left_down = function () self.scroll_y = max(0,self.scroll_y - d) print("UP",self.scroll_y) self:UpdateScroll() end
+	self.btn_dn.on_mouse_left_down = function () self.scroll_y = max(0,self.scroll_y + d) print("DN",self.scroll_y) self:UpdateScroll() end
+	self.clipped:SetClip(0,0,w-e,h)
 end
 
+function cScrollPaneB:UpdateScroll			() 
+	self.content:SetPos(-self.scroll_x,-self.scroll_y)
+end 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
 
 cScrollPaneB.CreateChild = gWidgetPrototype.Base.CreateChildPrivateNotice

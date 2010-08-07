@@ -274,7 +274,7 @@ function gWidgetPrototype.Base:GetWidgetUnderRelPos(relx,rely)
 	return self:GetWidgetUnderPos(relx+dx,rely+dy)
 end
 
--- coordinates absolute, returns self as well if hit
+-- coordinates absolute, returns self as well if hit		local mx,my = GetMousePos()
 function gWidgetPrototype.Base:GetWidgetUnderPos(x,y)
 	local wdata = self._widgetbasedata
 	if (not self:IsAlive()) then return end
@@ -352,13 +352,15 @@ function gWidgetPrototype.Base:GetBitMask		() 				return	self._widgetbasedata.bi
 function gWidgetPrototype.Base:SetClip			(l,t,r,b)	return self._widgetbasedata.rendergroup2d:SetClip(l,t,r,b) end
 function gWidgetPrototype.Base:ClearClip		()			return self._widgetbasedata.rendergroup2d:ClearClip() end
 
+local max = math.max
+
 --- returns l,t,r,b in absolute coords, clipped, (rel-bounds cached, only pos and clip intersect have to be calculated)
 function gWidgetPrototype.Base:GetAbsBounds		() 
 	local g = self._widgetbasedata.rendergroup2d
 	local cl,ct,cr,cb = g:GetEffectiveClipAbs()
 	local l,t,r,b = g:CalcAbsBounds() -- warning, bug: ignores forced_w of childs ! (fixed 2010.08.07)
 	local w,h = self._widgetbasedata.forced_w,self._widgetbasedata.forced_h
-	if (w) then r,b = l+w,t+h end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
+	if (w) then r,b = max(r,w),max(b,h) end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
 	if (cl) then l,t,r,b = IntersectRect(l,t,r,b, cl,ct,cr,cb) end -- same clip is also used by UpdateGeometryClipped()
 	return l,t,r,b
 end
@@ -367,7 +369,7 @@ end
 function gWidgetPrototype.Base:GetRelBounds		() 
 	local l,t,r,b = self._widgetbasedata.rendergroup2d:GetRelBounds()
 	local w,h = self._widgetbasedata.forced_w,self._widgetbasedata.forced_h
-	if (w) then return l,t,l+w,t+h end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
+	if (w) then return l,t,max(r,w),max(b,h) end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
 	return l,t,r,b
 end
 
