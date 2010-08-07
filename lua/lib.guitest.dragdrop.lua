@@ -63,6 +63,4 @@ function GuiTest_DragDrop ()
 	for i=0,3-1 do w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+i*ey, type="shield"}) end
 	for i=0,1-1 do w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+i*ey, type="engine"}) end
 	
-	
-	
 end

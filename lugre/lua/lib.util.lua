@@ -198,6 +198,9 @@ function FilterArray (arr,fun) local res = {} for k,v in ipairs(arr) do if (fun(
 -- associative (keys are preserved)
 function FilterTable (t,fun) local res = {} for k,v in pairs(t) do if (fun(v)) then res[k] = v end end return res end
 
+function clone		(t) local res = {} for k,v in pairs(t) do res[k] = v end return res end
+function clonemod	(t,mods) local res = {} for k,v in pairs(t) do res[k] = v end for k,v in pairs(mods) do res[k] = v end return res end
+
 -- returns captures, or whole string if no captures, or nil if not found
 -- lua5.1 function for lua 5.0
 string.match = string.match or function (s, pattern, init) 
