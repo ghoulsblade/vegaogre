@@ -19,10 +19,53 @@ function cItemIcon:Init (parentwidget, params)
 	self.icon = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat(params.image),w,h)})
 	self.frame = self:_CreateChild("Image",{gfxparam_init=btn_midtrans})
 end
-function cItemIcon:on_mouse_left_down	() print("cItemIcon:on_mouse_left_down	",self.params.image) end
-function cItemIcon:on_mouse_left_up		() print("cItemIcon:on_mouse_left_up	",self.params.image) end
-function cItemIcon:on_mouse_enter		() print("cItemIcon:on_mouse_enter		",self.params.image) end
-function cItemIcon:on_mouse_leave		() print("cItemIcon:on_mouse_leave		",self.params.image) end
+
+function cItemIcon:on_mouse_left_drag_start		() self:StartDragDrop() end
+function cItemIcon:on_start_dragdrop			() return true end -- returns true if allowed
+function cItemIcon:on_cancel_dragdrop			() end -- returns true if completely handled (don't use here, default handling will be used instead)
+function cItemIcon:on_finish_dragdrop			(w,x,y)
+	while w do 
+		--~ print("on_finish_dragdrop",w,x,y,w:GetClassName())
+		if (w.on_accept_drop and w:on_accept_drop(self,x,y)) then return true end
+		w = w:GetParent()
+	end
+end -- if false/nil is returned, the drop will be cancelled
+
+function cItemIcon:on_mouse_left_down			() if (1 == 2) then print("cItemIcon:on_mouse_left_down			",self.params.image) end end
+function cItemIcon:on_mouse_left_up				() if (1 == 2) then print("cItemIcon:on_mouse_left_up			",self.params.image) end end
+function cItemIcon:on_mouse_enter				() if (1 == 2) then print("cItemIcon:on_mouse_enter				",self.params.image) end end
+function cItemIcon:on_mouse_leave				() if (1 == 2) then print("cItemIcon:on_mouse_leave				",self.params.image) end end
+function cItemIcon:on_mouse_left_drag_step		() if (1 == 2) then print("cItemIcon:on_mouse_left_drag_step	",self.params.image) end end
+function cItemIcon:on_mouse_left_drag_end		() if (1 == 2) then print("cItemIcon:on_mouse_left_drag_end		",self.params.image) end end -- not used
+
+-- ***** ***** ***** ***** ***** DragDrop
+
+function cItemIcon:StartDragDrop			()
+	if (self.on_start_dragdrop and self:on_start_dragdrop()) then else return end
+	self.drag_old_parent = self:GetParent()
+	self.drag_old_x,self.drag_old_y = self:GetPos()
+	local x,y = self:GetDerivedPos()
+	self:SetParent(GetDesktopWidget())
+	self:SetPos(x,y)
+	self:StartMouseMove(key_mouse_left,nil,nil,function (x,y) self:EndDragDrop(x,y) end)
+end
+
+function cItemIcon:CancelDragDrop			(x,y)
+	if (self.on_cancel_dragdrop and self:on_cancel_dragdrop()) then return end -- return if on_cancel has handled it completely
+	self:SetParent(self.drag_old_parent)
+	self:SetPos(self.drag_old_x,self.drag_old_y)
+end
+
+function cItemIcon:EndDragDrop				(x,y)
+	local w = GetDesktopWidget():GetWidgetUnderPos(x,y)
+	--~ print("cItemIcon:EndDragDrop widget under pos",x,y,w)
+	if (w and w:GetParent() == self) then print("cItemIcon:todo:disable self-child-hit on dragdrop") w = nil end
+	if (w == self) then print("cItemIcon:todo:disable self-hit on dragdrop") w = nil end
+	if (not w) then self:CancelDragDrop() return end
+	if (self.on_finish_dragdrop and self:on_finish_dragdrop(w,x,y)) then else self:CancelDragDrop() end
+end
+
+-- ***** ***** ***** ***** ***** cEquipSlot
 
 function cEquipSlot:Init (parentwidget, params)
 	local w,h = 48,48
@@ -30,5 +73,14 @@ function cEquipSlot:Init (parentwidget, params)
 	local t = gEquipSlotType[params.type] assert(t)
 	self.back = self:_CreateChild("Image",{gfxparam_init=t.iconback})
 	self.frame = self:_CreateChild("Image",{gfxparam_init=btn_midtrans})
+end
+
+function cEquipSlot:on_accept_drop (w,x,y) -- return false if not accepted
+	--~ print("cEquipSlot:on_accept_drop",w,x,y,w:GetClassName())
+	if (self.item and self.item:GetParent() == self) then return false end
+	self.item = w
+	w:SetParent(self)
+	w:SetPos(0,0)
+	return true
 end
 

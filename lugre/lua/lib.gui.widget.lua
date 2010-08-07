@@ -282,6 +282,9 @@ function gWidgetPrototype.Base:GetWidgetUnderPos(x,y)
 	-- check visible
 	if ((not wdata.bVisibleCache) and (not wdata.bHitTestIfInvis)) then return end -- invis
 	
+	-- check dragdrop
+	if (wdata.bDragActive) then return end
+	
 	-- check bounds
 	local l,t,r,b = self:GetAbsBounds()
 	if (not PointInRect(l,t,r,b,x,y)) then return end -- early out if click not in bounds 
@@ -436,7 +439,7 @@ function gWidgetPrototype.Base:SendToBack	()	self._widgetbasedata.rendergroup2d:
 -- move_fun : can be nil, if set,  x,y = move_fun(x,y,param)   for widget:SetPos(),  can be used as constraint
 -- if move_fun doesn't return anything, SetPos is not called, useful if position is set inside move_fun
 -- no need to transform coordinates, as the offset to GetPos() at initial call is used
-function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_param)
+function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_param,end_fun)
 	keywatch = keywatch or key_mouse1
 	gui.bMouseBlocked = true -- mainly for 3d cam
 	local iMouseX,iMouseY = GetMousePos()
@@ -444,15 +447,19 @@ function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_para
 	local offx,offy = x-iMouseX,y-iMouseY
 	local widget = self
 	local last_mouse_x,last_mouse_y
+	widget._widgetbasedata.bDragActive = true
 	RegisterStepper(function ()
+		local iMouseX,iMouseY = GetMousePos()
+		
 		local bDead = widget._widgetbasedata.bDead
 		if (bDead or (not gKeyPressed[keywatch])) then -- end move,  warning ! widget could be dead here, then GetPos() etc would throw an error
 			NotifyListener("Gui_StopMouseMoveWidget",widget,x,y) -- old : Gui_StopMoveDialog, widget method syntax incompatible to old
 			gui.bMouseBlocked = false
+			if (end_fun) then end_fun(iMouseX,iMouseY) end
+			widget._widgetbasedata.bDragActive = false
 			return true
 		end
 		
-		local iMouseX,iMouseY = GetMousePos()
 		if (iMouseX == last_mouse_x and iMouseY == last_mouse_y) then return end -- mouse didn't move
 		last_mouse_x,last_mouse_y = iMouseX,iMouseY
 		local x,y = iMouseX+offx,iMouseY+offy
