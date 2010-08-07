@@ -150,20 +150,31 @@ function cScrollPaneB:Init (parentwidget, params)
 	self.bar		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder,{w=e,h=h,h=h-2*e+2*b})}) self.bar:SetPos(w-e,e-b)
 	self.btn_up		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_up		,x=w-e,y=0,w=e,h=e}		,spritebutton_4x4_mods))
 	self.btn_dn		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_down		,x=w-e,y=h-e,w=e,h=e}	,spritebutton_4x4_mods))
-	local d = 16
-	self.scroll_y = 0
+	local d,dt = 4,25
 	self.scroll_x = 0
-	self.btn_up.on_mouse_left_down = function (btn) self:StartButtonScroll(0,-d,btn) end
-	self.btn_dn.on_mouse_left_down = function (btn) self:StartButtonScroll(0, d,btn) end
+	self.scroll_y = 0
+	self.step_dx = 0
+	self.step_dy = 0
+	self.btn_up.on_mouse_left_down	= function (btn) self:StartButtonScroll(0,-d,btn) end
+	self.btn_dn.on_mouse_left_down	= function (btn) self:StartButtonScroll(0, d,btn) end
+	self.btn_up.on_mouse_left_up	= function (btn) self:StopButtonScroll(btn) end
+	self.btn_dn.on_mouse_left_up	= function (btn) self:StopButtonScroll(btn) end
 	self.clipped:SetClip(0,0,w-e,h)
+	RegisterIntervalStepper(dt,function () return self:ScrollStep() end)
 end
 
-function cScrollPaneB:StartButtonScroll			(dx,dy,o)
-	print("cScrollPaneB:StartButtonScroll",dx,dy,o)
+function cScrollPaneB:ScrollStep				()
+	if (not self:IsAlive()) then return true end
+	if (self.step_dx ~= 0 or self.step_dy ~= 0) then self:ScrollDelta(self.step_dx,self.step_dy) end
+end
+function cScrollPaneB:StopButtonScroll			(btn)		self.step_dx = 0 self.step_dy = 0 end
+function cScrollPaneB:StartButtonScroll			(dx,dy,btn)	self.step_dx = dx self.step_dy = dy end
+
+function cScrollPaneB:ScrollDelta			(dx,dy)
+	self.scroll_x = max(0,self.scroll_x + dx)
 	self.scroll_y = max(0,self.scroll_y + dy)
 	self:UpdateScroll()
-end
-
+end 
 function cScrollPaneB:UpdateScroll			() self.content:SetPos(-self.scroll_x,-self.scroll_y) end 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
 
