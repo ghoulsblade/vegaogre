@@ -153,14 +153,18 @@ function cScrollPaneB:Init (parentwidget, params)
 	local d = 16
 	self.scroll_y = 0
 	self.scroll_x = 0
-	self.btn_up.on_mouse_left_down = function () self.scroll_y = max(0,self.scroll_y - d) print("UP",self.scroll_y) self:UpdateScroll() end
-	self.btn_dn.on_mouse_left_down = function () self.scroll_y = max(0,self.scroll_y + d) print("DN",self.scroll_y) self:UpdateScroll() end
+	self.btn_up.on_mouse_left_down = function (btn) self:StartButtonScroll(0,-d,btn) end
+	self.btn_dn.on_mouse_left_down = function (btn) self:StartButtonScroll(0, d,btn) end
 	self.clipped:SetClip(0,0,w-e,h)
 end
 
-function cScrollPaneB:UpdateScroll			() 
-	self.content:SetPos(-self.scroll_x,-self.scroll_y)
-end 
+function cScrollPaneB:StartButtonScroll			(dx,dy,o)
+	print("cScrollPaneB:StartButtonScroll",dx,dy,o)
+	self.scroll_y = max(0,self.scroll_y + dy)
+	self:UpdateScroll()
+end
+
+function cScrollPaneB:UpdateScroll			() self.content:SetPos(-self.scroll_x,-self.scroll_y) end 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
 
 cScrollPaneB.CreateChild = gWidgetPrototype.Base.CreateChildPrivateNotice
