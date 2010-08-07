@@ -163,7 +163,7 @@ function cScrollPaneB:Init (parentwidget, params)
 	self.btn_dn.on_mouse_left_down		= function (btn) self:StartButtonScroll(0, d,btn) end
 	self.btn_up.on_mouse_left_up		= function (btn) self:StopButtonScroll(btn) end
 	self.btn_dn.on_mouse_left_up		= function (btn) self:StopButtonScroll(btn) end
-	--~ self.btn_thumb.on_mouse_left_down	= function (btn) self:StopButtonScroll(btn) end
+	self.btn_thumb.on_mouse_left_down	= function (btn) btn:StartMouseMove(key_mouse_left,self.ThumbMoveStep,self) end
 	self.clipped:SetClip(0,0,w-e,h)
 	self:UpdateScroll(0,0)
 	RegisterIntervalStepper(dt,function () return self:ScrollStep() end)
@@ -183,22 +183,42 @@ function cScrollPaneB:GetScrollContentWH	()
 	local l,t,r,b = self.content:GetRelBounds()
 	return r,b
 end
-function cScrollPaneB:UpdateScroll			(newx,newy)
+function cScrollPaneB:ThumbMoveStep			(x,y) -- returns x,y 
+	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove = self:GetParams()
+	if (max_y > 0) then
+		local newscrolly = floor(max_y * max(0,min(1,(y - thumb_yoff) / thumb_maxmove)))
+		if (newscrolly ~= self.scroll_y) then self:UpdateScroll(0,newscrolly,true) end
+		y = max(thumb_yoff,min(thumb_yoff+thumb_maxmove,y))
+	else
+		y = 0
+	end
+	return thumb_x,y
+end
+
+-- returns max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove
+function cScrollPaneB:GetParams				()
 	local sw,sh = self:GetScrollContentWH()
 	local w,h = self.w,self.h
 	local max_x = floor(max(0,sw-w))
 	local max_y = floor(max(0,sh-h))
+	local btn_h = 16
+	local thumb_w = 16
+	local thumb_h = 16
+	local thumb_maxmove = self.h - 2*btn_h - thumb_h
+	local thumb_yoff = btn_h
+	local thumb_x = self.w - thumb_w
+	return max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove
+end
+function cScrollPaneB:UpdateScroll			(newx,newy,bDontMoveThumb)
+	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove = self:GetParams()
 	self.scroll_x = max(0,min(max_x,floor(newx)))
 	self.scroll_y = max(0,min(max_y,floor(newy)))
 	self.content:SetPos(-self.scroll_x,-self.scroll_y)
-	local btn_h = 16
-	local thumb_h = 16
-	local thumb_w = 16
-	local thumb_maxmove = self.h - 2*btn_h - thumb_h
-	local thumb_yoff = btn_h
-	local x = self.w - thumb_w
-	local y = thumb_yoff + ((max_y > 0) and floor(thumb_maxmove * self.scroll_y / max_y) or 0)
-	self.btn_thumb:SetPos(x,y)
+	if (not bDontMoveThumb) then 
+		local x = thumb_x
+		local y = thumb_yoff + ((max_y > 0) and floor(thumb_maxmove * self.scroll_y / max_y) or 0)
+		self.btn_thumb:SetPos(x,y)
+	end
 end 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
 
