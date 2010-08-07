@@ -122,14 +122,32 @@ end
 -- ***** ***** ***** ***** ***** ScrollPaneB
 
 cScrollPaneB		= RegisterWidgetClass("ScrollPaneB","Group")
-local plainborder	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder2.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
+
+local plainborder				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
+local plainborder2				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder2.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
+local matrix_button_small_up	= MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_up.png")	,16,16,0,0, 0,0, 16,16, 32,32)
+local matrix_button_small_down	= MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_down.png")	,16,16,0,0, 0,0, 16,16, 32,32)
+local spritebutton_4x4_mods		= {	gfxparam_in_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.5,1,1,0),
+									gfxparam_in_up		= MakeSpritePanelParam_Mod_TexTransform(0.5,0.0,1,1,0),
+									gfxparam_out_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.0,1,1,0),
+									gfxparam_out_up		= MakeSpritePanelParam_Mod_TexTransform(0.0,0.0,1,1,0),
+									margin_left= 0,
+									margin_top= 0,
+									margin_right= 0,
+									margin_bottom= 0,
+								}
 
 function cScrollPaneB:Init (parentwidget, params)
 	self:SetSize(params.w,params.h)
 	self:SetIgnoreBBoxHit(false)
+	local w,h = params.w,params.h
+	local e,b = 16,3
 	self.content	= self:_CreateChild("Group")
-	self.frame		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder,{w=params.w,h=params.h})})
-	self.content:SetClip(0,0,params.w,params.h)
+	self.frame		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder2,{w=w-e,h=h})})
+	self.bar		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder,{w=e,h=h,h=h-2*e+2*b})}) self.bar:SetPos(w-e,e-b)
+	self.btn_up		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_up		,x=w-e,y=0,w=e,h=e}		,spritebutton_4x4_mods))
+	self.btn_dn		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_down		,x=w-e,y=h-e,w=e,h=e}	,spritebutton_4x4_mods))
+	self.content:SetClip(0,0,w,h)
 end
 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent

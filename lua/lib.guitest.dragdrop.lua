@@ -4,6 +4,9 @@ ceil = math.ceil
 function InitGuiThemes ()
 	gVegaWidgetFont = CreateFont_Ogre("TrebuchetMSBold",14)
 	
+	GuiThemeSetDefaultParam("Text",{	font=gVegaWidgetFont,fontsize=14, textparam={r=0,g=0,b=0} })
+
+	
 	local bordermatrix_32_widemid	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("window.png"),32,32,0,0, 0,0, 12,8,12, 12,8,12, 32,32, 1,1, false,false)
 	local bordermatrix_32_tinymid	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("window.png"),32,32,0,0, 0,0, 14,4,14, 14,4,14, 32,32, 1,1, false,false)
 	local bordermatrix_16			= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("window.png"),16,16,0,0, 0,0, 6,4,6, 6,4,6, 16,16, 1,1, false,false)
@@ -11,9 +14,7 @@ function InitGuiThemes ()
 	GuiThemeSetDefaultParam("Window",{	gfxparam_init 		= bordermatrix_32_tinymid, })
 	
 	
-	
 	local matrix_button_small	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("button_small.png"),16,16,0,0, 0,0, 6,4,6, 6,4,6, 32,32, 1,1, false,false)
-	GuiThemeSetDefaultParam("Text",{	font=gVegaWidgetFont,fontsize=14, textparam={r=0,g=0,b=0} })
 	GuiThemeSetDefaultParam("Button",{	gfxparam_init 		= matrix_button_small,
 										gfxparam_in_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.5,1,1,0),
 										gfxparam_in_up		= MakeSpritePanelParam_Mod_TexTransform(0.5,0.0,1,1,0),
