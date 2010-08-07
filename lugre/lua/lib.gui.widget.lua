@@ -440,12 +440,12 @@ function gWidgetPrototype.Base:SendToBack	()	self._widgetbasedata.rendergroup2d:
 -- move_fun : can be nil, if set,  x,y = move_fun(x,y,param)   for widget:SetPos(),  can be used as constraint
 -- if move_fun doesn't return anything, SetPos is not called, useful if position is set inside move_fun
 -- no need to transform coordinates, as the offset to GetPos() at initial call is used
-function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_param,end_fun)
+-- mx0,my0 can be used for custom offset, if left nil gLastMouseDownX,gLastMouseDownY are used (when button was pressed)
+function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_param,end_fun,mx0,my0)
 	keywatch = keywatch or key_mouse1
 	gui.bMouseBlocked = true -- mainly for 3d cam
-	local iMouseX,iMouseY = GetMousePos()
 	local x,y = self:GetPos()
-	local offx,offy = x-iMouseX,y-iMouseY
+	local offx,offy = x-(mx0 or gLastMouseDownX),y-(my0 or gLastMouseDownY)
 	local widget = self
 	local last_mouse_x,last_mouse_y
 	widget._widgetbasedata.bDragActive = true

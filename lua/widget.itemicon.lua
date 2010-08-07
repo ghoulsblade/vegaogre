@@ -22,7 +22,6 @@ gEquipSlotType = {
 	armor					= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
 	shield					= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
 	capacitor				= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
-	
 }
 	
 function cItemIcon:Init (parentwidget, params)
@@ -63,7 +62,7 @@ function cItemIcon:StartDragDrop			()
 end
 
 function cItemIcon:CancelDragDrop			(x,y)
-	if (self.on_cancel_dragdrop and self:on_cancel_dragdrop()) then return end -- return if on_cancel has handled it completely
+	if (self.on_cancel_dragdrop and self:on_cancel_dragdrop()) then return end -- returns true if on_cancel was handled completely
 	self:SetParent(self.drag_old_parent)
 	self:SetPos(self.drag_old_x,self.drag_old_y)
 end
@@ -98,16 +97,25 @@ end
 
 -- ***** ***** ***** ***** ***** cItemGrid
 
-function cItemGrid:Init (parentwidget, params) gMyTestGrid = self self:SetSize(params.w,params.h) self:SetIgnoreBBoxHit(false) end
+function cItemGrid:Init (parentwidget, params)
+	self:SetSize(params.w,params.h)
+	self:SetIgnoreBBoxHit(false)
+end
 
 function cItemGrid:on_mouse_left_down	() end
+
+function cItemGrid:FindItemOnPos(x,y)
+	for k,w in ipairs(self:_GetOrderedChildList()) do local cx,cy = w:GetPos() if (x == cx and y == cy) then return x end end
+end
 
 function cItemGrid:on_accept_drop (w,x,y) -- return false if not accepted
 	--~ print("cItemGrid:on_accept_drop",w,x,y,w:GetClassName())
 	local ox,oy = self:GetDerivedPos()
 	local e = 50
+	x,y = e*floor((x-ox)/e),e*floor((y-oy)/e)
+	if (self:FindItemOnPos(x,y)) then return false end -- already something at this position
 	w:SetParent(self)
-	w:SetPos(e*math.floor((x-ox)/e),e*math.floor((y-oy)/e))
+	w:SetPos(x,y)
 	return true
 end
 
