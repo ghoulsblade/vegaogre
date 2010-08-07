@@ -31,36 +31,41 @@ function GuiTest_DragDrop ()
 	--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
 	--~ GetDesktopWidget():CreateContentChild("Button",{x=10, y=10, label='testbutton'})
 	
-	local w1 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=100 y=100 w=320 h=300> <Text x=10 y=0 text='Inventory' /> </Window>]])
-	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=320 h=300> <Text x=10 y=0 text='Ship' /> </Window>]])
+	local w1 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=100 y=100 w=320 h=400> <Text x=10 y=0 text='Inventory' /> </Window>]])
+	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=320 h=400> <Text x=10 y=0 text='Ship' /> </Window>]])
 	
-	for k,v in ipairs({
-		"am_magcells.image.png",
-		"atmospheric_scrubbers.image.png",
-		"automated_factories.image.png",
-		"baakgah.image.png",
-		"biogenerators.image.png",
-		"bio_remodeler.image.png",
-		"cargo-hud.image.png",
-		"cloaking_device_aeramilspec.image.png",
-		"explosives.image.png",
-		"krystal.image.png",
-		"laser_drills.image.png",
-		"pai_wetware.image.png",
-		"repair_droid01.image.png",
-		"repulsor_beam.image.png",
-		"tractor_beam.image.png",
-		"waste_recyclers.image.png",}) do 
-		local i = k-1
-		local tooltip = string.gsub(v,"%.png$","").."\n5 SomeValue\n7 SomeOtherValue\nMedPowerSlot"
-		w1:CreateContentChild("ItemIcon",{x=5+(i%6)*50, y=40+math.floor(i/6)*50, image=v, tooltip=tooltip })
+	local i = 0
+	for img,n in pairs({
+		["am_magcells.image.png"					]=3,
+		["atmospheric_scrubbers.image.png"			]=2,
+		["automated_factories.image.png"			]=1,
+		["baakgah.image.png"						]=1,
+		["biogenerators.image.png"					]=1,
+		["bio_remodeler.image.png"					]=2,
+		["cargo-hud.image.png"						]=1,
+		["cloaking_device_aeramilspec.image.png"	]=1,
+		["explosives.image.png"						]=4,
+		["krystal.image.png"						]=1,
+		["laser_drills.image.png"					]=5,
+		["pai_wetware.image.png"					]=1,
+		["repair_droid01.image.png"					]=1,
+		["repulsor_beam.image.png"					]=2,
+		["tractor_beam.image.png"					]=2,
+		["waste_recyclers.image.png"				]=1,}) do 
+		for k=1,n do 
+			local tooltip = string.gsub(img,"%.png$","").."\n5 SomeValue\n7 SomeOtherValue\nMedPowerSlot"
+			w1:CreateContentChild("ItemIcon",{x=5+(i%6)*50, y=40+math.floor(i/6)*50, image=img, tooltip=tooltip })
+			i = i + 1
+		end
 	end
 	
 	local ox,ex = 5,50
 	local oy,ey = 40,50
-	for i=0,4-1 do w2:CreateContentChild("EquipSlot",{x=ox+0*ex, y=oy+i*ey, type="weapon" }) end
-	for i=0,3-1 do w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+i*ey, type="equip"}) end
-	for i=0,3-1 do w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+i*ey, type="shield"}) end
-	for i=0,1-1 do w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+i*ey, type="engine"}) end
+	local fixslots1 = {"spec","jump","sensors","overdrive"}
+	local fixslots2 = {"reactor","armor","shield","capacitor",}
+	for i=1,6 do					w2:CreateContentChild("EquipSlot",{x=ox+0*ex, y=oy+(i-1)*ey, type=(i<=4) and "weapon_light" or "weapon_light_missile" }) end
+	for i=1,7 do					w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+(i-1)*ey, type="equip"}) end
+	for i,v in ipairs(fixslots1) do	w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+(i-1)*ey, type=v}) end
+	for i,v in ipairs(fixslots2) do	w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+(i-1)*ey, type=v}) end
 	
 end

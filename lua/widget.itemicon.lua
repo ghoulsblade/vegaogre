@@ -7,10 +7,21 @@ local btn_back2			= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat(
 local btn_midtrans		= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("rounded_button_mid_trans.png")				,48,48,0,0, 0,0, 12,8,12, 12,8,12, 32,32, 1,1, false,false)
 
 gEquipSlotType = {
-	weapon	= { iconback=clonemod(btn_back2,{r=.9,g=.5,b=.4}) }, -- red
-	equip	= { iconback=clonemod(btn_back2,{r=.9,g=.8,b=.4}) }, -- yellow
-	shield	= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
-	engine	= { iconback=clonemod(btn_back2,{r=.7,g=.9,b=.7}) }, -- green
+	weapon_light			= { iconback=clonemod(btn_back2,{r=.5,g=.9,b=.5}) }, -- green
+	weapon_light_missile	= { iconback=clonemod(btn_back2,{r=.9,g=.5,b=.4}) }, -- red
+	
+	equip					= { iconback=clonemod(btn_back2,{r=.5,g=.5,b=.5}) }, -- gray
+	
+	spec					= { iconback=clonemod(btn_back2,{r=.9,g=.8,b=.4}) }, -- yellow
+	jump					= { iconback=clonemod(btn_back2,{r=.9,g=.8,b=.4}) }, -- yellow
+	sensors					= { iconback=clonemod(btn_back2,{r=.9,g=.8,b=.4}) }, -- yellow
+	overdrive				= { iconback=clonemod(btn_back2,{r=.9,g=.8,b=.4}) }, -- yellow
+	
+	reactor					= { iconback=clonemod(btn_back2,{r=.7,g=.9,b=.7}) }, -- green
+	armor					= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
+	shield					= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
+	capacitor				= { iconback=clonemod(btn_back2,{r=.7,g=.7,b=.9}) }, -- blue
+	
 }
 	
 function cItemIcon:Init (parentwidget, params)
@@ -70,7 +81,7 @@ end
 function cEquipSlot:Init (parentwidget, params)
 	local w,h = 48,48
 	assert(params.type) 
-	local t = gEquipSlotType[params.type] assert(t)
+	local t = gEquipSlotType[params.type] assert(t,"missing type :"..tostring(params.type))
 	self.back = self:_CreateChild("Image",{gfxparam_init=t.iconback})
 	self.frame = self:_CreateChild("Image",{gfxparam_init=btn_midtrans})
 end
