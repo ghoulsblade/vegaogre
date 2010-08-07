@@ -125,10 +125,11 @@ end
 
 cScrollPaneB		= RegisterWidgetClass("ScrollPaneB","Group")
 
-local plainborder				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
-local plainborder2				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder2.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
-local matrix_button_small_up	= MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_up.png")	,16,16,0,0, 0,0, 16,16, 32,32)
-local matrix_button_small_down	= MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_down.png")	,16,16,0,0, 0,0, 16,16, 32,32)
+local plainborder				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder.png")		,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
+local plainborder2				= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder2.png")		,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
+local matrix_button_small_thumb	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("button_small_thumb.png")	,16,16,0,0, 0,0, 6,4,6, 6,4,6, 32,32, 1,1, false,false)
+local matrix_button_small_up	= MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_up.png")		,16,16,0,0, 0,0, 16,16, 32,32)
+local matrix_button_small_down	= MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_down.png")		,16,16,0,0, 0,0, 16,16, 32,32)
 local spritebutton_4x4_mods		= {	gfxparam_in_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.5,1,1,0),
 									gfxparam_in_up		= MakeSpritePanelParam_Mod_TexTransform(0.5,0.0,1,1,0),
 									gfxparam_out_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.0,1,1,0),
@@ -150,16 +151,21 @@ function cScrollPaneB:Init (parentwidget, params)
 	self.bar		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder,{w=e,h=h,h=h-2*e+2*b})}) self.bar:SetPos(w-e,e-b)
 	self.btn_up		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_up		,x=w-e,y=0,w=e,h=e}		,spritebutton_4x4_mods))
 	self.btn_dn		= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_down		,x=w-e,y=h-e,w=e,h=e}	,spritebutton_4x4_mods))
+	self.btn_thumb	= self:_CreateChild("Button",tablemod({gfxparam_init = matrix_button_small_thumb	,x=w-e,y=e*3,w=e,h=e}	,spritebutton_4x4_mods))
 	local d,dt = 4,25
 	self.scroll_x = 0
 	self.scroll_y = 0
 	self.step_dx = 0
 	self.step_dy = 0
-	self.btn_up.on_mouse_left_down	= function (btn) self:StartButtonScroll(0,-d,btn) end
-	self.btn_dn.on_mouse_left_down	= function (btn) self:StartButtonScroll(0, d,btn) end
-	self.btn_up.on_mouse_left_up	= function (btn) self:StopButtonScroll(btn) end
-	self.btn_dn.on_mouse_left_up	= function (btn) self:StopButtonScroll(btn) end
+	self.w = w
+	self.h = h
+	self.btn_up.on_mouse_left_down		= function (btn) self:StartButtonScroll(0,-d,btn) end
+	self.btn_dn.on_mouse_left_down		= function (btn) self:StartButtonScroll(0, d,btn) end
+	self.btn_up.on_mouse_left_up		= function (btn) self:StopButtonScroll(btn) end
+	self.btn_dn.on_mouse_left_up		= function (btn) self:StopButtonScroll(btn) end
+	--~ self.btn_thumb.on_mouse_left_down	= function (btn) self:StopButtonScroll(btn) end
 	self.clipped:SetClip(0,0,w-e,h)
+	self:UpdateScroll(0,0)
 	RegisterIntervalStepper(dt,function () return self:ScrollStep() end)
 end
 
@@ -171,11 +177,29 @@ function cScrollPaneB:StopButtonScroll			(btn)		self.step_dx = 0 self.step_dy = 
 function cScrollPaneB:StartButtonScroll			(dx,dy,btn)	self.step_dx = dx self.step_dy = dy end
 
 function cScrollPaneB:ScrollDelta			(dx,dy)
-	self.scroll_x = max(0,self.scroll_x + dx)
-	self.scroll_y = max(0,self.scroll_y + dy)
-	self:UpdateScroll()
+	self:UpdateScroll(self.scroll_x + dx,self.scroll_y + dy)
 end 
-function cScrollPaneB:UpdateScroll			() self.content:SetPos(-self.scroll_x,-self.scroll_y) end 
+function cScrollPaneB:GetScrollContentWH	()
+	local l,t,r,b = self.content:GetRelBounds()
+	return r,b
+end
+function cScrollPaneB:UpdateScroll			(newx,newy)
+	local sw,sh = self:GetScrollContentWH()
+	local w,h = self.w,self.h
+	local max_x = floor(max(0,sw-w))
+	local max_y = floor(max(0,sh-h))
+	self.scroll_x = max(0,min(max_x,floor(newx)))
+	self.scroll_y = max(0,min(max_y,floor(newy)))
+	self.content:SetPos(-self.scroll_x,-self.scroll_y)
+	local btn_h = 16
+	local thumb_h = 16
+	local thumb_w = 16
+	local thumb_maxmove = self.h - 2*btn_h - thumb_h
+	local thumb_yoff = btn_h
+	local x = self.w - thumb_w
+	local y = thumb_yoff + ((max_y > 0) and floor(thumb_maxmove * self.scroll_y / max_y) or 0)
+	self.btn_thumb:SetPos(x,y)
+end 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
 
 cScrollPaneB.CreateChild = gWidgetPrototype.Base.CreateChildPrivateNotice
