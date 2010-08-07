@@ -33,12 +33,12 @@ function GuiTest_DragDrop ()
 	--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
 	--~ GetDesktopWidget():CreateContentChild("Button",{x=10, y=10, label='testbutton'})
 	
-	local w1 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=100 y=100 w=320 h=400> <Text x=10 y=0 text='Inventory' /> </Window>]])
-	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=320 h=400> <Text x=10 y=0 text='Ship' /> </Window>]])
+	local w1 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=100 y=100 w=325 h=380> <Text x=10 y=0 text='Inventory' /> </Window>]])
+	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=325 h=380> <Text x=10 y=0 text='Ship' /> </Window>]])
 	
 	local e = 50
-	local s = w1:CreateContentChild("ScrollPaneB",{x=4,y=40,w=(320-4-16),h=(400-40)})
-	local g = s:CreateContentChild("ItemGrid",{x=0,y=0,w=floor((320-4)/e)*e,h=floor((400-40)/e)*e})
+	local s = w1:CreateContentChild("ScrollPaneB",{x=4,y=40,w=(325-8),h=(380-50)})
+	local g = s:CreateContentChild("ItemGrid",{x=2,y=2,w=floor((325-4-16)/e)*e,h=floor((380-50)/e)*e})
 	gMyWindow1 = w1
 
 	local i = 0
@@ -72,7 +72,7 @@ function GuiTest_DragDrop ()
 	local fixslots1 = {"spec","jump","sensors","overdrive"}
 	local fixslots2 = {"reactor","armor","shield","capacitor",}
 	for i=1,6 do					w2:CreateContentChild("EquipSlot",{x=ox+0*ex, y=oy+(i-1)*ey, type=(i<=4) and "weapon_light" or "weapon_light_missile" }) end
-	for i=1,7 do					w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+(i-1)*ey, type="equip"}) end
+	for i=1,6 do					w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+(i-1)*ey, type="equip"}) end
 	for i,v in ipairs(fixslots1) do	w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+(i-1)*ey, type=v}) end
 	for i,v in ipairs(fixslots2) do	w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+(i-1)*ey, type=v}) end
 	

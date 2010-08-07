@@ -121,18 +121,20 @@ end
 
 -- ***** ***** ***** ***** ***** ScrollPaneB
 
-cScrollPaneB	= RegisterWidgetClass("ScrollPaneB","Group")
+cScrollPaneB		= RegisterWidgetClass("ScrollPaneB","Group")
+local plainborder	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder2.png")	,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false)
 
 function cScrollPaneB:Init (parentwidget, params)
 	self:SetSize(params.w,params.h)
 	self:SetIgnoreBBoxHit(false)
-	self.content = self:_CreateChild("Group")
+	self.content	= self:_CreateChild("Group")
+	self.frame		= self:_CreateChild("Image",{gfxparam_init=clonemod(plainborder,{w=params.w,h=params.h})})
+	self.content:SetClip(0,0,params.w,params.h)
 end
 
 function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
 
 cScrollPaneB.CreateChild = gWidgetPrototype.Base.CreateChildPrivateNotice
 function cScrollPaneB:GetContent () return self.content end
-
 
 
