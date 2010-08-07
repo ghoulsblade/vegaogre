@@ -166,7 +166,25 @@ function gWidgetPrototype.Base:CreateChildOrContentChild	(classname,...)
 end
 
 
-function gWidgetPrototype.Base:CreateContentChild	(classname,...) return self:GetContent():CreateChild(classname,...) end
+gGuiSystem_WidgetsMarkedForUpdateContent = {}
+function gWidgetPrototype.Base:MarkForUpdateContent	() gGuiSystem_WidgetsMarkedForUpdateContent[self] = true end
+
+function GuiSystem_ExecuteMarkedUpdates ()
+	if (next(gGuiSystem_WidgetsMarkedForUpdateContent)) then 
+		local arr = gGuiSystem_WidgetsMarkedForUpdateContent
+		gGuiSystem_WidgetsMarkedForUpdateContent = {}
+		for w,v in pairs(arr) do w:UpdateContent() end
+	end
+end
+RegisterStepper(GuiSystem_ExecuteMarkedUpdates)
+
+
+
+function gWidgetPrototype.Base:CreateContentChild	(classname,...)
+	local w = self:GetContent():CreateChild(classname,...)
+	if (self.on_create_content_child) then self:on_create_content_child(w) end
+	return w
+end
 
 -- internal method, use CreateChild instead
 function gWidgetPrototype.Base:_CreateChild		(classname,...) return CreateWidget(classname,self,...) end

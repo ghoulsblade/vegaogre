@@ -121,7 +121,7 @@ function cItemGrid:on_accept_drop (w,x,y) -- return false if not accepted
 end
 
 -- ***** ***** ***** ***** ***** ScrollPaneB
-
+-- vertical only so far (2010.08.07)
 
 cScrollPaneB		= RegisterWidgetClass("ScrollPaneB","Group")
 
@@ -165,6 +165,7 @@ function cScrollPaneB:Init (parentwidget, params)
 	self.btn_dn.on_mouse_left_up		= function (btn) self:StopButtonScroll(btn) end
 	self.btn_thumb.on_mouse_left_down	= function (btn) btn:StartMouseMove(key_mouse_left,self.ThumbMoveStep,self) end
 	self.clipped:SetClip(0,0,w-e,h)
+	self:UpdateContent()
 	self:UpdateScroll(0,0)
 	RegisterIntervalStepper(dt,function () return self:ScrollStep() end)
 end
@@ -184,7 +185,7 @@ function cScrollPaneB:GetScrollContentWH	()
 	return r,b
 end
 function cScrollPaneB:ThumbMoveStep			(x,y) -- returns x,y 
-	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove = self:GetParams()
+	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove = self:GetScrollParams()
 	if (max_y > 0) then
 		local newscrolly = floor(max_y * max(0,min(1,(y - thumb_yoff) / thumb_maxmove)))
 		if (newscrolly ~= self.scroll_y) then self:UpdateScroll(0,newscrolly,true) end
@@ -195,26 +196,29 @@ function cScrollPaneB:ThumbMoveStep			(x,y) -- returns x,y
 	return thumb_x,y
 end
 
--- returns max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove
-function cScrollPaneB:GetParams				()
+function cScrollPaneB:GetScrollParams				()
 	local sw,sh = self:GetScrollContentWH()
-	local w,h = self.w,self.h
-	local max_x = floor(max(0,sw-w))
-	local max_y = floor(max(0,sh-h))
+	local w,h = self.w,self.h -- page
+	local pagew = w -- minus scrollbar...
+	local pageh = h
+	local max_x = floor(max(0,sw-pagew))
+	local max_y = floor(max(0,sh-pageh))
 	local btn_h = 16
 	local thumb_w = 16
-	local thumb_h = 16
-	local thumb_maxmove = self.h - 2*btn_h - thumb_h
+	local thumb_area_h = self.h - 2*btn_h
+	local thumb_h = floor(max(0,thumb_area_h * ((sh > pageh) and (pageh / sh) or 1)))
+	local thumb_maxmove = thumb_area_h - thumb_h
 	local thumb_yoff = btn_h
 	local thumb_x = self.w - thumb_w
-	return max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove
+	return max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove,thumb_w,thumb_h
 end
-function cScrollPaneB:UpdateScroll			(newx,newy,bDontMoveThumb)
-	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove = self:GetParams()
+
+function cScrollPaneB:UpdateScroll			(newx,newy,bDontChangeThumb)
+	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove,thumb_w,thumb_h = self:GetScrollParams()
 	self.scroll_x = max(0,min(max_x,floor(newx)))
 	self.scroll_y = max(0,min(max_y,floor(newy)))
 	self.content:SetPos(-self.scroll_x,-self.scroll_y)
-	if (not bDontMoveThumb) then 
+	if (not bDontChangeThumb) then 
 		local x = thumb_x
 		local y = thumb_yoff + ((max_y > 0) and floor(thumb_maxmove * self.scroll_y / max_y) or 0)
 		self.btn_thumb:SetPos(x,y)
@@ -225,4 +229,9 @@ function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed t
 cScrollPaneB.CreateChild = gWidgetPrototype.Base.CreateChildPrivateNotice
 function cScrollPaneB:GetContent () return self.content end
 
-
+function cScrollPaneB:on_create_content_child () self:MarkForUpdateContent() end
+function cScrollPaneB:UpdateContent ()
+	--~ print("UpdateContent",self)
+	local max_x,max_y,thumb_x,thumb_yoff,thumb_maxmove,thumb_w,thumb_h = self:GetScrollParams()
+	self.btn_thumb:SetSize(thumb_w,thumb_h)
+end
