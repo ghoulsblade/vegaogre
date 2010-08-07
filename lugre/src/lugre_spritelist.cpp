@@ -60,7 +60,7 @@ inline Ogre::Rectangle	OffsetRect	(const Ogre::Rectangle& rIn,const Ogre::Vector
 
 // ***** ***** ***** ***** ***** cRenderGroup2D
 
-cRenderGroup2D::cRenderGroup2D	() : mpParent(0), mbRelBoundsDirty(true), mbRelBoundsEmpty(true), mbAddBoundsToParent(true), mbClipActive(false), mbTmpClipActive(false), mbVisible(true), miChildListRevision(0), mvPos(0,0,0) {}
+cRenderGroup2D::cRenderGroup2D	() : mpParent(0), miForcedMinW(0), miForcedMinH(0), mbRelBoundsDirty(true), mbRelBoundsEmpty(true), mbAddBoundsToParent(true), mbClipActive(false), mbTmpClipActive(false), mbVisible(true), miChildListRevision(0), mvPos(0,0,0) {}
 
 cRenderGroup2D::~cRenderGroup2D	() {
 	if (mpParent && GetAddBoundsToParent()) mpParent->MarkRelBoundsAsDirty(); 
@@ -71,11 +71,11 @@ cRenderGroup2D::~cRenderGroup2D	() {
 
 void	cRenderGroup2D::UpdateRelBounds				() {
 	mbRelBoundsDirty	= false;
-	mbRelBoundsEmpty	= true;
+	mbRelBoundsEmpty	= (miForcedMinW > 0 && miForcedMinH > 0) ? false : true;
 	mrRelBounds.left	= 0;
 	mrRelBounds.top		= 0;
-	mrRelBounds.right	= 0;
-	mrRelBounds.bottom	= 0;
+	mrRelBounds.right	= miForcedMinW;
+	mrRelBounds.bottom	= miForcedMinH;
 	
 	// add child bounds
 	for (tChildListItor itor=mlChilds.begin();itor!=mlChilds.end();++itor) {

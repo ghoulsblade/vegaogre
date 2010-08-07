@@ -108,6 +108,7 @@ class cRenderGroup2D : public Lugre::cSmartPointable { public :
 	inline void				SetAddBoundsToParent	(const bool bVal) { mbAddBoundsToParent = bVal; if (mpParent) mpParent->MarkRelBoundsAsDirty(); } ///< might be interesting for clipping
 	void					CalcAbsBounds			(Ogre::Rectangle& r); ///< in absolute coords, not clipped
 	virtual void			UpdateRelBounds			();
+	inline void				SetForcedMinSize		(int w,int h) { miForcedMinW = w; miForcedMinH = h; MarkRelBoundsAsDirty(); }
 	
 	// internal bounds manipulation during UpdateRelBounds
 	void	_BoundsAddRect	(float l,float t,float r,float b) {
@@ -141,6 +142,8 @@ class cRenderGroup2D : public Lugre::cSmartPointable { public :
 	Ogre::Vector3		mvPos;
 	bool				mbVisible;
 	int					miChildListRevision;
+	int					miForcedMinW;
+	int					miForcedMinH;
 	
 	// clip
 	bool				mbClipActive; 

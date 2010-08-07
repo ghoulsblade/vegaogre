@@ -37,6 +37,7 @@ class cRenderGroup2D_L : public cLuaBind<cRenderGroup2D> { public:
 			REGISTER_METHOD(GetVisible);
 			REGISTER_METHOD(SetVisible);
 			REGISTER_METHOD(SetClip);
+			REGISTER_METHOD(SetForcedMinSize);
 			REGISTER_METHOD(GetEffectiveClipAbs);
 			REGISTER_METHOD(GetEffectiveClipRel);
 			REGISTER_METHOD(ClearClip);
@@ -153,6 +154,13 @@ class cRenderGroup2D_L : public cLuaBind<cRenderGroup2D> { public:
 			checkudata_alive(L)->SetClip(r); 
 			return 0; 
 		}
+		
+		/// for lua : void	SetForcedMinSize 	(w,h)
+		static int			SetForcedMinSize		(lua_State *L) { PROFILE 
+			checkudata_alive(L)->SetForcedMinSize(luaL_checknumber(L,2),luaL_checknumber(L,3)); 
+			return 0; 
+		}
+		
 		
 		/// returns the effective (intersected with parent : might be smaller than the rect that was set) cliprect in absolute coords
 		/// for lua : l,t,r,b	GetEffectiveClipAbs 	()

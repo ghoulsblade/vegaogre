@@ -1,5 +1,6 @@
-cItemIcon = RegisterWidgetClass("ItemIcon","Group")
-cEquipSlot = RegisterWidgetClass("EquipSlot","Group")
+cItemIcon	= RegisterWidgetClass("ItemIcon","Group")
+cEquipSlot	= RegisterWidgetClass("EquipSlot","Group")
+cItemGrid	= RegisterWidgetClass("ItemGrid","Group")
 
 local btn_round			= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("rounded_button.png")							,48,48,0,0, 0,0, 12,8,12, 12,8,12, 32,32, 1,1, false,false)
 local btn_back1			= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("rounded_button_mid_trans_back_grad1.png")	,48,48,0,0, 0,0, 12,8,12, 12,8,12, 32,32, 1,1, false,false)
@@ -42,14 +43,14 @@ function cItemIcon:on_finish_dragdrop			(w,x,y)
 	end
 end -- if false/nil is returned, the drop will be cancelled
 
-function cItemIcon:on_mouse_left_down			() if (1 == 2) then print("cItemIcon:on_mouse_left_down			",self.params.image) end end
-function cItemIcon:on_mouse_left_up				() if (1 == 2) then print("cItemIcon:on_mouse_left_up			",self.params.image) end end
-function cItemIcon:on_mouse_enter				() if (1 == 2) then print("cItemIcon:on_mouse_enter				",self.params.image) end end
-function cItemIcon:on_mouse_leave				() if (1 == 2) then print("cItemIcon:on_mouse_leave				",self.params.image) end end
-function cItemIcon:on_mouse_left_drag_step		() if (1 == 2) then print("cItemIcon:on_mouse_left_drag_step	",self.params.image) end end
-function cItemIcon:on_mouse_left_drag_end		() if (1 == 2) then print("cItemIcon:on_mouse_left_drag_end		",self.params.image) end end -- not used
+function cItemIcon:on_mouse_left_down			() if (1 == 2) then print("cItemIcon:on_mouse_left_down			",self.params.image) end end -- don't remove, otherwise passed to parent->nodrag
+--~ function cItemIcon:on_mouse_left_up				() if (1 == 2) then print("cItemIcon:on_mouse_left_up			",self.params.image) end end
+--~ function cItemIcon:on_mouse_enter				() if (1 == 2) then print("cItemIcon:on_mouse_enter				",self.params.image) end end
+--~ function cItemIcon:on_mouse_leave				() if (1 == 2) then print("cItemIcon:on_mouse_leave				",self.params.image) end end
+--~ function cItemIcon:on_mouse_left_drag_step		() if (1 == 2) then print("cItemIcon:on_mouse_left_drag_step	",self.params.image) end end
+--~ function cItemIcon:on_mouse_left_drag_end		() if (1 == 2) then print("cItemIcon:on_mouse_left_drag_end		",self.params.image) end end -- not used
 
--- ***** ***** ***** ***** ***** DragDrop
+-- ***** ***** ***** ***** ***** DragDrop base
 
 function cItemIcon:StartDragDrop			()
 	if (self.on_start_dragdrop and self:on_start_dragdrop()) then else return end
@@ -94,4 +95,20 @@ function cEquipSlot:on_accept_drop (w,x,y) -- return false if not accepted
 	w:SetPos(0,0)
 	return true
 end
+
+-- ***** ***** ***** ***** ***** cItemGrid
+
+function cItemGrid:Init (parentwidget, params) gMyTestGrid = self self:SetSize(params.w,params.h) self:SetIgnoreBBoxHit(false) end
+
+function cItemGrid:on_mouse_left_down	() end
+
+function cItemGrid:on_accept_drop (w,x,y) -- return false if not accepted
+	--~ print("cItemGrid:on_accept_drop",w,x,y,w:GetClassName())
+	local ox,oy = self:GetDerivedPos()
+	local e = 50
+	w:SetParent(self)
+	w:SetPos(e*math.floor((x-ox)/e),e*math.floor((y-oy)/e))
+	return true
+end
+
 

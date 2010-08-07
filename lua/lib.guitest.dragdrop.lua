@@ -1,3 +1,5 @@
+floor = math.floor
+ceil = math.ceil
 
 function InitGuiThemes ()
 	gVegaWidgetFont = CreateFont_Ogre("TrebuchetMSBold",14)
@@ -34,6 +36,10 @@ function GuiTest_DragDrop ()
 	local w1 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=100 y=100 w=320 h=400> <Text x=10 y=0 text='Inventory' /> </Window>]])
 	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=320 h=400> <Text x=10 y=0 text='Ship' /> </Window>]])
 	
+	local e = 50
+	local g = w1:CreateContentChild("ItemGrid",{x=4,y=40,w=floor((320-4)/e)*e,h=floor((400-40)/e)*e})
+	gMyWindow1 = w1
+
 	local i = 0
 	for img,n in pairs({
 		["am_magcells.image.png"					]=3,
@@ -44,9 +50,9 @@ function GuiTest_DragDrop ()
 		["bio_remodeler.image.png"					]=2,
 		["cargo-hud.image.png"						]=1,
 		["cloaking_device_aeramilspec.image.png"	]=1,
-		["explosives.image.png"						]=4,
+		["explosives.image.png"						]=1,
 		["krystal.image.png"						]=1,
-		["laser_drills.image.png"					]=5,
+		["laser_drills.image.png"					]=4,
 		["pai_wetware.image.png"					]=1,
 		["repair_droid01.image.png"					]=1,
 		["repulsor_beam.image.png"					]=2,
@@ -54,7 +60,7 @@ function GuiTest_DragDrop ()
 		["waste_recyclers.image.png"				]=1,}) do 
 		for k=1,n do 
 			local tooltip = string.gsub(img,"%.png$","").."\n5 SomeValue\n7 SomeOtherValue\nMedPowerSlot"
-			w1:CreateContentChild("ItemIcon",{x=5+(i%6)*50, y=40+math.floor(i/6)*50, image=img, tooltip=tooltip })
+			g:CreateContentChild("ItemIcon",{x=(i%6)*50, y=math.floor(i/6)*50, image=img, tooltip=tooltip })
 			i = i + 1
 		end
 	end

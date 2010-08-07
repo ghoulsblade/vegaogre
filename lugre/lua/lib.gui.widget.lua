@@ -356,9 +356,9 @@ function gWidgetPrototype.Base:ClearClip		()			return self._widgetbasedata.rende
 function gWidgetPrototype.Base:GetAbsBounds		() 
 	local g = self._widgetbasedata.rendergroup2d
 	local cl,ct,cr,cb = g:GetEffectiveClipAbs()
-	local l,t,r,b = g:CalcAbsBounds()
+	local l,t,r,b = g:CalcAbsBounds() -- warning, bug: ignores forced_w of childs ! (fixed 2010.08.07)
 	local w,h = self._widgetbasedata.forced_w,self._widgetbasedata.forced_h
-	if (w) then r,b = l+w,t+h end
+	if (w) then r,b = l+w,t+h end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
 	if (cl) then l,t,r,b = IntersectRect(l,t,r,b, cl,ct,cr,cb) end -- same clip is also used by UpdateGeometryClipped()
 	return l,t,r,b
 end
@@ -367,7 +367,7 @@ end
 function gWidgetPrototype.Base:GetRelBounds		() 
 	local l,t,r,b = self._widgetbasedata.rendergroup2d:GetRelBounds()
 	local w,h = self._widgetbasedata.forced_w,self._widgetbasedata.forced_h
-	if (w) then return l,t,l+w,t+h end
+	if (w) then return l,t,l+w,t+h end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
 	return l,t,r,b
 end
 
@@ -376,6 +376,7 @@ end
 -- to remain consistent, it must be ensured that GetSize() always equals the last SetSize()
 -- most widget types have to react to this by implementing t:on_set_size(w,h)
 function gWidgetPrototype.Base:SetSize		(w,h)
+	self._widgetbasedata.rendergroup2d:SetForcedMinSize(w,h)
 	self._widgetbasedata.forced_w = w 
 	self._widgetbasedata.forced_h = h 
 	if (self.on_set_size) then self:on_set_size(w,h) end
