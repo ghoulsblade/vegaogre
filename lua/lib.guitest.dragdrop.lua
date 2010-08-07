@@ -37,11 +37,13 @@ function GuiTest_DragDrop ()
 	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=320 h=400> <Text x=10 y=0 text='Ship' /> </Window>]])
 	
 	local e = 50
-	local g = w1:CreateContentChild("ItemGrid",{x=4,y=40,w=floor((320-4)/e)*e,h=floor((400-40)/e)*e})
+	local s = w1:CreateContentChild("ScrollPaneB",{x=4,y=40,w=(320-4-16),h=(400-40)})
+	local g = s:CreateContentChild("ItemGrid",{x=0,y=0,w=floor((320-4)/e)*e,h=floor((400-40)/e)*e})
 	gMyWindow1 = w1
 
 	local i = 0
-	for img,n in pairs({
+	local function ninc (t,addmax) for k,v in pairs(t) do t[k] = v + math.random(0,addmax) end return t end
+	for img,n in pairs(ninc({
 		["am_magcells.image.png"					]=3,
 		["atmospheric_scrubbers.image.png"			]=2,
 		["automated_factories.image.png"			]=1,
@@ -57,7 +59,7 @@ function GuiTest_DragDrop ()
 		["repair_droid01.image.png"					]=1,
 		["repulsor_beam.image.png"					]=2,
 		["tractor_beam.image.png"					]=2,
-		["waste_recyclers.image.png"				]=1,}) do 
+		["waste_recyclers.image.png"				]=1,},6)) do 
 		for k=1,n do 
 			local tooltip = string.gsub(img,"%.png$","").."\n5 SomeValue\n7 SomeOtherValue\nMedPowerSlot"
 			g:CreateContentChild("ItemIcon",{x=(i%6)*50, y=math.floor(i/6)*50, image=img, tooltip=tooltip })

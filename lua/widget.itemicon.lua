@@ -58,7 +58,7 @@ function cItemIcon:StartDragDrop			()
 	local x,y = self:GetDerivedPos()
 	self:SetParent(GetDesktopWidget())
 	self:SetPos(x,y)
-	self:StartMouseMove(key_mouse_left,nil,nil,function (x,y) self:EndDragDrop(x,y) end)
+	self:StartMouseMove(key_mouse_left,nil,nil,function (x,y) self:EndDragDrop(x,y) end,gLastMouseDownX,gLastMouseDownY)
 end
 
 function cItemIcon:CancelDragDrop			(x,y)
@@ -102,7 +102,7 @@ function cItemGrid:Init (parentwidget, params)
 	self:SetIgnoreBBoxHit(false)
 end
 
-function cItemGrid:on_mouse_left_down	() end
+function cItemGrid:on_mouse_left_down	() end -- override so it isn't passed to parent
 
 function cItemGrid:FindItemOnPos(x,y)
 	for k,w in ipairs(self:_GetOrderedChildList()) do local cx,cy = w:GetPos() if (x == cx and y == cy) then return x end end
@@ -118,5 +118,21 @@ function cItemGrid:on_accept_drop (w,x,y) -- return false if not accepted
 	w:SetPos(x,y)
 	return true
 end
+
+-- ***** ***** ***** ***** ***** ScrollPaneB
+
+cScrollPaneB	= RegisterWidgetClass("ScrollPaneB","Group")
+
+function cScrollPaneB:Init (parentwidget, params)
+	self:SetSize(params.w,params.h)
+	self:SetIgnoreBBoxHit(false)
+	self.content = self:_CreateChild("Group")
+end
+
+function cScrollPaneB:on_mouse_left_down	() end -- override so it isn't passed to parent
+
+cScrollPaneB.CreateChild = gWidgetPrototype.Base.CreateChildPrivateNotice
+function cScrollPaneB:GetContent () return self.content end
+
 
 
