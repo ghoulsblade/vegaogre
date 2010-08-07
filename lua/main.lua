@@ -150,7 +150,7 @@ function Main ()
     NotifyListener("Hook_PostLoad")
 	
     --~ StartMainMenu()
-	
+	BindDown("escape", function () os.exit(0) end)
 	MySpaceInit()
 	GuiTest_DragDrop()
 	
