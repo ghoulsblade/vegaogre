@@ -151,8 +151,9 @@ function Main ()
 	
     --~ StartMainMenu()
 	BindDown("escape", function () os.exit(0) end)
+	BindDown("tab", function () GuiTest_DragDrop() end)
 	MySpaceInit()
-	GuiTest_DragDrop()
+	
 	
 	-- mainloop
     while (Client_IsAlive()) do 
