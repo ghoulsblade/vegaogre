@@ -9,8 +9,13 @@ material agricultural_station_tex0_0
 			diffuse 0.640000 0.640000 0.640000 1.000000
 			specular 0.500000 0.500000 0.500000 1.000000 12.500000
 			emissive 0.000000 0.000000 0.000000 1.000000
+			
+			scene_blend alpha_blend
+			alpha_rejection greater_equal 128
+			
 			texture_unit
 			{
+				//texture agri_dome.dds
 				texture agri_dome.dds
 			}
 		}

@@ -40,6 +40,8 @@ function FireShot ()
 	local x,y,z = gMyShipTest:GetPosition()
 	local s = 100
 	local vx,vy,vz = Quaternion.ApplyToVector(0,0,-s,w0,x0,y0,z0)
+	local o = gMyShipTest
+	vx,vy,vz = vx+o.vx,vy+o.vy,vz+o.vz
 	local gfx = CreateRootGfx3D()
 	gfx:SetMesh(gBoltMeshName)
 	gfx:SetOrientation(w0,x0,y0,z0)
@@ -93,6 +95,10 @@ function ShipTestStep ()
 		gfx:SetMesh("llama.mesh")
 		gMyShipTest = gfx
 		gMyShipTest:SetNormaliseNormals(true)
+		local o = gMyShipTest
+		o.vx = 0
+		o.vy = 0
+		o.vz = 0
 		
 		-- alien ship
 		local gfx = CreateRootGfx3D()
@@ -104,15 +110,15 @@ function ShipTestStep ()
 		-- station
 		local gfx = CreateRootGfx3D()
 		gfx:SetMesh("agricultural_station.mesh")
-		gfx:SetPosition(-100,0,0)
-		local s = 0.5 gfx:SetScale(s,s,s)
+		gfx:SetPosition(-1000,0,0)
+		local s = 5 gfx:SetScale(s,s,s)
 		
 		-- planet
 		local gfx = CreateRootGfx3D()
-		local steps_h,steps_v,cx,cy,cz = 22,22,1,1,1
+		local steps_h,steps_v,cx,cy,cz = 31,31,1,1,1
 		gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
-		gfx:SetPosition(1000,0,0)
-		local s = 400.05  gfx:SetScale(s,s,s)
+		gfx:SetPosition(40000,0,0)
+		local s = 16000.05  gfx:SetScale(s,s,s)
 		local e = gfx:GetEntity()
 		e:setMaterialName("planetbase")
 		
@@ -161,16 +167,18 @@ function ShipTestStep ()
 	local w0,x0,y0,z0 = gMyShipTest:GetOrientation()
 	
 	local x,y,z = gMyShipTest:GetPosition()
-	local s = 100*dt
+	local s = 100
 	local as = 10*s
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),
 		(gKeyPressed[key_s] and -s or 0) + (gKeyPressed[key_w] and  s or 0)  + (gKeyPressed[key_lshift] and as or 0) ,
-		w0,x0,y0,z0) x,y,z = x+ax,y+ay,z+az
+		w0,x0,y0,z0) x,y,z = x+ax*dt,y+ay*dt,z+az*dt
+	local o = gMyShipTest
+	o.vx,o.vy,o.vz = ax,ay,az
 	gMyShipTest:SetPosition(x,y,z)
 	
-	local ax,ay,az = Quaternion.ApplyToVector(0,4,-10,w0,x0,y0,z0)
+	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
 	
 	--~ local ox,oy,oz = 0,0,0
