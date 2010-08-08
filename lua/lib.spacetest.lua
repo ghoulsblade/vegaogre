@@ -67,13 +67,13 @@ end
 -- prefix material names at runtime
 function EnsureMeshMaterialNamePrefix (meshname,prefix)
 	local mesh = MeshManager_load(meshname) assert(mesh)
-	print("EnsureMeshMaterialNamePrefix",meshname,mesh:getNumSubMeshes())
+	--~ print("EnsureMeshMaterialNamePrefix",meshname,mesh:getNumSubMeshes())
 	for i=0,mesh:getNumSubMeshes()-1 do 
 		local sub = mesh:getSubMesh(i) assert(sub)
 		local mat = sub:getMaterialName()
 		local mat2 = EnsureMaterialNamePrefix(mat,prefix)
 		sub:setMaterialName(mat2)
-		print("sub",i,mat2)
+		--~ print("sub",i,mat2)
 	end
 end
 
@@ -88,22 +88,35 @@ function ShipTestStep ()
 		
 		gBoltMeshName = gBoltMeshName or GenerateBoltMesh()
 		
+		
+		-- player ship
 		gfx:SetMesh("llama.mesh")
-		--~ gfx:SetMesh(gBoltMeshName)
 		gMyShipTest = gfx
 		gMyShipTest:SetNormaliseNormals(true)
 		
+		-- alien ship
 		local gfx = CreateRootGfx3D()
 		gfx:SetMesh("ruizong.mesh")
 		gfx:SetPosition(10,0,0)
 		local s = 0.05
 		gfx:SetScale(s,s,s)
 		
+		-- station
 		local gfx = CreateRootGfx3D()
 		gfx:SetMesh("agricultural_station.mesh")
 		gfx:SetPosition(-10,0,0)
-		local s = 0.05
-		gfx:SetScale(s,s,s)
+		local s = 0.05 gfx:SetScale(s,s,s)
+		
+		-- planet
+		local gfx = CreateRootGfx3D()
+		local steps_h,steps_v,cx,cy,cz = 11,11,1,1,1
+		gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
+		gfx:SetPosition(100,0,0)
+		local s = 40.05  gfx:SetScale(s,s,s)
+		local e = gfx:GetEntity()
+		e:setMaterialName("planetbase")
+		
+		
 	end
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
 	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
