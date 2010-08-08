@@ -42,13 +42,13 @@ function ShipTestStep ()
 	local ang = math.pi * gMyTicks/1000 * 0.11
 	
 	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
-	local bMoveCam = gKeyPressed[key_mouse_middle]
-	local speedfactor = math.pi / 1000 -- 1000pix = pi radians
-	local bFlipUpAxis = false
-	local cam = GetMainCam()
-	StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
-	local ox,oy,oz = 0,3,0
-	local dist = 15
-	StepThirdPersonCam (cam,dist,ox,oy,oz)
+	--~ local bMoveCam = gKeyPressed[key_mouse_middle]
+	--~ local speedfactor = math.pi / 1000 -- 1000pix = pi radians
+	--~ local bFlipUpAxis = false
+	--~ local cam = GetMainCam()
+	--~ StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
+	--~ local ox,oy,oz = 0,3,0
+	--~ local dist = 15
+	--~ StepThirdPersonCam (cam,dist,ox,oy,oz)
 end
 

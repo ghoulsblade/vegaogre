@@ -48,6 +48,7 @@ function CollectOgreResLocs ()
     OgreAddResLoc(mydatapath.."units/vessels/llama"				,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/backgrounds"			,"FileSystem","General")
     OgreAddResLoc(mydatapath.."gui"								,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."crosshair"						,"FileSystem","General")
 	
 
     print("OgreInitResLocs...")
@@ -153,7 +154,7 @@ function Main ()
 	BindDown("escape", function () os.exit(0) end)
 	BindDown("tab", function () GuiTest_DragDrop() end)
 	MySpaceInit()
-	
+	GuiTest_InitCrossHair()
 	
 	-- mainloop
     while (Client_IsAlive()) do 

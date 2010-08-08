@@ -55,9 +55,41 @@ end
 
 
 
+function GuiTest_InitCrossHair ()
+		--~ local w,h = 128,128
+		--~ local x,y = gViewportW/2-w/2,gViewportH/2-h/2
+		--~ gCrossHair = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("crosshair01.png"),w,h)})
+		--~ gCrossHair:SetPos(x,y)
+end
+
+RegisterListener("Hook_HUDStep",function () GuiTest_Step() end)
+
+function GuiTest_Step ()
+	if (gGuiTest_DragDrop_Active) then return end
+	local mx,my = GetMousePos()
+	local cx,cy = gViewportW/2,gViewportH/2
+	local w,h = 32,32
+	if (not gMouseCross) then 
+		gMouseCross = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("objmark_vorhalt.png"),w,h)})
+	end
+	gMouseCross:SetPos(mx-w/2,my-h/2)
+	local dx,dy = (mx-cx)/cx,(my-cy)/cy
+	local cam = GetMainCam()
+	
+	local roth = -math.pi * .5 * dx * gSecondsSinceLastFrame
+	local rotv = -math.pi * .5 * dy * gSecondsSinceLastFrame
+	
+	local w0,x0,y0,z0 = cam:GetRot()	
+	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(roth,0,1,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
+	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
+	--~ local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
+	cam:SetRot(Quaternion.normalise(w0,x0,y0,z0))
+end
+
 function GuiTest_DragDrop ()
 	gGuiTest_DragDrop_Active = not gGuiTest_DragDrop_Active
 	if (gGuiTest_DragDrop_Active) then 
+		if (gCrossHair) then gCrossHair:Destroy() gCrossHair = nil end
 
 		InitGuiThemes()
 		--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
@@ -109,5 +141,6 @@ function GuiTest_DragDrop ()
 	else 
 		gMyWindow1:Destroy()
 		gMyWindow2:Destroy()
+		GuiTest_InitCrossHair()
 	end
 end
