@@ -165,3 +165,29 @@ material bluesky : skyboxbase
 		}
 	}
 }
+
+material bolttest
+{
+	technique
+	{
+		pass
+		{
+			ambient  1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0
+			
+			// cull_hardware none
+			// cull_software none
+			
+			lighting off
+			scene_blend add
+			depth_write off
+			
+			texture_unit
+			{
+				texture vaporisator.dds 2d 0
+				// tex_address_mode clamp
+				// filtering none
+			}
+		}
+	}
+}

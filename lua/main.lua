@@ -27,6 +27,7 @@ lugre_include_libs(lugreluapath)
 
 dofile(libpath .. "lib.spacetest.lua")
 dofile(libpath .. "lib.guitest.dragdrop.lua")
+dofile(libpath .. "lib.boltmesh.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##
@@ -47,6 +48,7 @@ function CollectOgreResLocs ()
 	end
     OgreAddResLoc(mydatapath.."units/vessels/llama"				,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/backgrounds"			,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."textures/weapons"				,"FileSystem","General")
     OgreAddResLoc(mydatapath.."gui"								,"FileSystem","General")
     OgreAddResLoc(mydatapath.."crosshair"						,"FileSystem","General")
 	

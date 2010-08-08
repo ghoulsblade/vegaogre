@@ -112,6 +112,7 @@ function cIndexBuffer:Destroy()
 end
 function cIndexBuffer:GetFIFO() return self.fifo end
 function cIndexBuffer:GetIndexNum() return self.ic end
+function cIndexBuffer:MultiIndex(i,j,...) self:Index(i) return j and self:MultiIndex(j,...) end
 function cIndexBuffer:Index(i) 
 	FIFO_PushUint32(self.quickfifo,i)
 	self.ic = self.ic + 1

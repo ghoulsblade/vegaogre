@@ -23,15 +23,67 @@ function MySpaceInit ()
 	gMaxFPS = 40
 end
 
+
+RegisterIntervalStepper(100,function ()
+	if (gGuiTest_DragDrop_Active) then return end
+	if (gKeyPressed[key_mouse_left]) then FireShot() end
+end)
+
+
+gObjects = {}
+
+function FireShot () 
+	--~ print("FireShot")
+	local cam = GetMainCam()
+	local w0,x0,y0,z0 = cam:GetRot()
+	
+	local x,y,z = 0,0,0
+	local s = 100
+	local vx,vy,vz = Quaternion.ApplyToVector(0,0,-s,w0,x0,y0,z0)
+	local gfx = CreateRootGfx3D()
+	gfx:SetMesh(gBoltMeshName)
+	gfx:SetOrientation(w0,x0,y0,z0)
+	local o = {x=x,y=y,z=z,vx=vx,vy=vy,vz=vz,gfx=gfx}
+	gObjects[o] = true
+end
+
+RegisterStepper(function () 
+	local dt = gSecondsSinceLastFrame
+	for o,v in pairs(gObjects) do 
+		o.x = o.x + o.vx * dt
+		o.y = o.y + o.vy * dt
+		o.z = o.z + o.vz * dt
+		o.gfx:SetPosition(o.x,o.y,o.z)
+	end
+end)
+
+
 function ShipTestStep ()
 	if (not gMyShipTest) then 
 		local gfx = CreateRootGfx3D()
+		
+		gBoltMeshName = gBoltMeshName or GenerateBoltMesh()
+		
 		gfx:SetMesh("llama.mesh")
+		--~ gfx:SetMesh(gBoltMeshName)
 		gMyShipTest = gfx
 		gMyShipTest:SetNormaliseNormals(true)
+		
+		
 	end
-	local ang = math.pi * gMyTicks/1000 * 0.05
-	gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	--~ local ang = math.pi * gMyTicks/1000 * 0.05
+	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	
+	if (1 == 1) then 
+		local cam = GetMainCam()
+		local w0,x0,y0,z0 = cam:GetRot()
+		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
+		w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)	
+		local w1,x1,y1,z1 = gMyShipTest:GetOrientation()
+		local bShortestPath = true 
+		local t = 0.9
+		gMyShipTest:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
+	end
 	
 	
     if (gbNeedCorrectAspectRatio) then
@@ -47,7 +99,11 @@ function ShipTestStep ()
 	--~ local speedfactor = math.pi / 1000 -- 1000pix = pi radians
 	--~ local bFlipUpAxis = false
 	--~ StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
-	local ox,oy,oz = 0,0,0
+	
+	local w0,x0,y0,z0 = gMyShipTest:GetOrientation()
+	local ox,oy,oz = Quaternion.ApplyToVector(0,4,-10,w0,x0,y0,z0)
+	
+	--~ local ox,oy,oz = 0,0,0
 	local dist = 15
 	StepThirdPersonCam (cam,dist,ox,oy,oz)
 end
