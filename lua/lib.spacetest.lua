@@ -11,7 +11,7 @@ function MySpaceInit ()
     local cam = GetMainCam()
     cam:SetFOVy(gfDeg2Rad*45)
     --~ cam:SetNearClipDistance(0.01) -- old : 1
-    --~ cam:SetFarClipDistance(2000) -- ogre defaul : 100000
+    cam:SetFarClipDistance(10000000) -- ogre defaul : 100000
 	
 	-- light 
     Client_ClearLights()
@@ -61,6 +61,15 @@ function ShipTestStep ()
 		
 		-- player ship
 		gPlayerShip = cPlayerShip:New(0,0,0	,5,"llama.mesh")
+		
+		
+		local gfx_far = CreateRootGfx3D()
+		local gfx_near = gfx_far:CreateChild()
+		local e = 100000000000000000000000000000000000000
+		gfx_far:SetPosition(e,0,0)
+		gfx_near:SetPosition(-e+0,0,0)
+		--~ gfx_near:SetPosition(-e-11,0,0)
+		gPlayerShip.gfx:SetParent(gfx_near)
 		
 		-- npc ship
 		for i=1,10 do 
@@ -135,6 +144,7 @@ function PlayerCamStep (dx,dy)
 	
 	local s = gKeyPressed[key_lshift] and 10 or 100
 	local as = 10*s
+	if (gKeyPressed[key_lcontrol]) then s = s * 10000 as = 0 end 
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),

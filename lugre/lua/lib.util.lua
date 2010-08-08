@@ -151,8 +151,10 @@ function CreateClass(parentclass_or_nil)
 	-- by metatable instead of copying, we avoid problems when not all parentclass methods are registered yet at class creation
 	p.New = CreateClassInstance
 	p._class_metatable = { __index=p } 
+	p._parent_class = parentclass_or_nil
 	return p 
 end
+
 
 -- creates a class instance and calls the Init function if it exists with the given parameter ...
 function CreateClassInstance(class, ...) 
