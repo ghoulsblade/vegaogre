@@ -37,7 +37,7 @@ function FireShot ()
 	local cam = GetMainCam()
 	local w0,x0,y0,z0 = cam:GetRot()
 	
-	local x,y,z = 0,0,0
+	local x,y,z = gMyShipTest:GetPosition()
 	local s = 100
 	local vx,vy,vz = Quaternion.ApplyToVector(0,0,-s,w0,x0,y0,z0)
 	local gfx = CreateRootGfx3D()
@@ -121,7 +121,7 @@ function ShipTestStep ()
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
 	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	
-	if (1 == 2) then 
+	if (1 == 1) then 
 		local cam = GetMainCam()
 		local w0,x0,y0,z0 = cam:GetRot()
 		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
@@ -148,7 +148,19 @@ function ShipTestStep ()
 	--~ StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
 	
 	local w0,x0,y0,z0 = gMyShipTest:GetOrientation()
-	local ox,oy,oz = Quaternion.ApplyToVector(0,4,-10,w0,x0,y0,z0)
+	
+	
+	local x,y,z = gMyShipTest:GetPosition()
+	local s = 100*gSecondsSinceLastFrame
+	local ax,ay,az = Quaternion.ApplyToVector(
+		(gKeyPressed[key_d] and -1 or 0) + (gKeyPressed[key_a] and  1 or 0),
+		(gKeyPressed[key_f] and -1 or 0) + (gKeyPressed[key_r] and  1 or 0),
+		(gKeyPressed[key_s] and -1 or 0) + (gKeyPressed[key_w] and  1 or 0),
+		w0,x0,y0,z0) x,y,z = x+ax,y+ay,z+az
+	gMyShipTest:SetPosition(x,y,z)
+	
+	local ax,ay,az = Quaternion.ApplyToVector(0,4,-10,w0,x0,y0,z0)
+	local ox,oy,oz = x+ax,y+ay,z+az
 	
 	--~ local ox,oy,oz = 0,0,0
 	local dist = 15
