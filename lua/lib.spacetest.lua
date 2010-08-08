@@ -1,7 +1,7 @@
 
 function MySpaceInit ()
 	local gNumberOfStars = 10000 
-	local gStarsDist = 50000 
+	local gStarsDist = 80000 
 	local gStarColorFactor = 0.5 -- somewhat colorful stars
 	gStarField = CreateRootGfx3D()
 	gStarField:SetStarfield(gNumberOfStars,gStarsDist,gStarColorFactor,"starbase")
@@ -91,12 +91,16 @@ function ShipTestStep ()
 		-- player ship
 		gMyShipTest = cShip:New(0,0,0	,5,"llama.mesh")
 		
-		-- alien ship
-		cNPCShip:New(10,0,0		,50,"ruizong.mesh") 
+		-- npc ship
+		for i=1,10 do 
+			local x,y,z = Vector.random3(400)
+			local o = cNPCShip:New(x,y,z		,10,"ruizong.mesh") 
+			o:SetRandomRot()
+		end
 		
 		-- bases
-		cStation:New(-1000,0,0	,100,"agricultural_station.mesh")
-		cPlanet:New(40000,0,0	,16000,"planetbase")
+		cStation:New(-1000,0,0	,400,"agricultural_station.mesh")
+		cPlanet:New(60000,0,0	,40000,"planetbase"):SetRandomRot()
 	end
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
 	--~ gMyShipTest.gfx:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))

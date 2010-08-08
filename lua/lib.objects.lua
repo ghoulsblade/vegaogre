@@ -28,6 +28,8 @@ end
 
 function cObject:GetPos() return self.x,self.y,self.z end
 function cObject:SetPos(x,y,z) self.x,self.y,self.z = x,y,z self.gfx:SetPosition(x,y,z) end
+function cObject:SetRandomRot() self:SetRot(Quaternion.random()) end
+function cObject:SetRot(w,x,y,z) self.gfx:SetOrientation(w,x,y,z) end
 
 function cObject:SetScaledMesh(meshname,r)
 	local gfx = self.gfx
