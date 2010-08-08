@@ -28,6 +28,7 @@ lugre_include_libs(lugreluapath)
 dofile(libpath .. "lib.spacetest.lua")
 dofile(libpath .. "lib.guitest.dragdrop.lua")
 dofile(libpath .. "lib.boltmesh.lua")
+dofile(libpath .. "lib.objects.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##

@@ -37,7 +37,7 @@ function FireShot ()
 	local cam = GetMainCam()
 	local w0,x0,y0,z0 = cam:GetRot()
 	
-	local x,y,z = gMyShipTest:GetPosition()
+	local x,y,z = gMyShipTest:GetPos()
 	local s = 100
 	local vx,vy,vz = Quaternion.ApplyToVector(0,0,-s,w0,x0,y0,z0)
 	local o = gMyShipTest
@@ -86,46 +86,20 @@ function ShipTestStep ()
 		EnsureMeshMaterialNamePrefix("agricultural_station.mesh","agricultural_station")
 		--~ os.exit(0)
 	
-		local gfx = CreateRootGfx3D()
-		
 		gBoltMeshName = gBoltMeshName or GenerateBoltMesh()
 		
-		
 		-- player ship
-		gfx:SetMesh("llama.mesh")
-		gMyShipTest = gfx
-		gMyShipTest:SetNormaliseNormals(true)
-		local o = gMyShipTest
-		o.vx = 0
-		o.vy = 0
-		o.vz = 0
+		gMyShipTest = cShip:New(0,0,0	,5,"llama.mesh")
 		
 		-- alien ship
-		local gfx = CreateRootGfx3D()
-		gfx:SetMesh("ruizong.mesh")
-		gfx:SetPosition(10,0,0)
-		local s = 0.05
-		gfx:SetScale(s,s,s)
+		cNPCShip:New(10,0,0		,50,"ruizong.mesh") 
 		
-		-- station
-		local gfx = CreateRootGfx3D()
-		gfx:SetMesh("agricultural_station.mesh")
-		gfx:SetPosition(-1000,0,0)
-		local s = 5 gfx:SetScale(s,s,s)
-		
-		-- planet
-		local gfx = CreateRootGfx3D()
-		local steps_h,steps_v,cx,cy,cz = 31,31,1,1,1
-		gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
-		gfx:SetPosition(40000,0,0)
-		local s = 16000.05  gfx:SetScale(s,s,s)
-		local e = gfx:GetEntity()
-		e:setMaterialName("planetbase")
-		
-		
+		-- bases
+		cStation:New(-1000,0,0	,100,"agricultural_station.mesh")
+		cPlanet:New(40000,0,0	,16000,"planetbase")
 	end
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
-	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	--~ gMyShipTest.gfx:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	
 	
 	
@@ -157,16 +131,16 @@ function ShipTestStep ()
 		local w0,x0,y0,z0 = cam:GetRot()
 		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
 		w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)	
-		local w1,x1,y1,z1 = gMyShipTest:GetOrientation()
+		local w1,x1,y1,z1 = gMyShipTest.gfx:GetOrientation()
 		local bShortestPath = true 
 		local t = 0.9
-		gMyShipTest:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
+		gMyShipTest.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
 	end
 	
 	
-	local w0,x0,y0,z0 = gMyShipTest:GetOrientation()
+	local w0,x0,y0,z0 = gMyShipTest.gfx:GetOrientation()
 	
-	local x,y,z = gMyShipTest:GetPosition()
+	local x,y,z = gMyShipTest:GetPos()
 	local s = 100
 	local as = 10*s
 	local ax,ay,az = Quaternion.ApplyToVector(
@@ -176,7 +150,7 @@ function ShipTestStep ()
 		w0,x0,y0,z0) x,y,z = x+ax*dt,y+ay*dt,z+az*dt
 	local o = gMyShipTest
 	o.vx,o.vy,o.vz = ax,ay,az
-	gMyShipTest:SetPosition(x,y,z)
+	gMyShipTest:SetPos(x,y,z)
 	
 	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
