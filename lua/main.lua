@@ -47,6 +47,7 @@ function CollectOgreResLocs ()
     --~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
 	end
     OgreAddResLoc(mydatapath.."units/vessels/llama"				,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."units/vessels/Ruizong"			,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/backgrounds"			,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/weapons"				,"FileSystem","General")
     OgreAddResLoc(mydatapath.."gui"								,"FileSystem","General")

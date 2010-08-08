@@ -69,7 +69,11 @@ function ShipTestStep ()
 		gMyShipTest = gfx
 		gMyShipTest:SetNormaliseNormals(true)
 		
-		
+		local gfx = CreateRootGfx3D()
+		gfx:SetMesh("ruizong.mesh")
+		gfx:SetPosition(10,0,0)
+		local s = 0.05
+		gfx:SetScale(s,s,s)
 	end
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
 	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
