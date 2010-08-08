@@ -28,3 +28,13 @@ to compile on win :  no guide available at the moment, please use contact email 
 
 * linux : fmod problem ? try ./makeclean.sh && ./premake.linux --nosound
 	
+== controls ==
+
+tab : guimode
+w-a-s-d : ship move
+r-f : up/down
+q-e : roll
+shift : slow
+ctrl : afterburner
+
+left-mouse : fire
