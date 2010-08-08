@@ -106,9 +106,10 @@ function GetDesktopWidget () return GetGUILayer_Dialogs() end
 
 
 gWidgetPrototype.Base = {}
+local cWidget = gWidgetPrototype.Base
 
 
-function gWidgetPrototype.Base:InitAsGroup (parentwidget,params)
+function cWidget:InitAsGroup (parentwidget,params)
 	self.rendergroup2d = CreateRenderGroup2D(parentwidget and parentwidget:CastToRenderGroup2D())
 	self:SetRenderGroup2D(self.rendergroup2d)
 	self:AddToDestroyList(self.rendergroup2d)
@@ -118,7 +119,7 @@ function gWidgetPrototype.Base:InitAsGroup (parentwidget,params)
 	self:SetParent(parentwidget) -- early parent setting, so it can be already used in init
 end
 
-function gWidgetPrototype.Base:InitAsSpritePanel (parentwidget,params,bVertexBufferDynamic,bVertexCol)
+function cWidget:InitAsSpritePanel (parentwidget,params,bVertexBufferDynamic,bVertexCol)
 	local spritepanel = CreateSpritePanel(parentwidget and parentwidget:CastToRenderGroup2D(),params.gfxparam_init,bVertexBufferDynamic,bVertexCol)
 	self:SetRenderGroup2D(spritepanel:CastToRenderGroup2D())
 	self:AddToDestroyList(spritepanel) -- don't add spritelist here, will be destroyed in spritepanel destructor
@@ -129,24 +130,24 @@ function gWidgetPrototype.Base:InitAsSpritePanel (parentwidget,params,bVertexBuf
 end
 
 -- see also lib.gui.xml.lua
-function gWidgetPrototype.Base:XMLCreate (xmlnode)
+function cWidget:XMLCreate (xmlnode)
 	for k,childnode in ipairs(xmlnode) do CreateWidgetFromXMLNode(self,childnode) end
 	if (self.on_xml_create_finished) then self:on_xml_create_finished() end -- for updating layout
 end
 
 -- returns the group containing childs considered "content" as opposed to "internal" child-widgets
 -- e.g. the scrollbars of a scrollpane would be "internal" rather than "content"
-function gWidgetPrototype.Base:GetContent			() return self end
+function cWidget:GetContent			() return self end
 
 
-function gWidgetPrototype.Base:SetID			(id)
+function cWidget:SetID			(id)
 	local dialog = self:GetDialog()
 	if (dialog) then dialog._widgetbasedata.id_lookup[id] = self end -- warning ! doesn't support parent-change
 end
-function gWidgetPrototype.Base:GetChildByID		(id)
+function cWidget:GetChildByID		(id)
 	return self._widgetbasedata.id_lookup[id]
 end
-function gWidgetPrototype.Base:FindChildByName	(name) -- recursive (finds first by depth search)
+function cWidget:FindChildByName	(name) -- recursive (finds first by depth search)
 	if (self.params and self.params.name == name) then return self end
 	for k,child in ipairs(self:_GetOrderedChildList()) do 
 		local res = child:FindChildByName(name)
@@ -155,19 +156,19 @@ function gWidgetPrototype.Base:FindChildByName	(name) -- recursive (finds first 
 end
 
 -- should be overriden by widgettypes, call this after adding/changing content-childs
-function gWidgetPrototype.Base:UpdateContent		() end
+function cWidget:UpdateContent		() end
 
 -- if widgets use a special group for content, they should map the normal CreateChild to CreateChildPrivateNotice , and use the _CreateChild internally
-function gWidgetPrototype.Base:CreateChildPrivateNotice () assert(false,"don't call CreateChild here directly, use CreateContentChild instead") end
+function cWidget:CreateChildPrivateNotice () assert(false,"don't call CreateChild here directly, use CreateContentChild instead") end
 
 
-function gWidgetPrototype.Base:CreateChildOrContentChild	(classname,...) 
+function cWidget:CreateChildOrContentChild	(classname,...) 
 	return self:GetContent():CreateChild(classname,...)  -- GetContent returns self as fallback if no specific content widget
 end
 
 
 gGuiSystem_WidgetsMarkedForUpdateContent = {}
-function gWidgetPrototype.Base:MarkForUpdateContent	() gGuiSystem_WidgetsMarkedForUpdateContent[self] = true end
+function cWidget:MarkForUpdateContent	() gGuiSystem_WidgetsMarkedForUpdateContent[self] = true end
 
 function GuiSystem_ExecuteMarkedUpdates ()
 	if (next(gGuiSystem_WidgetsMarkedForUpdateContent)) then 
@@ -180,45 +181,45 @@ RegisterStepper(GuiSystem_ExecuteMarkedUpdates)
 
 
 
-function gWidgetPrototype.Base:CreateContentChild	(classname,...)
+function cWidget:CreateContentChild	(classname,...)
 	local w = self:GetContent():CreateChild(classname,...)
 	if (self.on_create_content_child) then self:on_create_content_child(w) end
 	return w
 end
 
 -- internal method, use CreateChild instead
-function gWidgetPrototype.Base:_CreateChild		(classname,...) return CreateWidget(classname,self,...) end
+function cWidget:_CreateChild		(classname,...) return CreateWidget(classname,self,...) end
 
 -- primary method for creating widgets, e.g. GetDesktopWidget():CreateChild("Button",{...})
 -- can be overriden to make it "private" and prevent misuse if the widget has a content-group
-gWidgetPrototype.Base.CreateChild = gWidgetPrototype.Base._CreateChild
+cWidget.CreateChild = cWidget._CreateChild
 
 
-function gWidgetPrototype.Base:CastToRenderGroup2D		() 		return	self._widgetbasedata.rendergroup2d end
+function cWidget:CastToRenderGroup2D		() 		return	self._widgetbasedata.rendergroup2d end
 
 --- baseclass-handle for controlling the widget, setpos,hit-test/bounds-calc etc...
-function gWidgetPrototype.Base:SetRenderGroup2D	(rendergroup2d)
+function cWidget:SetRenderGroup2D	(rendergroup2d)
 	self._widgetbasedata.rendergroup2d = rendergroup2d 
 end
 
-function gWidgetPrototype.Base:GetClassName			() 				return	self._widgetbasedata.class.classname end
-function gWidgetPrototype.Base:GetClass				() 				return	self._widgetbasedata.class end
-function gWidgetPrototype.Base:GetBaseClass			() 				return	self._widgetbasedata.class.baseclass end
+function cWidget:GetClassName			() 				return	self._widgetbasedata.class.classname end
+function cWidget:GetClass				() 				return	self._widgetbasedata.class end
+function cWidget:GetBaseClass			() 				return	self._widgetbasedata.class.baseclass end
 
-function gWidgetPrototype.Base:GetParent			() 				return	self._widgetbasedata.parentwidget end
+function cWidget:GetParent			() 				return	self._widgetbasedata.parentwidget end
 
-function gWidgetPrototype.Base:SetLayouter			(layouter)
+function cWidget:SetLayouter			(layouter)
 	self._widgetbasedata.layouter = layouter
 end
 
-function gWidgetPrototype.Base:DoLayout				()
+function cWidget:DoLayout				()
 	if self._widgetbasedata.layouter then
 		local content = self:GetContent()
 		self._widgetbasedata.layouter:LayoutChilds(content, 0,0, content:GetSize())
 	end
 end
 
-function gWidgetPrototype.Base:SetParent			(parentwidget)
+function cWidget:SetParent			(parentwidget)
 	local oldparent = self._widgetbasedata.parentwidget
 	if (oldparent == parentwidget) then return end
 	local handle = self._widgetbasedata.rendergroup2d:GetHandle()
@@ -230,7 +231,7 @@ end
 
 -- fun is called for all children in order (see GetChild()), if it returns a result that evaluates to true, iteration ends and the result is returned
 -- you shouldn't add/delete childs during iteration
-function gWidgetPrototype.Base:ForAllChilds		(fun) 
+function cWidget:ForAllChilds		(fun) 
 	for k,child in ipairs(self:_GetOrderedChildList()) do 
 		local res = fun(child,k) 
 		if (res) then return res end 
@@ -238,16 +239,16 @@ function gWidgetPrototype.Base:ForAllChilds		(fun)
 end 
 
 -- number of direct child widgets
-function gWidgetPrototype.Base:GetChildCount		() return #self:_GetOrderedChildList() end
+function cWidget:GetChildCount		() return #self:_GetOrderedChildList() end
 
 -- see also GetChildCount(), index is ONE-based (1..n, first is 1)
 -- ordered back-to-front, e.g. the last one is in the foreground
-function gWidgetPrototype.Base:GetChild				(index) return self:_GetOrderedChildList()[index] end
+function cWidget:GetChild				(index) return self:_GetOrderedChildList()[index] end
 
 
 -- syncs list with c++ (draw-order) if neccessary, for iteration, don't insert/remove here  (needed for hit-test in draw-order)
 -- for internal use only, use GetChildCount() GetChild(index) otherwise
-function gWidgetPrototype.Base:_GetOrderedChildList() 
+function cWidget:_GetOrderedChildList() 
 	local d = self._widgetbasedata
 	local rev = d.rendergroup2d:GetChildListRevision()
 	if (rev == d.ordered_childlist_rev) then return d.ordered_childlist end -- cache still in sync
@@ -287,13 +288,13 @@ end
 ]]--
 
 
-function gWidgetPrototype.Base:GetWidgetUnderRelPos(relx,rely)
+function cWidget:GetWidgetUnderRelPos(relx,rely)
 	local dx,dy = self:GetPos()
 	return self:GetWidgetUnderPos(relx+dx,rely+dy)
 end
 
 -- coordinates absolute, returns self as well if hit		local mx,my = GetMousePos()
-function gWidgetPrototype.Base:GetWidgetUnderPos(x,y)
+function cWidget:GetWidgetUnderPos(x,y)
 	local wdata = self._widgetbasedata
 	if (not self:IsAlive()) then return end
 	
@@ -329,51 +330,51 @@ function gWidgetPrototype.Base:GetWidgetUnderPos(x,y)
 end
 
 -- old name : IsUnderPos
-function gWidgetPrototype.Base:HitTest(x,y)end
+function cWidget:HitTest(x,y)end
 
-function gWidgetPrototype.Base:SetVisible(bVal)				self._widgetbasedata.rendergroup2d:SetVisible(bVal) self._widgetbasedata.bVisibleCache = bVal end
-function gWidgetPrototype.Base:GetVisible()			return	self._widgetbasedata.rendergroup2d:GetVisible() end
+function cWidget:SetVisible(bVal)				self._widgetbasedata.rendergroup2d:SetVisible(bVal) self._widgetbasedata.bVisibleCache = bVal end
+function cWidget:GetVisible()			return	self._widgetbasedata.rendergroup2d:GetVisible() end
 
 -- backwards compatibility with old gui system, should this be obsoleted later ?
-function gWidgetPrototype.Base:IsAlive()			return	self._widgetbasedata.rendergroup2d:IsAlive() end
+function cWidget:IsAlive()			return	self._widgetbasedata.rendergroup2d:IsAlive() end
 
 -- if set to true, the hittest is performed even if the element is invis, default off
-function gWidgetPrototype.Base:SetHitTestIfInvis(bVal)		self._widgetbasedata.bHitTestIfInvis = bVal end
-function gWidgetPrototype.Base:GetHitTestIfInvis()	return	self._widgetbasedata.bHitTestIfInvis end
+function cWidget:SetHitTestIfInvis(bVal)		self._widgetbasedata.bHitTestIfInvis = bVal end
+function cWidget:GetHitTestIfInvis()	return	self._widgetbasedata.bHitTestIfInvis end
 
 -- if set to true, the hittest reports self as being hit even if childs are hit, not needed for notifiers, as they pass themselves to the parent
-function gWidgetPrototype.Base:SetConsumeChildHit(bVal)		self._widgetbasedata.bConsumeChildHit = bVal end
-function gWidgetPrototype.Base:GetConsumeChildHit()	return	self._widgetbasedata.bConsumeChildHit end
+function cWidget:SetConsumeChildHit(bVal)		self._widgetbasedata.bConsumeChildHit = bVal end
+function cWidget:GetConsumeChildHit()	return	self._widgetbasedata.bConsumeChildHit end
 
 -- old name:mbIgnoreMouseOver, if this is true, hittest for self will fail unless a bitmask is set, but childs are still tested, default:false 
-function gWidgetPrototype.Base:SetIgnoreBBoxHit(bVal)		self._widgetbasedata.bIgnoreBBoxHit = bVal end
-function gWidgetPrototype.Base:GetIgnoreBBoxHit()	return	self._widgetbasedata.bIgnoreBBoxHit end
+function cWidget:SetIgnoreBBoxHit(bVal)		self._widgetbasedata.bIgnoreBBoxHit = bVal end
+function cWidget:GetIgnoreBBoxHit()	return	self._widgetbasedata.bIgnoreBBoxHit end
 
 -- childs are not tested, e.g. tooltips
-function gWidgetPrototype.Base:SetIgnoreChildHits(bVal)		self._widgetbasedata.bIgnoreChildHits = bVal end
-function gWidgetPrototype.Base:GetIgnoreChildHits()	return	self._widgetbasedata.bIgnoreChildHits end
+function cWidget:SetIgnoreChildHits(bVal)		self._widgetbasedata.bIgnoreChildHits = bVal end
+function cWidget:GetIgnoreChildHits()	return	self._widgetbasedata.bIgnoreChildHits end
 
 
 
 -- dialog
-function gWidgetPrototype.Base:GetDialog		() local p = self:GetParent() return p and p:GetDialog() end -- recurse until method overridden
+function cWidget:GetDialog		() local p = self:GetParent() return p and p:GetDialog() end -- recurse until method overridden
 
 -- focus
-function gWidgetPrototype.Base:SetFocus			() SetFocusWidget(self) end
-function gWidgetPrototype.Base:RemoveFocus		() if (self == GetFocusWidget()) then ClearFocusWidget() end end
+function cWidget:SetFocus			() SetFocusWidget(self) end
+function cWidget:RemoveFocus		() if (self == GetFocusWidget()) then ClearFocusWidget() end end
 
 -- bitmask
-function gWidgetPrototype.Base:SetBitMask		(bitmask)				self._widgetbasedata.bitmask = bitmask end
-function gWidgetPrototype.Base:GetBitMask		() 				return	self._widgetbasedata.bitmask end
+function cWidget:SetBitMask		(bitmask)				self._widgetbasedata.bitmask = bitmask end
+function cWidget:GetBitMask		() 				return	self._widgetbasedata.bitmask end
 
 --- relative to own position
-function gWidgetPrototype.Base:SetClip			(l,t,r,b)	return self._widgetbasedata.rendergroup2d:SetClip(l,t,r,b) end
-function gWidgetPrototype.Base:ClearClip		()			return self._widgetbasedata.rendergroup2d:ClearClip() end
+function cWidget:SetClip			(l,t,r,b)	return self._widgetbasedata.rendergroup2d:SetClip(l,t,r,b) end
+function cWidget:ClearClip		()			return self._widgetbasedata.rendergroup2d:ClearClip() end
 
 local max = math.max
 
 --- returns l,t,r,b in absolute coords, clipped, (rel-bounds cached, only pos and clip intersect have to be calculated)
-function gWidgetPrototype.Base:GetAbsBounds		() 
+function cWidget:GetAbsBounds		() 
 	local g = self._widgetbasedata.rendergroup2d
 	local cl,ct,cr,cb = g:GetEffectiveClipAbs()
 	local l,t,r,b = g:CalcAbsBounds() -- warning, bug: ignores forced_w of childs ! (fixed 2010.08.07)
@@ -384,7 +385,7 @@ function gWidgetPrototype.Base:GetAbsBounds		()
 end
 
 --- returns l,t,r,b in relative coords, not clipped (cached in c++)  (bbox)
-function gWidgetPrototype.Base:GetRelBounds		() 
+function cWidget:GetRelBounds		() 
 	local l,t,r,b = self._widgetbasedata.rendergroup2d:GetRelBounds()
 	local w,h = self._widgetbasedata.forced_w,self._widgetbasedata.forced_h
 	if (w) then return l,t,max(r,w),max(b,h) end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
@@ -395,7 +396,7 @@ end
 -- useful for layouting, boxes and similar
 -- to remain consistent, it must be ensured that GetSize() always equals the last SetSize()
 -- most widget types have to react to this by implementing t:on_set_size(w,h)
-function gWidgetPrototype.Base:SetSize		(w,h)
+function cWidget:SetSize		(w,h)
 	self._widgetbasedata.rendergroup2d:SetForcedMinSize(w,h)
 	self._widgetbasedata.forced_w = w 
 	self._widgetbasedata.forced_h = h 
@@ -405,31 +406,31 @@ end
 
 	
 -- returns cx,cy
-function gWidgetPrototype.Base:GetSize		()
+function cWidget:GetSize		()
 	local l,t,r,b = self:GetRelBounds()
 	return r-l,b-t
 end
 
 --- returns x,y,z in absolute coords (z can be ignored usually)
-function gWidgetPrototype.Base:GetDerivedPos()		return	self._widgetbasedata.rendergroup2d:GetDerivedPos() end
-function gWidgetPrototype.Base:GetDerivedLeftTop()	
+function cWidget:GetDerivedPos()		return	self._widgetbasedata.rendergroup2d:GetDerivedPos() end
+function cWidget:GetDerivedLeftTop()	
 	local l,t,r,b = self:GetRelBounds()
 	local x,y = self:GetDerivedPos()
 	return x+l,y+t	
 end
 --- returns x,y,z in relative coords (z can be ignored usually)
-function gWidgetPrototype.Base:GetPos() 			return	self._widgetbasedata.rendergroup2d:GetPos() end
+function cWidget:GetPos() 			return	self._widgetbasedata.rendergroup2d:GetPos() end
 --- in relative coords
-function gWidgetPrototype.Base:SetPos(x,y,z)				self._widgetbasedata.rendergroup2d:SetPos(x,y,z or 0) end
+function cWidget:SetPos(x,y,z)				self._widgetbasedata.rendergroup2d:SetPos(x,y,z or 0) end
 
 -- relative to parent coord sys, compatible with SetLeftTop
-function gWidgetPrototype.Base:GetLeftTop	()
+function cWidget:GetLeftTop	()
 	local l,t,r,b = self:GetRelBounds()
 	local x,y = self:GetPos()
 	return x+l,y+t
 end
 
-function gWidgetPrototype.Base:SetLeftTop	(x,y)
+function cWidget:SetLeftTop	(x,y)
 	local l,t,r,b = self:GetRelBounds()
 	self:SetPos(x-l,y-t)
 end
@@ -445,7 +446,7 @@ end
 -- parentwidget : allows css like hierarchy conditions   (img inside table...)
 -- DEFINE : all css/theme params are capsuled inside params.style 
 -- TODO : theme can request widget class here and modify param
-function gWidgetPrototype.Base:ThemeModifyInitParams		(parentwidget,params) 
+function cWidget:ThemeModifyInitParams		(parentwidget,params) 
 	local arr = gGuiThemeClassParams[params and params.class or "default"]
 	if (not arr) then return params end
 	local themeparams = arr and (arr[self:GetClassName()] or arr["*"])
@@ -453,15 +454,15 @@ function gWidgetPrototype.Base:ThemeModifyInitParams		(parentwidget,params)
 	return params
 end
 
-function gWidgetPrototype.Base:BringToFront	()	self._widgetbasedata.rendergroup2d:BringToFront() end
-function gWidgetPrototype.Base:SendToBack	()	self._widgetbasedata.rendergroup2d:SendToBack() end
+function cWidget:BringToFront	()	self._widgetbasedata.rendergroup2d:BringToFront() end
+function cWidget:SendToBack	()	self._widgetbasedata.rendergroup2d:SendToBack() end
 
 -- mousemove, moves until keywatch=key_mouse1 is released e.g. dialogs, not really drag&drop..   see also old lib.movedialog.lua
 -- move_fun : can be nil, if set,  x,y = move_fun(x,y,param)   for widget:SetPos(),  can be used as constraint
 -- if move_fun doesn't return anything, SetPos is not called, useful if position is set inside move_fun
 -- no need to transform coordinates, as the offset to GetPos() at initial call is used
 -- mx0,my0 can be used for custom offset, e.g. gLastMouseDownX,gLastMouseDownY
-function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_param,end_fun,mx0,my0)
+function cWidget:StartMouseMove			(keywatch,move_fun,move_fun_param,end_fun,mx0,my0)
 	keywatch = keywatch or key_mouse1
 	gui.bMouseBlocked = true -- mainly for 3d cam
 	local x,y = self:GetPos()
@@ -491,12 +492,43 @@ function gWidgetPrototype.Base:StartMouseMove			(keywatch,move_fun,move_fun_para
 end
 
 
+
+
+function cWidget:StartDragDrop			()
+	if (self.on_start_dragdrop and self:on_start_dragdrop()) then else return end
+	self.drag_old_parent = self:GetParent()
+	self.drag_old_x,self.drag_old_y = self:GetPos()
+	local x,y = self:GetDerivedPos()
+	self:SetParent(GetDesktopWidget())
+	self:SetPos(x,y)
+	self:StartMouseMove(key_mouse_left,nil,nil,function (x,y) self:EndDragDrop(x,y) end,gLastMouseDownX,gLastMouseDownY)
+end
+
+function cWidget:CancelDragDrop			(x,y)
+	if (self.on_cancel_dragdrop and self:on_cancel_dragdrop()) then return end -- returns true if on_cancel was handled completely
+	self:SetParent(self.drag_old_parent)
+	self:SetPos(self.drag_old_x,self.drag_old_y)
+end
+
+function cWidget:EndDragDrop				(x,y)
+	local w = GetDesktopWidget():GetWidgetUnderPos(x,y)
+	--~ print("cWidget:EndDragDrop widget under pos",x,y,w)
+	if (w and w:GetParent() == self) then print("cWidget:todo:disable self-child-hit on dragdrop") w = nil end
+	if (w == self) then print("cWidget:todo:disable self-hit on dragdrop") w = nil end
+	if (not w) then self:CancelDragDrop() return end
+	if (self.on_finish_dragdrop and self:on_finish_dragdrop(w,x,y)) then else self:CancelDragDrop() end
+end
+
+
+
+
+
 -- o:Destroy() will be called on all things in this list at widget destruction
-function gWidgetPrototype.Base:AddToDestroyList			(o) self._widgetbasedata.destroylist[o] = true end
-function gWidgetPrototype.Base:RemoveFromDestroyList	(o) self._widgetbasedata.destroylist[o] = nil end
+function cWidget:AddToDestroyList			(o) self._widgetbasedata.destroylist[o] = true end
+function cWidget:RemoveFromDestroyList	(o) self._widgetbasedata.destroylist[o] = nil end
 
 -- cleanup
-function gWidgetPrototype.Base:Destroy			()
+function cWidget:Destroy			()
 	self._widgetbasedata.bDead = true -- mark as dead, e.g. for dialog-mouse-move-stepper
 	if (GetFocusWidget() == self) then self:RemoveFocus() end -- focus
 	for k,child in ipairs(self:_GetOrderedChildList()) do child:Destroy() end -- destroy childs
@@ -508,7 +540,7 @@ end
 -- renders the current widget + childs into a newly created texture with size w,h
 -- and returns the texture name (name_texture) and texture object (tex)
 -- r,g,b,a : viewport background colour
-function gWidgetPrototype.Base:RenderToTexture(w,h, r,g,b,a)
+function cWidget:RenderToTexture(w,h, r,g,b,a)
 	local old_parent = self:GetParent()
 	local old_x, old_y = self:GetPos()
 

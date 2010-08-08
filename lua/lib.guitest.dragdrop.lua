@@ -29,6 +29,27 @@ function InitGuiThemes ()
 										font=gVegaWidgetFont,
 										textcol={r=0,g=0,b=0},
 									})
+	
+	
+	
+	local spritebutton_4x4_mods		= {	gfxparam_in_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.5,1,1,0),
+										gfxparam_in_up		= MakeSpritePanelParam_Mod_TexTransform(0.5,0.0,1,1,0),
+										gfxparam_out_down	= MakeSpritePanelParam_Mod_TexTransform(0.0,0.0,1,1,0),
+										gfxparam_out_up		= MakeSpritePanelParam_Mod_TexTransform(0.0,0.0,1,1,0),
+										margin_left= 0,
+										margin_top= 0,
+										margin_right= 0,
+										margin_bottom= 0,
+									}
+
+	GuiThemeSetDefaultParam("ScrollPaneV",{
+		img_init_bar	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder.png")		,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false),
+		img_init_frame	= MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("plainborder2.png")		,8,8,0,0, 0,0, 3,2,3, 3,2,3, 8,8, 1,1, false,false),
+		param_btn_thumb	= tablemod({gfxparam_init = MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("button_small_thumb.png")	,16,16,0,0, 0,0, 6,4,6, 6,4,6, 32,32, 1,1, false,false)},spritebutton_4x4_mods),
+		param_btn_up	= tablemod({gfxparam_init = MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_up.png")			,16,16,0,0, 0,0, 16,16, 32,32)},spritebutton_4x4_mods),
+		param_btn_down	= tablemod({gfxparam_init = MakeSpritePanelParam_SingleSprite(GetPlainTextureGUIMat("button_small_down.png")		,16,16,0,0, 0,0, 16,16, 32,32)},spritebutton_4x4_mods),
+	})
+	
 end
 
 function GuiTest_DragDrop ()
@@ -40,7 +61,7 @@ function GuiTest_DragDrop ()
 	local w2 = CreateWidgetFromXMLString(GetDesktopWidget(),[[<Window x=600 y=100 w=325 h=380> <Text x=10 y=0 text='Ship' /> </Window>]])
 	
 	local e = 50
-	local s = w1:CreateContentChild("ScrollPaneB",{x=4,y=40,w=(325-8),h=(380-50)})
+	local s = w1:CreateContentChild("ScrollPaneV",{x=4,y=40,w=(325-8),h=(380-50)})
 	local g = s:CreateContentChild("ItemGrid",{x=2,y=2,w=floor((325-4-16)/e)*e,h=floor((380-50)/e)*e})
 	gMyWindow1 = w1
 
@@ -78,5 +99,4 @@ function GuiTest_DragDrop ()
 	for i=1,6 do					w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+(i-1)*ey, type="equip"}) end
 	for i,v in ipairs(fixslots1) do	w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+(i-1)*ey, type=v}) end
 	for i,v in ipairs(fixslots2) do	w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+(i-1)*ey, type=v}) end
-	
 end
