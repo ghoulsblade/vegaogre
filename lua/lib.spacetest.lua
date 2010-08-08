@@ -104,15 +104,15 @@ function ShipTestStep ()
 		-- station
 		local gfx = CreateRootGfx3D()
 		gfx:SetMesh("agricultural_station.mesh")
-		gfx:SetPosition(-10,0,0)
-		local s = 0.05 gfx:SetScale(s,s,s)
+		gfx:SetPosition(-100,0,0)
+		local s = 0.5 gfx:SetScale(s,s,s)
 		
 		-- planet
 		local gfx = CreateRootGfx3D()
-		local steps_h,steps_v,cx,cy,cz = 11,11,1,1,1
+		local steps_h,steps_v,cx,cy,cz = 22,22,1,1,1
 		gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
-		gfx:SetPosition(100,0,0)
-		local s = 40.05  gfx:SetScale(s,s,s)
+		gfx:SetPosition(1000,0,0)
+		local s = 400.05  gfx:SetScale(s,s,s)
 		local e = gfx:GetEntity()
 		e:setMaterialName("planetbase")
 		
@@ -120,6 +120,31 @@ function ShipTestStep ()
 	end
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
 	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	
+	
+	
+    if (gbNeedCorrectAspectRatio) then
+		gbNeedCorrectAspectRatio = false
+		local vp = GetMainViewport()
+		GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
+	end
+	local ang = math.pi * gMyTicks/1000 * 0.11
+	
+	local cam = GetMainCam()
+	local dt = gSecondsSinceLastFrame
+	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
+	--~ local bMoveCam = gKeyPressed[key_mouse_middle]
+	--~ local speedfactor = math.pi / 1000 -- 1000pix = pi radians
+	--~ local bFlipUpAxis = false
+	--~ StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
+	
+	local ang = math.pi*dt*.5
+	local w0,x0,y0,z0 = cam:GetRot()
+	local w2,x2,y2,z2 = Quaternion.fromAngleAxis(
+			(gKeyPressed[key_e] and -ang or 0) + (gKeyPressed[key_q] and  ang or 0),
+		0,0,1)
+	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)
+	cam:SetRot(w0,x0,y0,z0)
 	
 	if (1 == 1) then 
 		local cam = GetMainCam()
@@ -133,29 +158,15 @@ function ShipTestStep ()
 	end
 	
 	
-    if (gbNeedCorrectAspectRatio) then
-		gbNeedCorrectAspectRatio = false
-		local vp = GetMainViewport()
-		GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
-	end
-	local ang = math.pi * gMyTicks/1000 * 0.11
-	
-	local cam = GetMainCam()
-	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
-	--~ local bMoveCam = gKeyPressed[key_mouse_middle]
-	--~ local speedfactor = math.pi / 1000 -- 1000pix = pi radians
-	--~ local bFlipUpAxis = false
-	--~ StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
-	
 	local w0,x0,y0,z0 = gMyShipTest:GetOrientation()
 	
-	
 	local x,y,z = gMyShipTest:GetPosition()
-	local s = 100*gSecondsSinceLastFrame
+	local s = 100*dt
+	local as = 10*s
 	local ax,ay,az = Quaternion.ApplyToVector(
-		(gKeyPressed[key_d] and -1 or 0) + (gKeyPressed[key_a] and  1 or 0),
-		(gKeyPressed[key_f] and -1 or 0) + (gKeyPressed[key_r] and  1 or 0),
-		(gKeyPressed[key_s] and -1 or 0) + (gKeyPressed[key_w] and  1 or 0),
+		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
+		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),
+		(gKeyPressed[key_s] and -s or 0) + (gKeyPressed[key_w] and  s or 0)  + (gKeyPressed[key_lshift] and as or 0) ,
 		w0,x0,y0,z0) x,y,z = x+ax,y+ay,z+az
 	gMyShipTest:SetPosition(x,y,z)
 	
