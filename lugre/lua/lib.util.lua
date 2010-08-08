@@ -1183,6 +1183,21 @@ function IsPointOnPlane (px,py,pz, bx,by,bz, nx,ny,nz)
 	return d == 0
 end
 
+-- minimal distance between 2 spheres a and b
+-- if return value > 0 => value min dist between both
+-- if return value <= 0 => abs(value) is lengt of overlapping
+function MinDistSphereSphere(ax,ay,az,ar, bx,by,bz,br)
+	local dist = DistPointToPoint(ax,ay,az, bx,by,bz)
+	local overlapp = dist - ar - br
+	return overlapp
+end
+
+-- returns the distance between point a and point b
+function DistPointToPoint (ax,ay,az, bx,by,bz)
+	local dx,dy,dz = Vector.sub(ax,ay,az, bx,by,bz)
+	return Vector.len(dx,dy,dz)
+end
+
 -- returns the distance between point p and plane (base b, normal n)
 function DistPointToPlane (px,py,pz, bx,by,bz, nx,ny,nz)
 	local dx,dy,dz = Vector.sub(bx,by,bz, px,py,pz)

@@ -23,6 +23,8 @@ RegisterStepper(function ()
 		gNewObjects = {}
 		for o,v in pairs(arr) do gObjects[o] = true end
 	end
+	
+	handleCollisionBetweenOneAndWorld(gPlayerShip, gObjects)
 end)
 
 -- ***** ***** ***** ***** ***** cObject

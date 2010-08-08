@@ -30,6 +30,7 @@ dofile(libpath .. "lib.guitest.dragdrop.lua")
 dofile(libpath .. "lib.boltmesh.lua")
 dofile(libpath .. "lib.objects.lua")
 dofile(libpath .. "lib.hudmarker.lua")
+dofile(libpath .. "lib.collision.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##
