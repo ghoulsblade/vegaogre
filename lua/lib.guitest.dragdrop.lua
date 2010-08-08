@@ -66,6 +66,7 @@ RegisterListener("Hook_HUDStep",function () GuiTest_Step() end)
 
 function GuiTest_Step ()
 	if (gGuiTest_DragDrop_Active) then return end
+	
 	local mx,my = GetMousePos()
 	local cx,cy = gViewportW/2,gViewportH/2
 	local w,h = 32,32
@@ -73,17 +74,8 @@ function GuiTest_Step ()
 		gMouseCross = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("objmark_vorhalt.png"),w,h)})
 	end
 	gMouseCross:SetPos(mx-w/2,my-h/2)
-	local dx,dy = (mx-cx)/cx,(my-cy)/cy
-	local cam = GetMainCam()
 	
-	local roth = -math.pi * .5 * dx * gSecondsSinceLastFrame
-	local rotv = -math.pi * .5 * dy * gSecondsSinceLastFrame
-	
-	local w0,x0,y0,z0 = cam:GetRot()	
-	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(roth,0,1,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
-	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
-	--~ local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
-	cam:SetRot(Quaternion.normalise(w0,x0,y0,z0))
+	PlayerCamStep((mx-cx)/cx,(my-cy)/cy)
 end
 
 function GuiTest_DragDrop ()

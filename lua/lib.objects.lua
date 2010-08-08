@@ -1,5 +1,30 @@
 -- objecttypes 
 
+-- ***** ***** ***** ***** ***** global object list 
+
+gObjects = {}
+gNewObjects = {} -- delayed insert into the main list
+
+RegisterStepper(function () 
+	local dt = gSecondsSinceLastFrame
+	for o,v in pairs(gObjects) do 
+		o:Step(dt)
+		local x = o.x + o.vx * dt
+		local y = o.y + o.vy * dt
+		local z = o.z + o.vz * dt
+		o.x = x
+		o.y = y
+		o.z = z
+		local gfx = o.gfx
+		if (gfx) then gfx:SetPosition(x,y,z) end
+	end
+	if (next(gNewObjects)) then 
+		local arr = gNewObjects
+		gNewObjects = {}
+		for o,v in pairs(arr) do gObjects[o] = true end
+	end
+end)
+
 -- ***** ***** ***** ***** ***** cObject
 
 cObject = CreateClass()
@@ -10,6 +35,8 @@ end
 
 function cObject:Destroy ()
 	if (self.gfx) then self.gfx:Destroy() self.gfx = nil end
+	gObjects[self] = nil
+	gNewObjects[self] = nil
 end
 
 function cObject:InitObj (x,y,z,r)
@@ -23,13 +50,16 @@ function cObject:InitObj (x,y,z,r)
 	self.vy = 0
 	self.vz = 0
 	self.r = r or 10
+	gNewObjects[self] = true
 end
 
 
+function cObject:Step() end
 function cObject:GetPos() return self.x,self.y,self.z end
-function cObject:SetPos(x,y,z) self.x,self.y,self.z = x,y,z self.gfx:SetPosition(x,y,z) end
+function cObject:SetPos(x,y,z) self.x,self.y,self.z = x,y,z end --  self.gfx:SetPosition(x,y,z)
 function cObject:SetRandomRot() self:SetRot(Quaternion.random()) end
 function cObject:SetRot(w,x,y,z) self.gfx:SetOrientation(w,x,y,z) end
+function cObject:GetRot() return self.gfx:GetOrientation() end
 
 function cObject:SetScaledMesh(meshname,r)
 	local gfx = self.gfx
@@ -39,6 +69,26 @@ function cObject:SetScaledMesh(meshname,r)
 end
 
 function cObject:CanDock (o) return false end
+
+-- ***** ***** ***** ***** ***** cShot
+
+cShot = CreateClass(cObject)
+
+function cShot:Init (o)
+	--~ print("cShot:Init",o)
+	local x,y,z = o:GetPos()
+	local r = 1
+	local w0,x0,y0,z0 = o:GetRot()
+	local s = 100
+	local vx,vy,vz = Quaternion.ApplyToVector(0,0,s,w0,x0,y0,z0)
+	vx,vy,vz = vx+o.vx,vy+o.vy,vz+o.vz
+	local dt = gSecondsSinceLastFrame
+	self:InitObj(x+dt*vx,y+dt*vy,z+dt*vz,r)
+	self:SetScaledMesh(gBoltMeshName,r)
+	self:SetRot(w0,x0,y0,z0)
+	self.vx,self.vy,self.vz = vx,vy,vz
+end
+
 
 -- ***** ***** ***** ***** ***** cShip
 
@@ -55,6 +105,17 @@ cNPCShip = CreateClass(cShip)
 
 function cNPCShip:Init (x,y,z,r,meshname)
 	cShip.Init(self,x,y,z,r,meshname or "ruizong.mesh")
+end
+
+-- ***** ***** ***** ***** ***** cPlayerShip
+
+cPlayerShip = CreateClass(cShip)
+
+function cPlayerShip:Init (x,y,z,r,meshname)
+	cShip.Init(self,x,y,z,r,meshname)
+end
+function cPlayerShip:Step ()
+	
 end
 
 -- ***** ***** ***** ***** ***** cStation

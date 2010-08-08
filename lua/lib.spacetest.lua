@@ -29,36 +29,7 @@ RegisterIntervalStepper(100,function ()
 	if (gKeyPressed[key_mouse_left]) then FireShot() end
 end)
 
-
-gObjects = {}
-
-function FireShot () 
-	--~ print("FireShot")
-	local cam = GetMainCam()
-	local w0,x0,y0,z0 = cam:GetRot()
-	
-	local x,y,z = gMyShipTest:GetPos()
-	local s = 100
-	local vx,vy,vz = Quaternion.ApplyToVector(0,0,-s,w0,x0,y0,z0)
-	local o = gMyShipTest
-	vx,vy,vz = vx+o.vx,vy+o.vy,vz+o.vz
-	local gfx = CreateRootGfx3D()
-	gfx:SetMesh(gBoltMeshName)
-	gfx:SetOrientation(w0,x0,y0,z0)
-	local o = {x=x,y=y,z=z,vx=vx,vy=vy,vz=vz,gfx=gfx}
-	gObjects[o] = true
-end
-
-RegisterStepper(function () 
-	local dt = gSecondsSinceLastFrame
-	for o,v in pairs(gObjects) do 
-		o.x = o.x + o.vx * dt
-		o.y = o.y + o.vy * dt
-		o.z = o.z + o.vz * dt
-		o.gfx:SetPosition(o.x,o.y,o.z)
-	end
-end)
-       
+function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
 
 function EnsureMaterialNamePrefix (matname,prefix)
 	if (string.find(matname,prefix,nil,true) ~= 1) then return prefix.."_"..matname end
@@ -80,7 +51,7 @@ function EnsureMeshMaterialNamePrefix (meshname,prefix)
 end
 
 function ShipTestStep ()
-	if (not gMyShipTest) then 
+	if (not gPlayerShip) then 
 		EnsureMeshMaterialNamePrefix("llama.mesh","llama")
 		EnsureMeshMaterialNamePrefix("ruizong.mesh","ruizong")
 		EnsureMeshMaterialNamePrefix("agricultural_station.mesh","agricultural_station")
@@ -89,7 +60,7 @@ function ShipTestStep ()
 		gBoltMeshName = gBoltMeshName or GenerateBoltMesh()
 		
 		-- player ship
-		gMyShipTest = cShip:New(0,0,0	,5,"llama.mesh")
+		gPlayerShip = cPlayerShip:New(0,0,0	,5,"llama.mesh")
 		
 		-- npc ship
 		for i=1,10 do 
@@ -102,16 +73,34 @@ function ShipTestStep ()
 		cStation:New(-1000,0,0	,400,"agricultural_station.mesh")
 		cPlanet:New(60000,0,0	,40000,"planetbase"):SetRandomRot()
 	end
-	--~ local ang = math.pi * gMyTicks/1000 * 0.05
-	--~ gMyShipTest.gfx:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	
-	
-	
+
     if (gbNeedCorrectAspectRatio) then
 		gbNeedCorrectAspectRatio = false
 		local vp = GetMainViewport()
 		GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
 	end
+end
+
+
+
+
+function PlayerCamStep (dx,dy)
+	local cam = GetMainCam()
+	
+	local roth = -math.pi * .5 * dx * gSecondsSinceLastFrame
+	local rotv = -math.pi * .5 * dy * gSecondsSinceLastFrame
+	
+	local w0,x0,y0,z0 = cam:GetRot()	
+	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(roth,0,1,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
+	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
+	--~ local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
+	cam:SetRot(Quaternion.normalise(w0,x0,y0,z0))
+	
+	if (not gPlayerShip) then return end
+	
+	
+	
 	local ang = math.pi * gMyTicks/1000 * 0.11
 	
 	local cam = GetMainCam()
@@ -135,27 +124,26 @@ function ShipTestStep ()
 		local w0,x0,y0,z0 = cam:GetRot()
 		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
 		w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)	
-		local w1,x1,y1,z1 = gMyShipTest.gfx:GetOrientation()
+		local w1,x1,y1,z1 = gPlayerShip.gfx:GetOrientation()
 		local bShortestPath = true 
 		local t = 0.9
-		gMyShipTest.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
+		gPlayerShip.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
 	end
 	
 	
-	local w0,x0,y0,z0 = gMyShipTest.gfx:GetOrientation()
+	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
 	
-	local x,y,z = gMyShipTest:GetPos()
-	local s = 100
+	local s = gKeyPressed[key_lshift] and 10 or 100
 	local as = 10*s
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),
-		(gKeyPressed[key_s] and -s or 0) + (gKeyPressed[key_w] and  s or 0)  + (gKeyPressed[key_lshift] and as or 0) ,
-		w0,x0,y0,z0) x,y,z = x+ax*dt,y+ay*dt,z+az*dt
-	local o = gMyShipTest
+		(gKeyPressed[key_s] and -s or 0) + (gKeyPressed[key_w] and  s or 0)  + (gKeyPressed[key_lcontrol] and as or 0) ,
+		w0,x0,y0,z0)
+		
+	local o = gPlayerShip
 	o.vx,o.vy,o.vz = ax,ay,az
-	gMyShipTest:SetPos(x,y,z)
-	
+	local x,y,z = gPlayerShip:GetPos()
 	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
 	
@@ -163,4 +151,3 @@ function ShipTestStep ()
 	local dist = 15
 	StepThirdPersonCam (cam,dist,ox,oy,oz)
 end
-
