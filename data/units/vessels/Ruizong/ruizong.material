@@ -1,4 +1,4 @@
-material tex1_0
+material ruizong_tex1_0
 {
 	receive_shadows on
 	technique
@@ -19,7 +19,7 @@ material tex1_0
 		}
 	}
 }
-material tex2_0
+material ruizong_tex2_0
 {
 	receive_shadows on
 	technique
@@ -40,7 +40,7 @@ material tex2_0
 		}
 	}
 }
-material tex3_0
+material ruizong_tex3_0
 {
 	receive_shadows on
 	technique
@@ -61,7 +61,7 @@ material tex3_0
 		}
 	}
 }
-material tex0_2
+material ruizong_tex0_2
 {
 	receive_shadows on
 	technique
@@ -82,7 +82,7 @@ material tex0_2
 		}
 	}
 }
-material tex0_0
+material ruizong_tex0_0
 {
 	receive_shadows on
 	technique
@@ -103,7 +103,7 @@ material tex0_0
 		}
 	}
 }
-material tex0_1
+material ruizong_tex0_1
 {
 	receive_shadows on
 	technique

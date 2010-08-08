@@ -46,8 +46,9 @@ function CollectOgreResLocs ()
 	for k,subpath in ipairs({"units/vessels/llama"}) do 
     --~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
 	end
-    OgreAddResLoc(mydatapath.."units/vessels/llama"				,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."units/vessels/Ruizong"			,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."units/vessels/llama"							,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."units/vessels/Ruizong"						,"FileSystem","General")
+    OgreAddResLoc(mydatapath.."units/installations/Agricultural_Station"	,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/backgrounds"			,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/weapons"				,"FileSystem","General")
     OgreAddResLoc(mydatapath.."gui"								,"FileSystem","General")

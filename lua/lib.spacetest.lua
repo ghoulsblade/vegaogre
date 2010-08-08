@@ -56,10 +56,34 @@ RegisterStepper(function ()
 		o.gfx:SetPosition(o.x,o.y,o.z)
 	end
 end)
+       
 
+function EnsureMaterialNamePrefix (matname,prefix)
+	if (string.find(matname,prefix,nil,true) ~= 1) then return prefix.."_"..matname end
+	return matname
+end
+
+-- see also    data/convertmaterial.lua   for adjusting the .material files
+-- prefix material names at runtime
+function EnsureMeshMaterialNamePrefix (meshname,prefix)
+	local mesh = MeshManager_load(meshname) assert(mesh)
+	print("EnsureMeshMaterialNamePrefix",meshname,mesh:getNumSubMeshes())
+	for i=0,mesh:getNumSubMeshes()-1 do 
+		local sub = mesh:getSubMesh(i) assert(sub)
+		local mat = sub:getMaterialName()
+		local mat2 = EnsureMaterialNamePrefix(mat,prefix)
+		sub:setMaterialName(mat2)
+		print("sub",i,mat2)
+	end
+end
 
 function ShipTestStep ()
 	if (not gMyShipTest) then 
+		EnsureMeshMaterialNamePrefix("llama.mesh","llama")
+		EnsureMeshMaterialNamePrefix("ruizong.mesh","ruizong")
+		EnsureMeshMaterialNamePrefix("agricultural_station.mesh","agricultural_station")
+		--~ os.exit(0)
+	
 		local gfx = CreateRootGfx3D()
 		
 		gBoltMeshName = gBoltMeshName or GenerateBoltMesh()
@@ -74,11 +98,17 @@ function ShipTestStep ()
 		gfx:SetPosition(10,0,0)
 		local s = 0.05
 		gfx:SetScale(s,s,s)
+		
+		local gfx = CreateRootGfx3D()
+		gfx:SetMesh("agricultural_station.mesh")
+		gfx:SetPosition(-10,0,0)
+		local s = 0.05
+		gfx:SetScale(s,s,s)
 	end
 	--~ local ang = math.pi * gMyTicks/1000 * 0.05
 	--~ gMyShipTest:SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	
-	if (1 == 1) then 
+	if (1 == 2) then 
 		local cam = GetMainCam()
 		local w0,x0,y0,z0 = cam:GetRot()
 		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)

@@ -1,0 +1,80 @@
+material agricultural_station_tex0_0
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.640000 0.640000 0.640000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture agri_dome.dds
+			}
+		}
+	}
+}
+material agricultural_station_tex1_0
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.640000 0.640000 0.640000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture agri_hull.dds
+			}
+			// map_Kd agri_hull.dds
+			// map_Ks agri_hull_spec.dds
+			// map_Ke agri_hull_glow.dds
+			// map_Normal agri_hull_norm.dds
+		}
+	}
+}
+material agricultural_station_tex2_0
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.640000 0.640000 0.640000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture agricultural.dds
+			}
+			//map_Kd agricultural.dds
+			//map_Ks agricultural_spec.dds
+			//map_Normal agricultural_norm.dds
+		}
+	}
+}
+material agricultural_station_tex3_0
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.640000 0.640000 0.640000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture agri_terrain.dds
+			}
+			// map_Kd terrain.dds
+		}
+	}
+}

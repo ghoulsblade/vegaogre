@@ -1,4 +1,4 @@
-material tex0_0
+material llama_tex0_0
 {
 	receive_shadows on
 	technique
@@ -22,7 +22,7 @@ material tex0_0
 		}
 	}
 }
-material tex1_0
+material llama_tex1_0
 {
 	receive_shadows on
 	technique
@@ -46,7 +46,7 @@ material tex1_0
 		}
 	}
 }
-material tex2_0
+material llama_tex2_0
 {
 	receive_shadows on
 	technique
@@ -70,7 +70,7 @@ material tex2_0
 		}
 	}
 }
-material tex3_0
+material llama_tex3_0
 {
 	technique
 	{
