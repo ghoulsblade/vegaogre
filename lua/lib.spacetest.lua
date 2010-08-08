@@ -1,7 +1,7 @@
 
 function MySpaceInit ()
 	local gNumberOfStars = 10000 
-	local gStarsDist = 9000 
+	local gStarsDist = 50000 
 	local gStarColorFactor = 0.5 -- somewhat colorful stars
 	gStarField = CreateRootGfx3D()
 	gStarField:SetStarfield(gNumberOfStars,gStarsDist,gStarColorFactor,"starbase")

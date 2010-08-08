@@ -62,6 +62,32 @@ material guibasemat_plaincolor
 	}
 }
 
+material background_base
+{
+	technique
+	{
+		pass
+		{
+			ambient  1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0
+			
+			cull_hardware none
+			cull_software none
+			
+			lighting off
+			depth_write off
+			depth_check off
+			
+			texture_unit
+			{
+				filtering point point none
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
+
 // GUI BASE TEMPLATE
 material guibase
 {

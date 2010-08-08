@@ -90,6 +90,11 @@ function GuiTest_DragDrop ()
 	gGuiTest_DragDrop_Active = not gGuiTest_DragDrop_Active
 	if (gGuiTest_DragDrop_Active) then 
 		if (gCrossHair) then gCrossHair:Destroy() gCrossHair = nil end
+		local s = min(gViewportW,gViewportH) s = 1024
+		local w,h = s,s
+		gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","ocean_concourse.dds"),w,h)})
+		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat","military_concourse.dds"),w,h)})
+		gBaseBackground:SetPos(gViewportW/2-w/2,gViewportH/2-h/2)
 
 		InitGuiThemes()
 		--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
@@ -141,6 +146,7 @@ function GuiTest_DragDrop ()
 	else 
 		gMyWindow1:Destroy()
 		gMyWindow2:Destroy()
+		if (gBaseBackground) then gBaseBackground:Destroy() gBaseBackground = nil end
 		GuiTest_InitCrossHair()
 	end
 end
