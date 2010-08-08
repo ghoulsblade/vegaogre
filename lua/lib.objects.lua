@@ -107,6 +107,10 @@ function cNPCShip:Init (x,y,z,r,meshname)
 	cShip.Init(self,x,y,z,r,meshname or "ruizong.mesh")
 end
 
+function cNPCShip:Step ()
+	stepHudMarker(self)
+end
+
 -- ***** ***** ***** ***** ***** cPlayerShip
 
 cPlayerShip = CreateClass(cShip)
@@ -129,6 +133,10 @@ end
 
 function cStation:CanDock (o) return true end
 
+function cStation:Step () 
+	stepHudMarker(self)
+end
+
 -- ***** ***** ***** ***** ***** cPlanet
 
 cPlanet = CreateClass(cObject)
@@ -141,5 +149,8 @@ function cPlanet:Init (x,y,z,r,matname)
 end
 
 function cPlanet:CanDock (o) return true end
+
+function cPlanet:Step () 
+end
 
 -- ***** ***** ***** ***** ***** 

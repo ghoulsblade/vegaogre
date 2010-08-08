@@ -144,7 +144,7 @@ function PlayerCamStep (dx,dy)
 	
 	local s = gKeyPressed[key_lshift] and 10 or 100
 	local as = 10*s
-	if (gKeyPressed[key_lcontrol]) then s = s * 10000 as = 0 end 
+	if (gKeyPressed[key_lcontrol]) then s = s * 100 as = 0 end 
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),
