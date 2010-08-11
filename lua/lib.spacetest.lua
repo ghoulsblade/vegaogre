@@ -1,3 +1,6 @@
+sin = math.sin
+cos = math.cos
+
 
 function MySpaceInit ()
 	local gNumberOfStars = 10000 
@@ -56,13 +59,16 @@ function ShipTestStep ()
 		EnsureMeshMaterialNamePrefix("ruizong.mesh","ruizong")
 		EnsureMeshMaterialNamePrefix("agricultural_station.mesh","agricultural_station")
 		--~ os.exit(0)
-	
+		
 		gBoltMeshName = gBoltMeshName or GenerateBoltMesh()
 		
-		-- player ship
-		gPlayerShip = cPlayerShip:New(0,0,0	,5,"llama.mesh")
+		-- prepare solarsystem : 
+		
+		local solroot = cLocation:New(nil,0,0,0,0)
+	
 		
 		
+		--[[
 		local gfx_far = CreateRootGfx3D()
 		local gfx_near = gfx_far:CreateChild()
 		local e = 100000000000000000000000000000000000000
@@ -70,17 +76,89 @@ function ShipTestStep ()
 		gfx_near:SetPosition(-e+0,0,0)
 		--~ gfx_near:SetPosition(-e-11,0,0)
 		gPlayerShip.gfx:SetParent(gfx_near)
+		]]--
 		
-		-- npc ship
-		for i=1,10 do 
-			local x,y,z = Vector.random3(400)
-			local o = cNPCShip:New(x,y,z		,10,"ruizong.mesh") 
-			o:SetRandomRot()
+		
+		-- planets : 
+		-- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: http://en.wikipedia.org/wiki/Earth
+		-- local earth = 3rd planet
+		local light_second = 300*1000*1000 -- 300 mio m/s
+		local light_minute = 60*light_second -- 18.000.000.000 in meters
+		local vega_factor = 1/10 -- ... useme ? 
+		local au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
+		local planets = {
+			{ "sun"			,0 			},
+			{ "test1"		,10*1000*1000	,bStartHere=true},
+			{ "mercury"		,0.4*au 	},
+			{ "venus"		,0.7*au 	},
+			{ "earth"		,1.0*au 	},
+			{ "mars"		,1.5*au 	},
+			-- asteroidbelt:2.3-3.3au   
+			-- Asteroids range in size from hundreds of kilometres across to microscopic
+			-- The asteroid belt contains tens of thousands, possibly millions, of objects over one kilometre in diameter.
+			-- [46] Despite this, the total mass of the main belt is unlikely to be more than a thousandth of that of the Earth.
+			-- [47] The main belt is very sparsely populated
+			-- outerplanets: 
+			{ "jupiter"		,5.2*au		},
+			{ "saturn"		,9.5*au     },
+			{ "uranus"		,19.6*au    },
+			{ "neptune"		,30*au      },
+			-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
+		}	
+		function GetRandomOrbitFlatXY (d,dzmax)
+			local ang = math.random()*math.pi*2
+			local x,y = d*sin(ang),d*cos(ang)
+			local z = (math.random()*2-1)*dzmax
+			return x,y,z
 		end
-		
-		-- bases
-		cStation:New(-1000,0,0	,400,"agricultural_station.mesh")
-		cPlanet:New(60000,0,0	,40000,"planetbase"):SetRandomRot()
+		for k,o in pairs(planets) do 
+			local name,d = unpack(o)
+			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+			local r = 0
+			local ploc = cLocation:New(solroot,x,y,z,r)
+			local node = ploc.gfx:GetSceneNode()
+			local pr = 40000
+			local planet = cPlanet:New(ploc,0,0,0	,pr,"planetbase")
+			planet:SetRandomRot()
+			
+			-- player ship
+			if (o.bStartHere) then 
+				local x,y,z = pr * 1.2,0,0
+				-- player ship
+				gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
+				
+				local camnode = node -- direct
+				
+				-- indirect test : 
+				local camsubgfx = ploc.gfx:CreateChild()
+				camsubgfx:SetPosition(0,0,0)
+				camnode = camsubgfx:GetSceneNode()
+				
+				-- cam raw
+				local cam = GetMainCam():GetQuickHandle()
+				local cammov = cam:CastToMovable()
+				local oldp = cammov:getParentSceneNode()
+				if (oldp) then oldp:detachObject2(cammov) end
+				node:attachObject(cammov)
+				
+	
+				
+				
+				-- npc ship
+				for i=1,10 do 
+					local ax,ay,az = Vector.random3(400)
+					local o = cNPCShip:New(ploc,x+ax,y+ay,z+az,10,"ruizong.mesh") 
+					o:SetRandomRot()
+				end
+			end
+			
+			-- stations
+			for i = 0,math.random(0,2) do 
+				local d = pr * (1.5 + 2.0 * math.random())
+				local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+				local s = cStation:New(ploc,x,y,z	,400,"agricultural_station.mesh")
+			end
+		end
 	end
 	
 
@@ -101,10 +179,13 @@ function PlayerCamStep (dx,dy)
 	local rotv = -math.pi * .5 * dy * gSecondsSinceLastFrame
 	
 	local w0,x0,y0,z0 = cam:GetRot()	
+	--~ print("PlayerCamStep",dx,dy,w0,x0,y0,z0)
 	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(roth,0,1,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
 	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
 	--~ local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
 	cam:SetRot(Quaternion.normalise(w0,x0,y0,z0))
+	
+	--~ if (true) then return end
 	
 	if (not gPlayerShip) then return end
 	
@@ -145,6 +226,7 @@ function PlayerCamStep (dx,dy)
 	local s = gKeyPressed[key_lshift] and 10 or 100
 	local as = 10*s
 	if (gKeyPressed[key_lcontrol]) then s = s * 100 as = 0 end 
+	if (gKeyPressed[key_lcontrol] and gKeyPressed[key_lshift]) then s = s * 10000 as = 0 end 
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),

@@ -24,15 +24,15 @@ RegisterStepper(function ()
 		for o,v in pairs(arr) do gObjects[o] = true end
 	end
 	
-	handleCollisionBetweenOneAndWorld(gPlayerShip, gObjects)
+	--~ handleCollisionBetweenOneAndWorld(gPlayerShip, gObjects)
 end)
 
 -- ***** ***** ***** ***** ***** cObject
 
 cObject = CreateClass()
 
-function cObject:Init (x,y,z,r,matname)
-	self:InitObj(x,y,z,r)
+function cObject:Init (loc,x,y,z,r)
+	self:InitObj(loc,x,y,z,r)
 end
 
 function cObject:Destroy ()
@@ -41,9 +41,10 @@ function cObject:Destroy ()
 	gNewObjects[self] = nil
 end
 
-function cObject:InitObj (x,y,z,r)
-	local gfx = CreateRootGfx3D()
+function cObject:InitObj (loc,x,y,z,r)
+	local gfx = loc and loc:CreateChild() or CreateRootGfx3D()
 	gfx:SetPosition(x,y,z)
+	self.loc = loc
 	self.gfx = gfx
 	self.x = x
 	self.y = y
@@ -78,6 +79,7 @@ cShot = CreateClass(cObject)
 
 function cShot:Init (o)
 	--~ print("cShot:Init",o)
+	local loc = o.loc
 	local x,y,z = o:GetPos()
 	local r = 1
 	local w0,x0,y0,z0 = o:GetRot()
@@ -85,7 +87,7 @@ function cShot:Init (o)
 	local vx,vy,vz = Quaternion.ApplyToVector(0,0,s,w0,x0,y0,z0)
 	vx,vy,vz = vx+o.vx,vy+o.vy,vz+o.vz
 	local dt = gSecondsSinceLastFrame
-	self:InitObj(x+dt*vx,y+dt*vy,z+dt*vz,r)
+	self:InitObj(loc,x+dt*vx,y+dt*vy,z+dt*vz,r)
 	self:SetScaledMesh(gBoltMeshName,r)
 	self:SetRot(w0,x0,y0,z0)
 	self.vx,self.vy,self.vz = vx,vy,vz
@@ -96,8 +98,8 @@ end
 
 cShip = CreateClass(cObject)
 
-function cShip:Init (x,y,z,r,meshname)
-	self:InitObj(x,y,z,r)
+function cShip:Init (loc,x,y,z,r,meshname)
+	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "llama.mesh",r)
 end
 
@@ -105,8 +107,8 @@ end
 
 cNPCShip = CreateClass(cShip)
 
-function cNPCShip:Init (x,y,z,r,meshname)
-	cShip.Init(self,x,y,z,r,meshname or "ruizong.mesh")
+function cNPCShip:Init (loc,x,y,z,r,meshname)
+	cShip.Init(self,loc,x,y,z,r,meshname or "ruizong.mesh")
 end
 
 function cNPCShip:Step ()
@@ -128,8 +130,8 @@ end
 
 cStation = CreateClass(cObject)
 
-function cStation:Init (x,y,z,r,meshname)
-	self:InitObj(x,y,z,r)
+function cStation:Init (loc,x,y,z,r,meshname)
+	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "agricultural_station.mesh",r)
 end
 
@@ -139,12 +141,23 @@ function cStation:Step ()
 	stepHudMarker(self)
 end
 
+-- ***** ***** ***** ***** ***** cLocation
+
+cLocation = CreateClass(cObject)
+
+function cLocation:Init (loc,x,y,z,r)
+	self:InitObj(loc,x,y,z,r)
+end
+
+function cLocation:CreateChild () return self.gfx:CreateChild() end
+
+
 -- ***** ***** ***** ***** ***** cPlanet
 
 cPlanet = CreateClass(cObject)
 
-function cPlanet:Init (x,y,z,r,matname)
-	self:InitObj(x,y,z,r)
+function cPlanet:Init (loc,x,y,z,r,matname)
+	self:InitObj(loc,x,y,z,r)
 	local steps_h,steps_v,cx,cy,cz = 31,31,r,r,r
 	self.gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
 	self.gfx:GetEntity():setMaterialName(matname or "planetbase")
