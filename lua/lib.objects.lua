@@ -77,6 +77,21 @@ end
 
 function cObject:CanDock (o) return false end
 
+function cObject:MoveToNewLoc (loc)
+	self.gfx:SetParent(loc.gfx)
+	self.loc = loc
+end 
+function cObject:GetPosFromSun () 
+	local p = self.loc
+	return self.x+p.x,self.y+p.y,self.z+p.z
+end
+function cObject:GetPosFromPlayerLoc () 
+	local o = gPlayerShip.loc
+	local p = self.loc
+	return self.x+p.x-o.x,self.y+p.y-o.y,self.z+p.z-o.z
+	--~ return self.x+p.x+gWorldOriginX,self.y+p.y+gWorldOriginY,self.z+p.z+gWorldOriginZ
+end
+
 -- ***** ***** ***** ***** ***** cShot
 
 cShot = CreateClass(cObject)
@@ -164,6 +179,7 @@ function cLocation:CreateChild () return self.gfx:CreateChild() end
 
 function cLocation:PhysStep(dt) end -- DONT MOVE GFX! (hard to find error if it resets offset)
 
+function cLocation:SetPos(x,y,z) self.x,self.y,self.z = x,y,z self.gfx:SetPosition(x,y,z) end
 
 -- ***** ***** ***** ***** ***** cPlanet
 

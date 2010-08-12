@@ -14,7 +14,8 @@ function stepHudMarker(obj)
 	
 	-- update
 	if obj.guiMarker then
-		local bIsInFront,px,py,cx,cy = ProjectSizeAndPos(obj.x, obj.y, obj.z, obj.r)
+		local x,y,z = obj:GetPosFromPlayerLoc()
+		local bIsInFront,px,py,cx,cy = ProjectSizeAndPos(x,y,z, obj.r)
 		local marker = obj.guiMarker
 		
 		local w = (cx * gViewportW)

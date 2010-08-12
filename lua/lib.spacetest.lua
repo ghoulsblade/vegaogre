@@ -53,33 +53,6 @@ function EnsureMeshMaterialNamePrefix (meshname,prefix)
 	end
 end
 
-function MySetCamBaseGfx (gfx)
-	--~ assert(false) -- disabled for now
-	local node = gfx:GetSceneNode()
-	local camnode = node -- direct
-	
-	-- indirect test : 
-	local camsubgfx = gfx:CreateChild()
-	camsubgfx:SetPosition(0,0,0)
-	camnode = camsubgfx:GetSceneNode()
-	
-	-- cam raw
-	local cam = GetMainCam():GetQuickHandle()
-	local cammov = cam:CastToMovable()
-	local camholder = cammov:getParentSceneNode()
-	
-	local oldparentnode = camholder:getParentSceneNode()
-	if (oldparentnode) then oldparentnode:removeChild2(camholder) end
-	node:addChild(camholder)
-	
-	
-	--[[
-	local oldp = cammov:getParentSceneNode()
-	if (oldp) then oldp:detachObject2(cammov) end
-	node:attachObject(cammov)
-	]]--
-end
-
 function GetGfxHierarchyText (gfx) return GetNodeHierarchyText(gfx:GetSceneNode()) end
 function GetNodeHierarchyText (node) 
 	if (not node) then return "." end
@@ -88,13 +61,18 @@ function GetNodeHierarchyText (node)
 	return string.gsub(tostring(node:getRealAddress()),"userdata: ","").."("..x..","..y..","..z..")("..ax..","..ay..","..az.."):"..GetNodeHierarchyText(node:getParentSceneNode())
 end
 
-function MyMoveWorldOriginAgainstGfxPos (gfx) 
-	local x,y,z = gfx:GetDerivedPosition()
+gWorldOriginX = 0
+gWorldOriginY = 0
+gWorldOriginZ = 0
+function MyMoveWorldOriginAgainstLocation (loc)
+	local x,y,z = loc.x,loc.y,loc.z
 	print("######################################")
-	print("### MyMoveWorldOriginAgainstGfxPos ###",x,y,z)
+	print("### MyMoveWorldOriginAgainstLocation ###",x,y,z)
 	print("######################################")
-	gWorldOrigin:SetPosition(-x,-y,-z)
-	
+	gWorldOrigin:SetPos(-x,-y,-z)
+	gWorldOriginX = x
+	gWorldOriginY = y
+	gWorldOriginZ = z
 end
 
 function ShipTestStep ()
@@ -109,7 +87,7 @@ function ShipTestStep ()
 		-- prepare solarsystem : 
 		
 		local solroot = cLocation:New(nil,0,0,0,0)
-		gWorldOrigin = solroot.gfx		
+		gWorldOrigin = solroot	
 		
 		-- planets : 
 		-- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: http://en.wikipedia.org/wiki/Earth
@@ -119,25 +97,21 @@ function ShipTestStep ()
 		local vega_factor = 1/10 -- ... useme ? 
 		local au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
 		local planets = {
-			--~ { "sun"			,0 			},
-			--~ { "test1"		,0				,bStartHere=true}, -- test for rounding errors due to origin-dist
-			--~ { "test2"		,10				,bStartHere=true}, -- test for rounding errors due to origin-dist
-			--~ { "test3"		,40*1000		,bStartHere=true}, -- test for rounding errors due to origin-dist
-			--~ { "test4"		,10*1000*1000	,bStartHere=true}, -- test for rounding errors due to origin-dist
-			--~ { "mercury"		,0.4*au 	},
-			--~ { "venus"		,0.7*au 	},
+			{ "sun"			,0 			},
+			{ "mercury"		,0.4*au 	},
+			{ "venus"		,0.7*au 	},
 			{ "earth"		,1.0*au 	,bStartHere=true},
-			--~ { "mars"		,1.5*au 	},
+			{ "mars"		,1.5*au 	},
 			-- asteroidbelt:2.3-3.3au   
 			-- Asteroids range in size from hundreds of kilometres across to microscopic
 			-- The asteroid belt contains tens of thousands, possibly millions, of objects over one kilometre in diameter.
 			-- [46] Despite this, the total mass of the main belt is unlikely to be more than a thousandth of that of the Earth.
 			-- [47] The main belt is very sparsely populated
 			-- outerplanets: 
-			--~ { "jupiter"		,5.2*au		},
-			--~ { "saturn"		,9.5*au     },
-			--~ { "uranus"		,19.6*au    },
-			--~ { "neptune"		,30*au      },
+			{ "jupiter"		,5.2*au		},
+			{ "saturn"		,9.5*au     },
+			{ "uranus"		,19.6*au    },
+			{ "neptune"		,30*au      },
 			-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
 		}	
 		function GetRandomOrbitFlatXY (d,dzmax)
@@ -146,12 +120,16 @@ function ShipTestStep ()
 			local z = (math.random()*2-1)*dzmax
 			return x,y,z
 		end
+		
+		gPlanetsLocs = {}
 		for k,o in pairs(planets) do 
 			local name,d = unpack(o)
 			--~ local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 			local x,y,z = d,0,0
 			local r = 0
 			local ploc = cLocation:New(solroot,x,y,z,r)
+			table.insert(gPlanetsLocs,ploc)
+			ploc.name = name
 			
 			local pr = 40000
 			local planet = cPlanet:New(ploc,0,0,0	,pr,"planetbase")
@@ -162,28 +140,7 @@ function ShipTestStep ()
 				local x,y,z = pr * 1.2,0,0
 				-- player ship
 				gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
-				MyMoveWorldOriginAgainstGfxPos(ploc.gfx) 
-				--~ MySetCamBaseGfx(ploc.gfx)
-				
-				if (1 == 2) then 
-					print("#################################")
-					print("### near-far-near test active ###")
-					print("#################################")
-					local gfx_far = CreateRootGfx3D()
-					local gfx_far2 = gfx_far:CreateChild()
-					local gfx_near = gfx_far2:CreateChild()
-					local e = 100000000000000000000000000000000000000
-					gfx_far:SetPosition(e,0,0)
-					gfx_far2:SetPosition(0,e,0)
-					gfx_near:SetPosition(-e,-e,0)
-					--~ gfx_near:SetPosition(-e-11,0,0)
-					gPlayerShip.gfx:SetParent(gfx_near)
-					MySetCamBaseGfx(gfx_near)
-					-- no rounding errors when moving back and forth...
-				end
-				
-	
-				
+				MyMoveWorldOriginAgainstLocation(ploc)
 				
 				-- npc ship
 				for i=1,10 do 
@@ -211,7 +168,15 @@ function ShipTestStep ()
 end
 
 
-
+gDebugJumpPlanetID = 0
+BindDown("j",function ()
+	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
+	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
+	print("recenter",newloc.name) 
+	MyMoveWorldOriginAgainstLocation(newloc)
+	gPlayerShip:MoveToNewLoc(newloc)
+	print("position from sun:",gPlayerShip:GetPosFromSun())
+end)
 
 function PlayerCamStep (dx,dy)
 	local cam = GetMainCam()
@@ -266,7 +231,7 @@ function PlayerCamStep (dx,dy)
 	local s = gKeyPressed[key_lshift] and 10 or 100
 	local as = 10*s
 	if (gKeyPressed[key_lcontrol]) then s = s * 100 as = 0 end 
-	if (gKeyPressed[key_lcontrol] and gKeyPressed[key_lshift]) then s = s * 10000 as = 0 end 
+	if (gKeyPressed[key_lcontrol] and gKeyPressed[key_lshift]) then s = s * 100*1000 as = 0 end 
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),
