@@ -177,6 +177,16 @@ BindDown("j",function ()
 	gPlayerShip:MoveToNewLoc(newloc)
 	print("position from sun:",gPlayerShip:GetPosFromSun())
 end)
+BindDown("k",function ()
+	local loc = gPlayerShip.loc
+	local x,y,z = gPlayerShip.x+loc.x,gPlayerShip.y+loc.y,gPlayerShip.z+loc.z
+	local newloc = cLocation:New(gWorldOrigin,x,y,z,r)
+	print("recenter on new loc",x,y,z) 
+	MyMoveWorldOriginAgainstLocation(newloc)
+	gPlayerShip:MoveToNewLoc(newloc)
+	gPlayerShip:SetPos(0,0,0)
+	print("position from sun:",gPlayerShip:GetPosFromSun())
+end)
 
 function PlayerCamStep (dx,dy)
 	local cam = GetMainCam()
