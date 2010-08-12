@@ -397,7 +397,9 @@ end
 -- to remain consistent, it must be ensured that GetSize() always equals the last SetSize()
 -- most widget types have to react to this by implementing t:on_set_size(w,h)
 function cWidget:SetSize		(w,h)
-	self._widgetbasedata.rendergroup2d:SetForcedMinSize(w,h)
+	if (self._widgetbasedata.rendergroup2d.SetForcedMinSize) then 
+		self._widgetbasedata.rendergroup2d:SetForcedMinSize(w,h)
+	end
 	self._widgetbasedata.forced_w = w 
 	self._widgetbasedata.forced_h = h 
 	if (self.on_set_size) then self:on_set_size(w,h) end

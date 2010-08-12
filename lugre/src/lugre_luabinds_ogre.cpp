@@ -232,6 +232,8 @@ class cLugreLuaBind_Ogre_Node : public cLuaBindDirect<Ogre::Node>, public cLuaBi
 	virtual void RegisterMethods	(lua_State *L) { PROFILE 
 		LUABIND_DIRECTWRAP_BASECLASS(Ogre::Renderable);
 		
+		LUABIND_QUICKWRAP(	getRealAddress,		{ return PushPointer(L,checkudata_alive(L)); }); // for compare/hierarchy
+		
 		// unknown syntax:enum TransformSpace;
 		// unknown syntax:typedef HashMap<String,Node* > ChildNodeMap;
 		// unknown syntax:typedef MapIterator<ChildNodeMap> ChildNodeIterator;

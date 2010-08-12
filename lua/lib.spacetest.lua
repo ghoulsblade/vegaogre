@@ -53,6 +53,50 @@ function EnsureMeshMaterialNamePrefix (meshname,prefix)
 	end
 end
 
+function MySetCamBaseGfx (gfx)
+	--~ assert(false) -- disabled for now
+	local node = gfx:GetSceneNode()
+	local camnode = node -- direct
+	
+	-- indirect test : 
+	local camsubgfx = gfx:CreateChild()
+	camsubgfx:SetPosition(0,0,0)
+	camnode = camsubgfx:GetSceneNode()
+	
+	-- cam raw
+	local cam = GetMainCam():GetQuickHandle()
+	local cammov = cam:CastToMovable()
+	local camholder = cammov:getParentSceneNode()
+	
+	local oldparentnode = camholder:getParentSceneNode()
+	if (oldparentnode) then oldparentnode:removeChild2(camholder) end
+	node:addChild(camholder)
+	
+	
+	--[[
+	local oldp = cammov:getParentSceneNode()
+	if (oldp) then oldp:detachObject2(cammov) end
+	node:attachObject(cammov)
+	]]--
+end
+
+function GetGfxHierarchyText (gfx) return GetNodeHierarchyText(gfx:GetSceneNode()) end
+function GetNodeHierarchyText (node) 
+	if (not node) then return "." end
+	local x,y,z = node:getPosition()
+	local ax,ay,az = node:_getDerivedPosition()
+	return string.gsub(tostring(node:getRealAddress()),"userdata: ","").."("..x..","..y..","..z..")("..ax..","..ay..","..az.."):"..GetNodeHierarchyText(node:getParentSceneNode())
+end
+
+function MyMoveWorldOriginAgainstGfxPos (gfx) 
+	local x,y,z = gfx:GetDerivedPosition()
+	print("######################################")
+	print("### MyMoveWorldOriginAgainstGfxPos ###",x,y,z)
+	print("######################################")
+	gWorldOrigin:SetPosition(-x,-y,-z)
+	
+end
+
 function ShipTestStep ()
 	if (not gPlayerShip) then 
 		EnsureMeshMaterialNamePrefix("llama.mesh","llama")
@@ -65,19 +109,7 @@ function ShipTestStep ()
 		-- prepare solarsystem : 
 		
 		local solroot = cLocation:New(nil,0,0,0,0)
-	
-		
-		
-		--[[
-		local gfx_far = CreateRootGfx3D()
-		local gfx_near = gfx_far:CreateChild()
-		local e = 100000000000000000000000000000000000000
-		gfx_far:SetPosition(e,0,0)
-		gfx_near:SetPosition(-e+0,0,0)
-		--~ gfx_near:SetPosition(-e-11,0,0)
-		gPlayerShip.gfx:SetParent(gfx_near)
-		]]--
-		
+		gWorldOrigin = solroot.gfx		
 		
 		-- planets : 
 		-- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: http://en.wikipedia.org/wiki/Earth
@@ -87,22 +119,25 @@ function ShipTestStep ()
 		local vega_factor = 1/10 -- ... useme ? 
 		local au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
 		local planets = {
-			{ "sun"			,0 			},
-			{ "test1"		,10*1000*1000	,bStartHere=true},
-			{ "mercury"		,0.4*au 	},
-			{ "venus"		,0.7*au 	},
-			{ "earth"		,1.0*au 	},
-			{ "mars"		,1.5*au 	},
+			--~ { "sun"			,0 			},
+			--~ { "test1"		,0				,bStartHere=true}, -- test for rounding errors due to origin-dist
+			--~ { "test2"		,10				,bStartHere=true}, -- test for rounding errors due to origin-dist
+			--~ { "test3"		,40*1000		,bStartHere=true}, -- test for rounding errors due to origin-dist
+			--~ { "test4"		,10*1000*1000	,bStartHere=true}, -- test for rounding errors due to origin-dist
+			--~ { "mercury"		,0.4*au 	},
+			--~ { "venus"		,0.7*au 	},
+			{ "earth"		,1.0*au 	,bStartHere=true},
+			--~ { "mars"		,1.5*au 	},
 			-- asteroidbelt:2.3-3.3au   
 			-- Asteroids range in size from hundreds of kilometres across to microscopic
 			-- The asteroid belt contains tens of thousands, possibly millions, of objects over one kilometre in diameter.
 			-- [46] Despite this, the total mass of the main belt is unlikely to be more than a thousandth of that of the Earth.
 			-- [47] The main belt is very sparsely populated
 			-- outerplanets: 
-			{ "jupiter"		,5.2*au		},
-			{ "saturn"		,9.5*au     },
-			{ "uranus"		,19.6*au    },
-			{ "neptune"		,30*au      },
+			--~ { "jupiter"		,5.2*au		},
+			--~ { "saturn"		,9.5*au     },
+			--~ { "uranus"		,19.6*au    },
+			--~ { "neptune"		,30*au      },
 			-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
 		}	
 		function GetRandomOrbitFlatXY (d,dzmax)
@@ -113,33 +148,39 @@ function ShipTestStep ()
 		end
 		for k,o in pairs(planets) do 
 			local name,d = unpack(o)
-			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+			--~ local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+			local x,y,z = d,0,0
 			local r = 0
 			local ploc = cLocation:New(solroot,x,y,z,r)
-			local node = ploc.gfx:GetSceneNode()
+			
 			local pr = 40000
 			local planet = cPlanet:New(ploc,0,0,0	,pr,"planetbase")
 			planet:SetRandomRot()
 			
 			-- player ship
-			if (o.bStartHere) then 
+			if (o.bStartHere and (not gPlayerShip)) then 
 				local x,y,z = pr * 1.2,0,0
 				-- player ship
 				gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
+				MyMoveWorldOriginAgainstGfxPos(ploc.gfx) 
+				--~ MySetCamBaseGfx(ploc.gfx)
 				
-				local camnode = node -- direct
-				
-				-- indirect test : 
-				local camsubgfx = ploc.gfx:CreateChild()
-				camsubgfx:SetPosition(0,0,0)
-				camnode = camsubgfx:GetSceneNode()
-				
-				-- cam raw
-				local cam = GetMainCam():GetQuickHandle()
-				local cammov = cam:CastToMovable()
-				local oldp = cammov:getParentSceneNode()
-				if (oldp) then oldp:detachObject2(cammov) end
-				node:attachObject(cammov)
+				if (1 == 2) then 
+					print("#################################")
+					print("### near-far-near test active ###")
+					print("#################################")
+					local gfx_far = CreateRootGfx3D()
+					local gfx_far2 = gfx_far:CreateChild()
+					local gfx_near = gfx_far2:CreateChild()
+					local e = 100000000000000000000000000000000000000
+					gfx_far:SetPosition(e,0,0)
+					gfx_far2:SetPosition(0,e,0)
+					gfx_near:SetPosition(-e,-e,0)
+					--~ gfx_near:SetPosition(-e-11,0,0)
+					gPlayerShip.gfx:SetParent(gfx_near)
+					MySetCamBaseGfx(gfx_near)
+					-- no rounding errors when moving back and forth...
+				end
 				
 	
 				
@@ -185,6 +226,7 @@ function PlayerCamStep (dx,dy)
 	--~ local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
 	cam:SetRot(Quaternion.normalise(w0,x0,y0,z0))
 	
+	--~ print("cam",cam:GetQuickHandle():getDerivedPosition())
 	--~ if (true) then return end
 	
 	if (not gPlayerShip) then return end
@@ -193,7 +235,6 @@ function PlayerCamStep (dx,dy)
 	
 	local ang = math.pi * gMyTicks/1000 * 0.11
 	
-	local cam = GetMainCam()
 	local dt = gSecondsSinceLastFrame
 	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	--~ local bMoveCam = gKeyPressed[key_mouse_middle]
@@ -210,7 +251,6 @@ function PlayerCamStep (dx,dy)
 	cam:SetRot(w0,x0,y0,z0)
 	
 	if (1 == 1) then 
-		local cam = GetMainCam()
 		local w0,x0,y0,z0 = cam:GetRot()
 		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
 		w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)	
@@ -236,8 +276,11 @@ function PlayerCamStep (dx,dy)
 	local o = gPlayerShip
 	o.vx,o.vy,o.vz = ax,ay,az
 	local x,y,z = gPlayerShip:GetPos()
+	--~ print("playerpos",x,y,z)
 	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
+	
+	--~ print("playerderived",gPlayerShip.gfx:GetDerivedPosition())
 	
 	--~ local ox,oy,oz = 0,0,0
 	local dist = 15

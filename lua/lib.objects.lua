@@ -9,14 +9,7 @@ RegisterStepper(function ()
 	local dt = gSecondsSinceLastFrame
 	for o,v in pairs(gObjects) do 
 		o:Step(dt)
-		local x = o.x + o.vx * dt
-		local y = o.y + o.vy * dt
-		local z = o.z + o.vz * dt
-		o.x = x
-		o.y = y
-		o.z = z
-		local gfx = o.gfx
-		if (gfx) then gfx:SetPosition(x,y,z) end
+		o:PhysStep(dt)
 	end
 	if (next(gNewObjects)) then 
 		local arr = gNewObjects
@@ -30,6 +23,7 @@ end)
 -- ***** ***** ***** ***** ***** cObject
 
 cObject = CreateClass()
+function cObject:GetClass() return "cObject" end
 
 function cObject:Init (loc,x,y,z,r)
 	self:InitObj(loc,x,y,z,r)
@@ -56,6 +50,16 @@ function cObject:InitObj (loc,x,y,z,r)
 	gNewObjects[self] = true
 end
 
+function cObject:PhysStep(dt)
+	local x = self.x + self.vx * dt
+	local y = self.y + self.vy * dt
+	local z = self.z + self.vz * dt
+	self.x = x
+	self.y = y
+	self.z = z
+	local gfx = self.gfx
+	if (gfx) then gfx:SetPosition(x,y,z) end
+end
 
 function cObject:Step() end
 function cObject:GetPos() return self.x,self.y,self.z end
@@ -76,6 +80,7 @@ function cObject:CanDock (o) return false end
 -- ***** ***** ***** ***** ***** cShot
 
 cShot = CreateClass(cObject)
+function cShot:GetClass() return "cShot" end
 
 function cShot:Init (o)
 	--~ print("cShot:Init",o)
@@ -97,15 +102,18 @@ end
 -- ***** ***** ***** ***** ***** cShip
 
 cShip = CreateClass(cObject)
+function cShip:GetClass() return "cShip" end
 
 function cShip:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "llama.mesh",r)
 end
 
+
 -- ***** ***** ***** ***** ***** cNPCShip
 
 cNPCShip = CreateClass(cShip)
+function cNPCShip:GetClass() return "cNPCShip" end
 
 function cNPCShip:Init (loc,x,y,z,r,meshname)
 	cShip.Init(self,loc,x,y,z,r,meshname or "ruizong.mesh")
@@ -118,6 +126,7 @@ end
 -- ***** ***** ***** ***** ***** cPlayerShip
 
 cPlayerShip = CreateClass(cShip)
+function cPlayerShip:GetClass() return "cPlayerShip" end
 
 function cPlayerShip:Init (x,y,z,r,meshname)
 	cShip.Init(self,x,y,z,r,meshname)
@@ -129,6 +138,7 @@ end
 -- ***** ***** ***** ***** ***** cStation
 
 cStation = CreateClass(cObject)
+function cStation:GetClass() return "cStation" end
 
 function cStation:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
@@ -144,6 +154,7 @@ end
 -- ***** ***** ***** ***** ***** cLocation
 
 cLocation = CreateClass(cObject)
+function cLocation:GetClass() return "cLocation" end
 
 function cLocation:Init (loc,x,y,z,r)
 	self:InitObj(loc,x,y,z,r)
@@ -151,10 +162,13 @@ end
 
 function cLocation:CreateChild () return self.gfx:CreateChild() end
 
+function cLocation:PhysStep(dt) end -- DONT MOVE GFX! (hard to find error if it resets offset)
+
 
 -- ***** ***** ***** ***** ***** cPlanet
 
 cPlanet = CreateClass(cObject)
+function cPlanet:GetClass() return "cPlanet" end
 
 function cPlanet:Init (loc,x,y,z,r,matname)
 	self:InitObj(loc,x,y,z,r)
