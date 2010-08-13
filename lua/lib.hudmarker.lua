@@ -5,8 +5,7 @@ function stepHudMarker(obj)
 	if not obj.guiMarker then
 		local marker = GetDesktopWidget():CreateContentChild("Image",
 			{
-				gfxparam_init = MakeSpritePanelParam_SingleSpriteSimple(
-					GetPlainTextureGUIMat("hud_marker.png"), 256, 256)
+				gfxparam_init = MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("hud_obj_frame.png"),16,16,0,0, 0,0, 6,4,6, 6,4,6, 16,16, 1,1, false,false)
 			})
 			
 		obj.guiMarker = marker
