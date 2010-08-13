@@ -165,6 +165,8 @@ function Main ()
     --~ StartMainMenu()
 	BindDown("escape", function () os.exit(0) end)
 	BindDown("tab", function () GuiTest_DragDrop() end)
+	
+	InitGuiThemes()
 	MySpaceInit()
 	GuiTest_InitCrossHair()
 	

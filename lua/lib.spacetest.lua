@@ -66,14 +66,21 @@ gWorldOriginY = 0
 gWorldOriginZ = 0
 function MyMoveWorldOriginAgainstLocation (loc)
 	local x,y,z = loc.x,loc.y,loc.z
-	print("######################################")
-	print("### MyMoveWorldOriginAgainstLocation ###",x,y,z)
-	print("######################################")
+	--~ print("######################################")
+	--~ print("### MyMoveWorldOriginAgainstLocation ###",x,y,z)
+	--~ print("######################################")
 	gWorldOrigin:SetPos(-x,-y,-z)
 	gWorldOriginX = x
 	gWorldOriginY = y
 	gWorldOriginZ = z
 end
+
+-- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: 
+local light_second = 300*1000*1000 -- 300 mio m/s
+local light_minute = 60*light_second -- 18.000.000.000 in meters
+local vega_factor = 1/10 -- ... useme ? 
+au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
+km = 1000
 
 function ShipTestStep ()
 	if (not gPlayerShip) then 
@@ -89,29 +96,23 @@ function ShipTestStep ()
 		local solroot = cLocation:New(nil,0,0,0,0)
 		gWorldOrigin = solroot	
 		
-		-- planets : 
-		-- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: http://en.wikipedia.org/wiki/Earth
-		-- local earth = 3rd planet
-		local light_second = 300*1000*1000 -- 300 mio m/s
-		local light_minute = 60*light_second -- 18.000.000.000 in meters
-		local vega_factor = 1/10 -- ... useme ? 
-		local au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
+		-- planets
 		local planets = {
-			{ "sun"			,0 			},
-			{ "mercury"		,0.4*au 	},
-			{ "venus"		,0.7*au 	},
-			{ "earth"		,1.0*au 	,bStartHere=true},
-			{ "mars"		,1.5*au 	},
+			{ "sun"			,0 			,6955*10e5*km	},
+			{ "mercury"		,0.4*au 	,2439.7*km		},
+			{ "venus"		,0.7*au 	,6051.8*km		},
+			{ "earth"		,1.0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
+			{ "mars"		,1.5*au 	,3396.2*km	},
 			-- asteroidbelt:2.3-3.3au   
 			-- Asteroids range in size from hundreds of kilometres across to microscopic
 			-- The asteroid belt contains tens of thousands, possibly millions, of objects over one kilometre in diameter.
 			-- [46] Despite this, the total mass of the main belt is unlikely to be more than a thousandth of that of the Earth.
 			-- [47] The main belt is very sparsely populated
 			-- outerplanets: 
-			{ "jupiter"		,5.2*au		},
-			{ "saturn"		,9.5*au     },
-			{ "uranus"		,19.6*au    },
-			{ "neptune"		,30*au      },
+			{ "jupiter"		,5.2*au		,71492*km			},
+			{ "saturn"		,9.5*au     ,60268*km			},
+			{ "uranus"		,19.6*au    ,25559*km			},
+			{ "neptune"		,30*au      ,24764*km			},
 			-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
 		}	
 		function GetRandomOrbitFlatXY (d,dzmax)
@@ -123,7 +124,7 @@ function ShipTestStep ()
 		
 		gPlanetsLocs = {}
 		for k,o in pairs(planets) do 
-			local name,d = unpack(o)
+			local name,d,pr = unpack(o)
 			--~ local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 			local x,y,z = d,0,0
 			local r = 0
@@ -131,16 +132,18 @@ function ShipTestStep ()
 			table.insert(gPlanetsLocs,ploc)
 			ploc.name = name
 			
-			local pr = 40000
 			local planet = cPlanet:New(ploc,0,0,0	,pr,"planetbase")
+			ploc.planet = planet
 			planet:SetRandomRot()
+			planet.name = name
 			
 			-- player ship
 			if (o.bStartHere and (not gPlayerShip)) then 
 				local x,y,z = pr * 1.2,0,0
 				-- player ship
 				gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
-				MyMoveWorldOriginAgainstLocation(ploc)
+				--~ MyMoveWorldOriginAgainstLocation(ploc) -- already causes rounding errors even near planet earth for real planet sizes
+				MyMoveWorldOriginAgainstPlayerShip()
 				
 				-- npc ship
 				for i=1,10 do 
@@ -173,18 +176,23 @@ BindDown("j",function ()
 	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
 	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
 	print("recenter",newloc.name) 
-	MyMoveWorldOriginAgainstLocation(newloc)
 	gPlayerShip:MoveToNewLoc(newloc)
+	local r = newloc.planet and newloc.planet.r or 0
+	gPlayerShip:SetPos(r*1.2,0,0)
+	MyMoveWorldOriginAgainstPlayerShip()
 	print("position from sun:",gPlayerShip:GetPosFromSun())
 end)
-BindDown("k",function ()
+function MyMoveWorldOriginAgainstPlayerShip ()
 	local loc = gPlayerShip.loc
 	local x,y,z = gPlayerShip.x+loc.x,gPlayerShip.y+loc.y,gPlayerShip.z+loc.z
 	local newloc = cLocation:New(gWorldOrigin,x,y,z,r)
-	print("recenter on new loc",x,y,z) 
+	--~ print("recenter on new loc",x,y,z) 
 	MyMoveWorldOriginAgainstLocation(newloc)
 	gPlayerShip:MoveToNewLoc(newloc)
 	gPlayerShip:SetPos(0,0,0)
+end
+BindDown("k",function ()
+	MyMoveWorldOriginAgainstPlayerShip()
 	print("position from sun:",gPlayerShip:GetPosFromSun())
 end)
 
@@ -238,7 +246,7 @@ function PlayerCamStep (dx,dy)
 	
 	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
 	
-	local s = gKeyPressed[key_lshift] and 10 or 100
+	local s = gKeyPressed[key_lshift] and 100 or 1000
 	local as = 10*s
 	if (gKeyPressed[key_lcontrol]) then s = s * 100 as = 0 end 
 	if (gKeyPressed[key_lcontrol] and gKeyPressed[key_lshift]) then s = s * 100*1000 as = 0 end 

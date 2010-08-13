@@ -88,7 +88,6 @@ function GuiTest_DragDrop ()
 		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat","military_concourse.dds"),w,h)})
 		gBaseBackground:SetPos(gViewportW/2-w/2,gViewportH/2-h/2)
 
-		InitGuiThemes()
 		--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
 		--~ GetDesktopWidget():CreateContentChild("Button",{x=10, y=10, label='testbutton'})
 		

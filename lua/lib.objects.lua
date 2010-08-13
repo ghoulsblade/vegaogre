@@ -86,9 +86,15 @@ function cObject:GetPosFromSun ()
 	return self.x+p.x,self.y+p.y,self.z+p.z
 end
 function cObject:GetPosFromPlayerLoc () 
-	local o = gPlayerShip.loc
+	--~ local o = gPlayerShip.loc
 	local p = self.loc
-	return self.x+p.x-o.x,self.y+p.y-o.y,self.z+p.z-o.z
+	
+	--~ gWorldOriginX = x
+	--~ gWorldOriginY = y
+	--~ gWorldOriginZ = z
+	
+	--~ return self.x+(p.x-o.x),self.y+(p.y-o.y),self.z+(p.z-o.z)
+	return self.x+(p.x-gWorldOriginX),self.y+(p.y-gWorldOriginY),self.z+(p.z-gWorldOriginZ)
 	--~ return self.x+p.x+gWorldOriginX,self.y+p.y+gWorldOriginY,self.z+p.z+gWorldOriginZ
 end
 
@@ -158,6 +164,7 @@ function cStation:GetClass() return "cStation" end
 function cStation:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "agricultural_station.mesh",r)
+	--~ self.name = "station"
 end
 
 function cStation:CanDock (o) return true end
@@ -196,6 +203,7 @@ end
 function cPlanet:CanDock (o) return true end
 
 function cPlanet:Step () 
+	stepHudMarker(self)
 end
 
 -- ***** ***** ***** ***** ***** 
