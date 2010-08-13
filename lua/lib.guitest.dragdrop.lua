@@ -63,6 +63,7 @@ function GuiTest_InitCrossHair ()
 end
 
 RegisterListener("Hook_HUDStep",function () GuiTest_Step() end)
+BindDown("tab", function () GuiTest_DragDrop() end)
 
 function GuiTest_Step ()
 	if (gGuiTest_DragDrop_Active) then return end
@@ -84,9 +85,9 @@ function GuiTest_DragDrop ()
 		if (gCrossHair) then gCrossHair:Destroy() gCrossHair = nil end
 		local s = min(gViewportW,gViewportH) s = 1024
 		local w,h = s,s
-		gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","ocean_concourse.dds"),w,h)})
+		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","ocean_concourse.dds"),w,h)})
 		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat","military_concourse.dds"),w,h)})
-		gBaseBackground:SetPos(gViewportW/2-w/2,gViewportH/2-h/2)
+		--~ gBaseBackground:SetPos(gViewportW/2-w/2,gViewportH/2-h/2)
 
 		--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
 		--~ GetDesktopWidget():CreateContentChild("Button",{x=10, y=10, label='testbutton'})

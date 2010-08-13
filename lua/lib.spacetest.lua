@@ -14,17 +14,25 @@ function MySpaceInit ()
     local cam = GetMainCam()
     cam:SetFOVy(gfDeg2Rad*45)
     --~ cam:SetNearClipDistance(0.01) -- old : 1
-    cam:SetFarClipDistance(10000000) -- ogre defaul : 100000
+    cam:SetNearClipDistance(10) -- old : 1
+    cam:SetFarClipDistance(100*1000*km) -- ogre defaul : 100000
 	
-	-- light 
-    Client_ClearLights()
-	local x,y,z = .1,-.7,-.9			gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
-	local e = .9	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
-	local e = .0	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
-	local e = .2	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
-
+	-- UpdateWorldLight() called depending on sun
+	
 	gMaxFPS = 40
 end
+
+function UpdateWorldLight (x,y,z)
+	-- light 
+	Client_ClearLights()
+	--~ local x,y,z = .1,-.7,-.9				
+	local x,y,z = Vector.normalise(x,y,z)	
+	gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
+	local e = .9	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
+	local e = .0	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
+	local e = .1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+end
+
 
 
 RegisterIntervalStepper(100,function ()
@@ -73,11 +81,12 @@ function MyMoveWorldOriginAgainstLocation (loc)
 	gWorldOriginX = x
 	gWorldOriginY = y
 	gWorldOriginZ = z
+	UpdateWorldLight(gWorldOriginX,gWorldOriginY,gWorldOriginZ)
 end
 
 -- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: 
-local light_second = 300*1000*1000 -- 300 mio m/s
-local light_minute = 60*light_second -- 18.000.000.000 in meters
+light_second = 300*1000*1000 -- 300 mio m/s
+light_minute = 60*light_second -- 18.000.000.000 in meters
 local vega_factor = 1/10 -- ... useme ? 
 au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
 km = 1000
@@ -249,7 +258,7 @@ function PlayerCamStep (dx,dy)
 	local s = gKeyPressed[key_lshift] and 100 or 1000
 	local as = 10*s
 	if (gKeyPressed[key_lcontrol]) then s = s * 100 as = 0 end 
-	if (gKeyPressed[key_lcontrol] and gKeyPressed[key_lshift]) then s = s * 100*1000 as = 0 end 
+	if (gKeyPressed[key_lcontrol] and gKeyPressed[key_lshift]) then s = s * 1000 as = 0 end 
 	local ax,ay,az = Quaternion.ApplyToVector(
 		(gKeyPressed[key_d] and -s or 0) + (gKeyPressed[key_a] and  s or 0),
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),

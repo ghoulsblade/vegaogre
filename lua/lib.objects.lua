@@ -23,7 +23,7 @@ end)
 -- ***** ***** ***** ***** ***** cObject
 
 cObject = CreateClass()
-function cObject:GetClass() return "cObject" end
+function cObject:GetClass() return "Object" end
 
 function cObject:Init (loc,x,y,z,r)
 	self:InitObj(loc,x,y,z,r)
@@ -85,6 +85,16 @@ function cObject:GetPosFromSun ()
 	local p = self.loc
 	return self.x+p.x,self.y+p.y,self.z+p.z
 end
+function cObject:GetDistToPlayer () return self:GetDistToObject(gPlayerShip) end
+function cObject:GetDistToObject (o) return Vector.len(self:GetVectorToObject(o)) end
+function cObject:GetVectorToObject (a) 
+	local ao = a.loc
+	local so = self.loc
+	return	(a.x-self.x)+(ao.x-so.x),
+			(a.y-self.y)+(ao.y-so.y),
+			(a.z-self.z)+(ao.z-so.z)
+end
+	
 function cObject:GetPosFromPlayerLoc () 
 	--~ local o = gPlayerShip.loc
 	local p = self.loc
@@ -101,7 +111,7 @@ end
 -- ***** ***** ***** ***** ***** cShot
 
 cShot = CreateClass(cObject)
-function cShot:GetClass() return "cShot" end
+function cShot:GetClass() return "Shot" end
 
 function cShot:Init (o)
 	--~ print("cShot:Init",o)
@@ -123,7 +133,7 @@ end
 -- ***** ***** ***** ***** ***** cShip
 
 cShip = CreateClass(cObject)
-function cShip:GetClass() return "cShip" end
+function cShip:GetClass() return "Ship" end
 
 function cShip:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
@@ -134,7 +144,7 @@ end
 -- ***** ***** ***** ***** ***** cNPCShip
 
 cNPCShip = CreateClass(cShip)
-function cNPCShip:GetClass() return "cNPCShip" end
+function cNPCShip:GetClass() return "NPCShip" end
 
 function cNPCShip:Init (loc,x,y,z,r,meshname)
 	cShip.Init(self,loc,x,y,z,r,meshname or "ruizong.mesh")
@@ -147,7 +157,7 @@ end
 -- ***** ***** ***** ***** ***** cPlayerShip
 
 cPlayerShip = CreateClass(cShip)
-function cPlayerShip:GetClass() return "cPlayerShip" end
+function cPlayerShip:GetClass() return "PlayerShip" end
 
 function cPlayerShip:Init (x,y,z,r,meshname)
 	cShip.Init(self,x,y,z,r,meshname)
@@ -159,7 +169,7 @@ end
 -- ***** ***** ***** ***** ***** cStation
 
 cStation = CreateClass(cObject)
-function cStation:GetClass() return "cStation" end
+function cStation:GetClass() return "Station" end
 
 function cStation:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
@@ -176,7 +186,7 @@ end
 -- ***** ***** ***** ***** ***** cLocation
 
 cLocation = CreateClass(cObject)
-function cLocation:GetClass() return "cLocation" end
+function cLocation:GetClass() return "Location" end
 
 function cLocation:Init (loc,x,y,z,r)
 	self:InitObj(loc,x,y,z,r)
@@ -191,7 +201,7 @@ function cLocation:SetPos(x,y,z) self.x,self.y,self.z = x,y,z self.gfx:SetPositi
 -- ***** ***** ***** ***** ***** cPlanet
 
 cPlanet = CreateClass(cObject)
-function cPlanet:GetClass() return "cPlanet" end
+function cPlanet:GetClass() return "Planet" end
 
 function cPlanet:Init (loc,x,y,z,r,matname)
 	self:InitObj(loc,x,y,z,r)

@@ -11,14 +11,32 @@ function cHudMarker:Init (parentwidget, params)
 	--~ self.img2 = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("repulsor_beam.image.png"),w,h)})
 
 	local o = params.obj
-	if (o.name) then self.text = self:_CreateChild("Text",{text=o.name,font=gVegaWidgetFont,fontsize=14,textparam={r=0,g=1,b=0}}) end
+	if (o.name) then self.text = self:_CreateChild("Text",{text=o.name,textparam={r=0,g=1,b=0}}) end
 	--~ self:SetConsumeChildHit(true)  -- not needed due to child events passing through if unhandled
 end
 
+function cHudMarker:on_mouse_enter			() self:ShowMouseOverText(true) end
+function cHudMarker:on_mouse_leave			() self:ShowMouseOverText(false) end
 function cHudMarker:GetColor ()
 	return 0,1,0
 end
 
+function GetDistText (d) 
+	local thres = 0.5
+	local u=au				if (d >= thres*u) then return sprintf("%0.2fau",d/u) end
+	local u=light_minute	if (d >= thres*u) then return sprintf("%0.2fLm",d/u) end
+	local u=light_second	if (d >= thres*u) then return sprintf("%0.2fLs",d/u) end
+	local u=km				if (d >= thres*u) then return sprintf("%0.2fkm",d/u) end
+	return sprintf("%0.0fm",d)
+end
+function cHudMarker:ShowMouseOverText (bVisible)
+	if (self.overtxt) then self.overtxt:Destroy() self.overtxt = nil end
+	if (not bVisible) then return end
+	local o = self.params.obj
+	local txt = "("..o:GetClass()..")"..GetDistText(o:GetDistToPlayer())
+	self.overtxt = self:_CreateChild("Text",{text=txt,textparam={r=0,g=1,b=0}})
+	self.overtxt:SetPos(0,-20)
+end
 function cHudMarker:Step (obj)
 	local x,y,z = obj:GetPosFromPlayerLoc()
 	local bIsInFront,px,py,cx,cy = ProjectSizeAndPos(x,y,z, obj.r)
