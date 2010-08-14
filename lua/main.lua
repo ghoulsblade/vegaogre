@@ -56,6 +56,7 @@ function CollectOgreResLocs ()
 
 	local function MyAddSubDirs (base) for k,v in ipairs(dirlist(base,true,false)) do if (v ~= "." and v ~= "..") then OgreAddResLoc(base..v,"FileSystem","General") end end end
 	MyAddSubDirs(mydatapath.."sprites/bases/")
+	OgreAddResLoc(mydatapath.."sprites"										,"FileSystem","General")
 	
     OgreAddResLoc(mydatapath.."textures/weapons"							,"FileSystem","General")
     OgreAddResLoc(mydatapath.."textures/planets"							,"FileSystem","General")

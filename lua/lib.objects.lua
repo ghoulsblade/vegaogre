@@ -73,6 +73,8 @@ function cObject:PhysStep(dt)
 	if (gfx) then gfx:SetPosition(x,y,z) end
 end
 
+function cObject:GetHUDImageName() end -- TODO : generic?
+
 function cObject:Step() end
 function cObject:HUDStep() end
 function cObject:GetPos() return self.x,self.y,self.z end
@@ -156,6 +158,7 @@ function cShip:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "llama.mesh",r)
 end
+function cShip:GetHUDImageName () return "llama-hud.png" end
 
 
 -- ***** ***** ***** ***** ***** cNPCShip
@@ -170,6 +173,8 @@ end
 function cNPCShip:HUDStep ()
 	stepHudMarker(self)
 end
+
+function cNPCShip:GetHUDImageName () return "ruizong-hud.dds" end
 
 -- ***** ***** ***** ***** ***** cPlayerShip
 
@@ -200,6 +205,8 @@ function cStation:HUDStep ()
 	stepHudMarker(self)
 end
 
+function cStation:GetHUDImageName () return "Agricultural_Station-hud.dds" end
+
 -- ***** ***** ***** ***** ***** cLocation
 
 cLocation = CreateClass(cObject)
@@ -222,7 +229,7 @@ function cPlanet:GetClass() return "Planet" end
 
 function cPlanet:Init (loc,x,y,z,r,matname)
 	self:InitObj(loc,x,y,z,r)
-	local res = 111 -- 31
+	local res = 51 -- 31
 	local steps_h,steps_v,cx,cy,cz = res,res,r,r,r
 	self.gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
 	self.gfx:GetEntity():setMaterialName(matname or "planetbase")
@@ -230,8 +237,7 @@ end
 
 function cPlanet:CanDock (o) return true end
 
-function cPlanet:HUDStep () 
-	stepHudMarker(self)
-end
+function cPlanet:HUDStep () stepHudMarker(self) end
+function cPlanet:GetHUDImageName () return "planet-carribean-hud.dds" end
 
 -- ***** ***** ***** ***** ***** 

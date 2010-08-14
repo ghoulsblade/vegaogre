@@ -146,3 +146,4 @@ function ToggleGuiMouseMode ()
 		GuiTest_InitCrossHair()
 	end
 end
+

@@ -185,6 +185,15 @@ function ShipTestStep ()
 end
 
 
+gHideFPS = true 
+
+BindDown("n",function ()
+	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
+	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
+	local p = newloc.planet 
+	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
+end)
+
 gDebugJumpPlanetID = 0
 BindDown("j",function ()
 	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
