@@ -99,6 +99,8 @@ function MySpaceInit ()
 			local s = cStation:New(ploc,x,y,z	,400,"agricultural_station.mesh")
 		end
 	end
+	
+	HUD_UpdateDisplaySelf()
 end
 
 function UpdateWorldLight (x,y,z)

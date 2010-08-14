@@ -104,7 +104,12 @@ function gWidgetPrototype.Text._UpdateGeometry_Visitor (x,y,glyph,glyphindex,sel
 end
 
 function gWidgetPrototype.Text:SetCol (r,g,b,a)
-	self.params.col = {r=r,g=g,b=b,a=a}
+	--~ self.params.col = {r=r,g=g,b=b,a=a}
+	local param = self.params.textparam
+	param.r = r
+	param.g = g
+	param.b = b
+	param.a = a
 end
 
 function gWidgetPrototype.Text:UpdateGeometry ()
