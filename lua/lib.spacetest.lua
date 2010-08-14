@@ -164,7 +164,7 @@ function ShipTestStep ()
 			
 			-- stations
 			for i = 0,math.random(0,2) do 
-				local d = pr * (1.5 + 2.0 * math.random())
+				local d = pr * (1.2 + 0.3 * math.random())
 				local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 				local s = cStation:New(ploc,x,y,z	,400,"agricultural_station.mesh")
 			end
