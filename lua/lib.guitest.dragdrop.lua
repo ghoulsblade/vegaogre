@@ -1,7 +1,3 @@
-floor	= math.floor
-ceil	= math.ceil
-min		= math.min
-max		= math.max
 
 function InitGuiThemes ()
 	gVegaWidgetFont = CreateFont_Ogre("TrebuchetMSBold",14)
@@ -64,7 +60,6 @@ end
 
 
 
-BindDown("tab", function () ToggleGuiMouseMode() end)
 
 function GuiTest_CursorCrossHair_Step ()
 	if (gGuiMouseModeActive) then return end

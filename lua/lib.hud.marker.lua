@@ -17,6 +17,7 @@ function cHudMarker:Init (parentwidget, params)
 	--~ self.img2 = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("repulsor_beam.image.png"),w,h)})
 
 	if (o.name) then self.text = self:_CreateChild("Text",{text=o.name,textparam={r=r,g=g,b=b}}) end
+	
 	--~ self:SetConsumeChildHit(true)  -- not needed due to child events passing through if unhandled
 end
 
@@ -46,13 +47,29 @@ function GetDistText (d)
 	local u=km				if (d >= thres*u) then return sprintf("%0.2fkm",d/u) end
 	return sprintf("%0.0fm",d)
 end
+function cHudMarker:UpdateDistanceFade ()
+	local s = 1
+	if (self.obj ~= gSelectedObject) then 
+		local d = self.params.obj:GetDistToPlayer()
+		if (d > 100*km) then s = 0.9 end
+		if (d > 10*1000*km) then s = 0.8 end
+		if (d > 0.1*au) then s = 0.5 end
+	end
+	if (self.fade_strength == s) then return end
+	self.fade_strength = s
+	self:UpdateGfx()
+end
 function cHudMarker:UpdateGfx ()
 	local r,g,b = self:GetColor()
 	local p = self.gfxparam_init
-	p.r = r 
-	p.g = g 
-	p.b = b 
+	local s = self.fade_strength or 1
+	p.r = s*r 
+	p.g = s*g 
+	p.b = s*b 
+	p.a = s 
 	self.frame:SetGfxParam(p)
+	local o = self.obj
+	if (o.name and self.text) then self.text:SetCol(p.r,p.g,p.b,p.a) self.text:SetText(o.name) end
 end
 function cHudMarker:ShowMouseOverText (bVisible)
 	if (self.overtxt) then self.overtxt:Destroy() self.overtxt = nil end
@@ -82,6 +99,7 @@ function cHudMarker:Step (obj)
 	self:SetPos(x, y)
 	self.frame:SetPos(-w/2,-h/2)
 	self.frame:SetSize(w, h)
+	self:UpdateDistanceFade()
 end
 
 -- draws hud markers at obj.x/y/z with size obj.r

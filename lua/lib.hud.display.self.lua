@@ -32,6 +32,8 @@ function cHudDisplaySelf:Init (parentwidget, params)
 	
 	local t = self:_CreateChild("Text",{text="",textparam={r=1,g=1,b=1}})	self.txt_R2 = t		t:SetPos(w+b,b+20)
 	
+	self.txt_TR.on_mouse_left_down = function () ToggleAutoPilot() end
+	
 	self:UpdateTexts()
 end
 

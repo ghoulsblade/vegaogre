@@ -10,8 +10,12 @@ dofile(libpath .. "lib.player.lua")
 dofile(libpath .. "lib.autopilot.lua")
 
 
-sin = math.sin
-cos = math.cos
+sin		= math.sin
+cos		= math.cos
+floor	= math.floor
+ceil	= math.ceil
+min		= math.min
+max		= math.max
 gMaxFPS = 40
 gHideFPS = true 
 

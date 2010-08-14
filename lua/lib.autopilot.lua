@@ -1,5 +1,4 @@
 
-BindDown("A",function () ToggleAutoPilot() end)
 
 function AutoPilotMsg (...) print("AutoPilot:",...) end
 

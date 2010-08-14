@@ -7,6 +7,9 @@ end)
 function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
 
 
+BindDown("tab", function () ToggleGuiMouseMode() end)
+BindDown("a",function () if (gGuiMouseModeActive) then ToggleAutoPilot() end end)
+
 BindDown("n",function ()
 	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
 	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
