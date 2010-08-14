@@ -160,10 +160,28 @@ end
 function MyMoveWorldOriginAgainstPlayerShip ()
 	local loc = gPlayerShip.loc
 	local x,y,z = gPlayerShip.x+loc.x,gPlayerShip.y+loc.y,gPlayerShip.z+loc.z
-	local newloc = cLocation:New(gWorldOrigin,x,y,z,r)
+	local moveloc = gPlayerShip.moveloc
+	if (not moveloc) then 
+		moveloc = cLocation:New(gWorldOrigin,x,y,z,r)
+		gPlayerShip.moveloc = moveloc
+		gPlayerShip:MoveToNewLoc(moveloc)
+	else
+		moveloc:SetPos(x,y,z)
+	end
 	--~ print("recenter on new loc",x,y,z) 
-	MyMoveWorldOriginAgainstLocation(newloc)
-	gPlayerShip:MoveToNewLoc(newloc)
+	MyMoveWorldOriginAgainstLocation(moveloc)
 	gPlayerShip:SetPos(0,0,0)
+end
+
+function MyPlayerHyperMoveRel (dx,dy,dz)
+	gPlayerShip.vx = 0
+	gPlayerShip.vy = 0
+	gPlayerShip.vz = 0
+	local moveloc = gPlayerShip.moveloc
+	if (not moveloc) then MyMoveWorldOriginAgainstPlayerShip()  moveloc = gPlayerShip.moveloc end
+	moveloc:SetPos(	moveloc.x + dx,
+					moveloc.y + dy,
+					moveloc.z + dz )
+	MyMoveWorldOriginAgainstLocation(moveloc)
 end
 

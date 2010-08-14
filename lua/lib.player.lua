@@ -86,6 +86,7 @@ end
 
 function Player_RotateShip_Step ()
 	if (not gPlayerShip) then return end
+	if (gAutoPilotActive) then return end
 	local cam = GetMainCam()
 	local w0,x0,y0,z0 = cam:GetRot()
 	local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
