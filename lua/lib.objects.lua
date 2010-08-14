@@ -222,7 +222,8 @@ function cPlanet:GetClass() return "Planet" end
 
 function cPlanet:Init (loc,x,y,z,r,matname)
 	self:InitObj(loc,x,y,z,r)
-	local steps_h,steps_v,cx,cy,cz = 31,31,r,r,r
+	local res = 111 -- 31
+	local steps_h,steps_v,cx,cy,cz = res,res,r,r,r
 	self.gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
 	self.gfx:GetEntity():setMaterialName(matname or "planetbase")
 end
