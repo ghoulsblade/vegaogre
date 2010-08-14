@@ -48,8 +48,10 @@ function StepAutoPilot ()
 	
 	local min_d_hyper = 10*km
 	local min_d_auto = 1*km
-	local f = 0.5*gSecondsSinceLastFrame
+	local per_second = 0.5
+	
 	if (d > min_d_hyper) then 
+		local f = per_second*gSecondsSinceLastFrame
 		MyPlayerHyperMoveRel(x*f,y*f,z*f)
 	elseif (d < min_d_auto) then 
 		my.vx = 0
@@ -58,9 +60,8 @@ function StepAutoPilot ()
 		AutoPilotMsg("arrived")
 		ToggleAutoPilot()
 	else
-		local f = 0.5
-		my.vx = x * 0.5
-		my.vy = y * 0.5
-		my.vz = z * 0.5
+		my.vx = x * per_second
+		my.vy = y * per_second
+		my.vz = z * per_second
 	end
 end
