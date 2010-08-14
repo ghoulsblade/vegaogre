@@ -239,11 +239,35 @@ material planetbase
 	{
 		pass
 		{
+			ambient  0.0 0.0 0.0 1.0
+			diffuse  1.0 1.0 1.0 1.0
+			specular 0.5 0.5 0.5 1.0
+			texture_unit
+			{
+				texture carribean1.dds
+				// carribean1_spec.dds
+			}
+		}
+		
+		pass
+		{
+			scene_blend add
+			emissive 1.0 1.0 1.0 1.0
+			lighting off
+			texture_unit
+			{
+				texture carribean1_light.dds
+			}
+		}
+
+		pass
+		{
+			scene_blend colour_blend 
 			ambient  1.0 1.0 1.0 1.0
 			specular 0.0 0.0 0.0 1.0
 			texture_unit
 			{
-				texture k_class2.dds
+				texture carribean1_cloud.dds
 			}
 		}
 	}
