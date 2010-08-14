@@ -25,12 +25,7 @@ print("lugreluapath",lugreluapath)
 dofile(lugreluapath .. "lugre.lua")
 lugre_include_libs(lugreluapath)
 
-dofile(libpath .. "lib.spacetest.lua")
-dofile(libpath .. "lib.guitest.dragdrop.lua")
-dofile(libpath .. "lib.boltmesh.lua")
-dofile(libpath .. "lib.objects.lua")
-dofile(libpath .. "lib.hudmarker.lua")
-dofile(libpath .. "lib.collision.lua")
+dofile(libpath .. "lib.vegamain.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##
@@ -42,27 +37,7 @@ function CollectOgreResLocs ()
     local mydatapath = gMainWorkingDir.."data/"
     OgreAddResLoc(mydatapath.."base/OgreCore.zip"           ,"Zip","Bootstrap")
 	
-    OgreAddResLoc(mydatapath.."."                           ,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."base"                        ,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."icons_equip"					,"FileSystem","General")
-	
-	for k,subpath in ipairs({"units/vessels/llama"}) do 
-    --~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
-	end
-    OgreAddResLoc(mydatapath.."units/vessels/llama"							,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."units/vessels/Ruizong"						,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."units/installations/Agricultural_Station"	,"FileSystem","General")    
-	OgreAddResLoc(mydatapath.."textures/backgrounds"						,"FileSystem","General")
-
-	local function MyAddSubDirs (base) for k,v in ipairs(dirlist(base,true,false)) do if (v ~= "." and v ~= "..") then OgreAddResLoc(base..v,"FileSystem","General") end end end
-	MyAddSubDirs(mydatapath.."sprites/bases/")
-	OgreAddResLoc(mydatapath.."sprites"										,"FileSystem","General")
-	
-    OgreAddResLoc(mydatapath.."textures/weapons"							,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."textures/planets"							,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."gui"											,"FileSystem","General")
-    OgreAddResLoc(mydatapath.."crosshair"									,"FileSystem","General")
-	
+	VegaMainAddResLocs(mydatapath) 
 
     print("OgreInitResLocs...")
     OgreInitResLocs()
@@ -163,13 +138,8 @@ function Main ()
 
     NotifyListener("Hook_PostLoad")
 	
-    --~ StartMainMenu()
-	BindDown("escape", function () os.exit(0) end)
-	
-	InitGuiThemes()
-	MySpaceInit()
-	GuiTest_InitCrossHair()
-	
+	VegaMainInit()
+
 	-- mainloop
     while (Client_IsAlive()) do 
         MainStep() 

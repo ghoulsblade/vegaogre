@@ -5,33 +5,6 @@
 gObjects = {}
 gNewObjects = {} -- delayed insert into the main list
 
-function VegaMainStep ()
-	local dt = gSecondsSinceLastFrame
-	
-	GuiTest_CursorCrossHair_Step() -- only moves gui widget to mousepos
-	
-	for o,v in pairs(gObjects) do o:Step(dt) end -- think, might modify params for physstep ( might also add new items )
-	
-	for o,v in pairs(gObjects) do o:PhysStep(dt) end -- move items and gfx:SetPos()
-	
-	--~ handleCollisionBetweenOneAndWorld(gPlayerShip, gObjects)   (do collision, might change pos and speed, so do before physstep) 
-	-- deactivated until large-universe rounding errors system finished  (should be between pos+=vel and render, so intersections can be solved before being rendered)
-	
-	-- insert new items into main list  (can be done after physstep, since InitObj already calls gfx:SetPos())
-	if (next(gNewObjects)) then local arr = gNewObjects gNewObjects = {} for o,v in pairs(arr) do gObjects[o] = true end end
-	
-	
-	PlayerStep() -- moves cam and handles player keyboard, changes player velocity, but not position.  call before HUD stuff so cam is up to date for render
-	
-	NotifyListener("Hook_HUDStep") -- updates special hud elements dependant on object positions that don't have auto-tracking
-	
-	for o,v in pairs(gObjects) do o:HUDStep(dt) end -- update hud markers, should be done AFTER moving objects and updating cam
-	
-	NotifyListener("Hook_PreRenderOneFrame")
-	
-	ShipTestStep()
-end
-
 -- ***** ***** ***** ***** ***** cObject
 
 cObject = CreateClass()
@@ -110,6 +83,8 @@ function cObject:GetVectorToObject (a)
 			(a.z-self.z)+(ao.z-so.z)
 end
 	
+function cObject:GetNameForMessageText ()  return (self.name or "").."("..self:GetClass()..")" end
+
 function cObject:GetPosForMarker () 
 	return self.gfx:GetDerivedPosition()
 	--~ local o = gPlayerShip.loc

@@ -1,9 +1,12 @@
 cHudMarker	= RegisterWidgetClass("HudMarker","Group")
 
-gHudMarkerSelected = nil
+gSelectedObject = nil
 
 	
 function cHudMarker:Init (parentwidget, params)
+	local o = params.obj
+	self.obj = o
+	
 	local r,g,b = self:GetColor()
 	local gfxparam_init = MakeSpritePanelParam_BorderPartMatrix(GetPlainTextureGUIMat("hud_obj_frame.png"),16,16,0,0, 0,0, 6,4,6, 6,4,6, 16,16, 1,1, false,false)
 	self.gfxparam_init = gfxparam_init
@@ -13,8 +16,6 @@ function cHudMarker:Init (parentwidget, params)
 	--~ local w,h = 32,32
 	--~ self.img2 = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("repulsor_beam.image.png"),w,h)})
 
-	local o = params.obj
-	self.obj = o
 	if (o.name) then self.text = self:_CreateChild("Text",{text=o.name,textparam={r=r,g=g,b=b}}) end
 	--~ self:SetConsumeChildHit(true)  -- not needed due to child events passing through if unhandled
 end
@@ -24,14 +25,14 @@ function cHudMarker:on_mouse_enter			() self:ShowMouseOverText(true) end
 function cHudMarker:on_mouse_leave			() self:ShowMouseOverText(false) end
 
 function cHudMarker:GetColor ()
-	if (self == gHudMarkerSelected) then return 0,1,0 end
+	if (self.obj == gSelectedObject) then return 0,1,0 end
 	return 1,1,1
 end
 
 function cHudMarker:SetSelected () 
-	if (self == gHudMarkerSelected) then return end
-	local old = gHudMarkerSelected
-	gHudMarkerSelected = self
+	if (self.obj == gSelectedObject) then return end
+	local old = gSelectedObject and gSelectedObject.guiMarker
+	gSelectedObject = self.obj
 	if (old) then old:UpdateGfx() end
 	self:UpdateGfx()
 	HUD_UpdateSelectedObject(self.obj)
