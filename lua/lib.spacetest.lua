@@ -9,7 +9,7 @@ function MySpaceInit ()
     local cam = GetMainCam()
     cam:SetFOVy(gfDeg2Rad*45)
     --~ cam:SetNearClipDistance(0.01) -- old : 1
-	local farclip = 100*1000*km
+	local farclip = 1000*1000*km
     cam:SetNearClipDistance(10) -- old : 1
     cam:SetFarClipDistance(farclip) -- ogre defaul : 100000
 	
@@ -33,7 +33,7 @@ function UpdateWorldLight (x,y,z)
 	local x,y,z = Vector.normalise(x,y,z)	
 	gDirectionalLightSun = Client_AddDirectionalLight(x,y,z)
 	local e = .9	local r,g,b = e,e,e		Client_SetLightDiffuseColor(gDirectionalLightSun,r,g,b)
-	local e = .9	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
+	local e = .5	local r,g,b = e,e,e		Client_SetLightSpecularColor(gDirectionalLightSun,r,g,b)
 	local e = .1	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 end
 
