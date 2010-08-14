@@ -38,7 +38,7 @@ function cHudMarker:ShowMouseOverText (bVisible)
 	self.overtxt:SetPos(0,-20)
 end
 function cHudMarker:Step (obj)
-	local x,y,z = obj:GetPosFromPlayerLoc()
+	local x,y,z = obj:GetPosForMarker()
 	local bIsInFront,px,py,cx,cy = ProjectSizeAndPos(x,y,z, obj.r)
 	
 	local w = (cx * gViewportW)

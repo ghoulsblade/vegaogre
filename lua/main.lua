@@ -192,11 +192,7 @@ function MainStep ()
     ToolTipStep() -- needs mouse_enter, should be after GUIStep
     CursorStep()
 	
-    NotifyListener("Hook_HUDStep") -- updates special hud elements dependant on object positions that don't have auto-tracking
-	
-    NotifyListener("Hook_PreRenderOneFrame")
-	
-	ShipTestStep()
+	VegaMainStep()
 	
 	-- RENDER !
     Client_RenderOneFrame()

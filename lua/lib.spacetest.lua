@@ -205,54 +205,66 @@ BindDown("k",function ()
 	print("position from sun:",gPlayerShip:GetPosFromSun())
 end)
 
-function PlayerCamStep (dx,dy)
-	local cam = GetMainCam()
+
+
+function PlayerStep ()
+	PlayerCam_Rot_Step() -- depends on mouse
+	PlayerCam_Roll_Step() -- depends on keys (e,q)
+	
+	if (not gPlayerShip) then return end
+	if (gKeyPressed[key_rshift]) then return end
+	
+	Player_RotateShip_Step() -- depends on camera orientation
+	Player_MoveShip_Step() -- depends on keys (wasd rf) and player-ship orientation
+	PlayerCam_Pos_Step() -- depends on player ship position, moves cam position
+end
+
+function PlayerCam_Rot_Step ()
+	local mx,my = GetMousePos()
+	local cx,cy = gViewportW/2,gViewportH/2
+	local dx,dy = (mx-cx)/cx,(my-cy)/cy
 	
 	local roth = -math.pi * .5 * dx * gSecondsSinceLastFrame
 	local rotv = -math.pi * .5 * dy * gSecondsSinceLastFrame
 	
+	local cam = GetMainCam()
 	local w0,x0,y0,z0 = cam:GetRot()	
-	--~ print("PlayerCamStep",dx,dy,w0,x0,y0,z0)
-	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(roth,0,1,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
-	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)	
-	--~ local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
+	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(roth,0,1,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
+	local w1,x1,y1,z1 = Quaternion.fromAngleAxis(rotv,1,0,0)	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w1,x1,y1,z1)
 	cam:SetRot(Quaternion.normalise(w0,x0,y0,z0))
 	
-	--~ print("cam",cam:GetQuickHandle():getDerivedPosition())
-	--~ if (true) then return end
-	
-	if (not gPlayerShip) then return end
-	
-	
-	
-	local ang = math.pi * gMyTicks/1000 * 0.11
-	
-	local dt = gSecondsSinceLastFrame
-	--~ GetMainCam():SetOrientation(Quaternion.fromAngleAxis(ang,0,1,0))
 	--~ local bMoveCam = gKeyPressed[key_mouse_middle]
 	--~ local speedfactor = math.pi / 1000 -- 1000pix = pi radians
 	--~ local bFlipUpAxis = false
 	--~ StepTableCam(cam,bMoveCam,speedfactor,bFlipUpAxis)
-	
-	local ang = math.pi*dt*.5
+end
+
+function PlayerCam_Roll_Step ()
+	local cam = GetMainCam()
+	local ang = math.pi*gSecondsSinceLastFrame*.5
 	local w0,x0,y0,z0 = cam:GetRot()
 	local w2,x2,y2,z2 = Quaternion.fromAngleAxis(
 			(gKeyPressed[key_e] and -ang or 0) + (gKeyPressed[key_q] and  ang or 0),
 		0,0,1)
 	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)
 	cam:SetRot(w0,x0,y0,z0)
-	
-	if (1 == 1) then 
-		local w0,x0,y0,z0 = cam:GetRot()
-		local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
-		w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)	
-		local w1,x1,y1,z1 = gPlayerShip.gfx:GetOrientation()
-		local bShortestPath = true 
-		local t = 0.9
-		gPlayerShip.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
-	end
-	
-	
+end
+
+function Player_RotateShip_Step ()
+	if (not gPlayerShip) then return end
+	local cam = GetMainCam()
+	local w0,x0,y0,z0 = cam:GetRot()
+	local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
+	w0,x0,y0,z0 = Quaternion.Mul(w0,x0,y0,z0, w2,x2,y2,z2)	
+	local w1,x1,y1,z1 = gPlayerShip.gfx:GetOrientation()
+	local bShortestPath = true 
+	local t = 0.9
+	gPlayerShip.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
+end
+
+function Player_MoveShip_Step ()
+	if (not gPlayerShip) then return end
+
 	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
 	
 	local s = gKeyPressed[key_lshift] and 100 or 1000
@@ -264,17 +276,19 @@ function PlayerCamStep (dx,dy)
 		(gKeyPressed[key_f] and -s or 0) + (gKeyPressed[key_r] and  s or 0),
 		(gKeyPressed[key_s] and -s or 0) + (gKeyPressed[key_w] and  s or 0)  + (gKeyPressed[key_lcontrol] and as or 0) ,
 		w0,x0,y0,z0)
-		
+	
 	local o = gPlayerShip
 	o.vx,o.vy,o.vz = ax,ay,az
+end
+
+function PlayerCam_Pos_Step ()
+	if (not gPlayerShip) then return end
+	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
 	local x,y,z = gPlayerShip:GetPos()
-	--~ print("playerpos",x,y,z)
 	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
 	
-	--~ print("playerderived",gPlayerShip.gfx:GetDerivedPosition())
-	
-	--~ local ox,oy,oz = 0,0,0
 	local dist = 15
-	StepThirdPersonCam (cam,dist,ox,oy,oz)
+	local cam = GetMainCam()
+	StepThirdPersonCam(cam,dist,ox,oy,oz)
 end

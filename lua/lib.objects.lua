@@ -5,20 +5,32 @@
 gObjects = {}
 gNewObjects = {} -- delayed insert into the main list
 
-RegisterStepper(function () 
+function VegaMainStep ()
 	local dt = gSecondsSinceLastFrame
-	for o,v in pairs(gObjects) do 
-		o:Step(dt)
-		o:PhysStep(dt)
-	end
-	if (next(gNewObjects)) then 
-		local arr = gNewObjects
-		gNewObjects = {}
-		for o,v in pairs(arr) do gObjects[o] = true end
-	end
 	
-	--~ handleCollisionBetweenOneAndWorld(gPlayerShip, gObjects)
-end)
+	GuiTest_CursorCrossHair_Step() -- only moves gui widget to mousepos
+	
+	for o,v in pairs(gObjects) do o:Step(dt) end -- think, might modify params for physstep ( might also add new items )
+	
+	for o,v in pairs(gObjects) do o:PhysStep(dt) end -- move items and gfx:SetPos()
+	
+	--~ handleCollisionBetweenOneAndWorld(gPlayerShip, gObjects)   (do collision, might change pos and speed, so do before physstep) 
+	-- deactivated until large-universe rounding errors system finished  (should be between pos+=vel and render, so intersections can be solved before being rendered)
+	
+	-- insert new items into main list  (can be done after physstep, since InitObj already calls gfx:SetPos())
+	if (next(gNewObjects)) then local arr = gNewObjects gNewObjects = {} for o,v in pairs(arr) do gObjects[o] = true end end
+	
+	
+	PlayerStep() -- moves cam and handles player keyboard, changes player velocity, but not position.  call before HUD stuff so cam is up to date for render
+	
+	NotifyListener("Hook_HUDStep") -- updates special hud elements dependant on object positions that don't have auto-tracking
+	
+	for o,v in pairs(gObjects) do o:HUDStep(dt) end -- update hud markers, should be done AFTER moving objects and updating cam
+	
+	NotifyListener("Hook_PreRenderOneFrame")
+	
+	ShipTestStep()
+end
 
 -- ***** ***** ***** ***** ***** cObject
 
@@ -62,6 +74,7 @@ function cObject:PhysStep(dt)
 end
 
 function cObject:Step() end
+function cObject:HUDStep() end
 function cObject:GetPos() return self.x,self.y,self.z end
 function cObject:SetPos(x,y,z) self.x,self.y,self.z = x,y,z end --  self.gfx:SetPosition(x,y,z)
 function cObject:SetRandomRot() self:SetRot(Quaternion.random()) end
@@ -95,16 +108,20 @@ function cObject:GetVectorToObject (a)
 			(a.z-self.z)+(ao.z-so.z)
 end
 	
-function cObject:GetPosFromPlayerLoc () 
+function cObject:GetPosForMarker () 
+	return self.gfx:GetDerivedPosition()
 	--~ local o = gPlayerShip.loc
-	local p = self.loc
+	--~ local p = self.loc
 	
 	--~ gWorldOriginX = x
 	--~ gWorldOriginY = y
 	--~ gWorldOriginZ = z
 	
+	--~ return (self.x+p.x)-o.x,(self.y+p.y)-o.y,(self.z+p.z)-o.z
 	--~ return self.x+(p.x-o.x),self.y+(p.y-o.y),self.z+(p.z-o.z)
-	return self.x+(p.x-gWorldOriginX),self.y+(p.y-gWorldOriginY),self.z+(p.z-gWorldOriginZ)
+	--~ return self.x,self.y,self.z
+	--~ return self.x+(p.x),self.y+(p.y),self.z+(p.z)
+	--~ return self.x+(p.x-gWorldOriginX),self.y+(p.y-gWorldOriginY),self.z+(p.z-gWorldOriginZ)
 	--~ return self.x+p.x+gWorldOriginX,self.y+p.y+gWorldOriginY,self.z+p.z+gWorldOriginZ
 end
 
@@ -150,7 +167,7 @@ function cNPCShip:Init (loc,x,y,z,r,meshname)
 	cShip.Init(self,loc,x,y,z,r,meshname or "ruizong.mesh")
 end
 
-function cNPCShip:Step ()
+function cNPCShip:HUDStep ()
 	stepHudMarker(self)
 end
 
@@ -179,7 +196,7 @@ end
 
 function cStation:CanDock (o) return true end
 
-function cStation:Step () 
+function cStation:HUDStep () 
 	stepHudMarker(self)
 end
 
@@ -212,7 +229,7 @@ end
 
 function cPlanet:CanDock (o) return true end
 
-function cPlanet:Step () 
+function cPlanet:HUDStep () 
 	stepHudMarker(self)
 end
 

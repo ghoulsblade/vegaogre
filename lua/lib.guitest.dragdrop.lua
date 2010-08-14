@@ -62,10 +62,11 @@ function GuiTest_InitCrossHair ()
 		--~ gCrossHair:SetPos(x,y)
 end
 
-RegisterListener("Hook_HUDStep",function () GuiTest_Step() end)
+
+
 BindDown("tab", function () GuiTest_DragDrop() end)
 
-function GuiTest_Step ()
+function GuiTest_CursorCrossHair_Step ()
 	if (gGuiTest_DragDrop_Active) then return end
 	
 	local mx,my = GetMousePos()
@@ -75,8 +76,6 @@ function GuiTest_Step ()
 		gMouseCross = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("objmark_vorhalt.png"),w,h)})
 	end
 	gMouseCross:SetPos(mx-w/2,my-h/2)
-	
-	PlayerCamStep((mx-cx)/cx,(my-cy)/cy)
 end
 
 function GuiTest_DragDrop ()
