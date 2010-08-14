@@ -3,19 +3,23 @@ cos = math.cos
 
 
 function MySpaceInit ()
-	local gNumberOfStars = 10000 
-	local gStarsDist = 80000 
-	local gStarColorFactor = 0.5 -- somewhat colorful stars
-	gStarField = CreateRootGfx3D()
-	gStarField:SetStarfield(gNumberOfStars,gStarsDist,gStarColorFactor,"starbase")
 	
     Client_SetSkybox("bluesky")
 	
     local cam = GetMainCam()
     cam:SetFOVy(gfDeg2Rad*45)
     --~ cam:SetNearClipDistance(0.01) -- old : 1
+	local farclip = 100*1000*km
     cam:SetNearClipDistance(10) -- old : 1
-    cam:SetFarClipDistance(100*1000*km) -- ogre defaul : 100000
+    cam:SetFarClipDistance(farclip) -- ogre defaul : 100000
+	
+	
+	local gNumberOfStars = 10000 
+	local gStarsDist = farclip*0.9 -- 80000 
+	local gStarColorFactor = 0.5 -- somewhat colorful stars
+	gStarField = CreateRootGfx3D()
+	gStarField:SetStarfield(gNumberOfStars,gStarsDist,gStarColorFactor,"starbase")
+	
 	
 	-- UpdateWorldLight() called depending on sun
 	
@@ -36,7 +40,7 @@ end
 
 
 RegisterIntervalStepper(100,function ()
-	if (gGuiTest_DragDrop_Active) then return end
+	if (gGuiMouseModeActive) then return end
 	if (gKeyPressed[key_mouse_left]) then FireShot() end
 end)
 
@@ -134,8 +138,8 @@ function ShipTestStep ()
 		gPlanetsLocs = {}
 		for k,o in pairs(planets) do 
 			local name,d,pr = unpack(o)
-			--~ local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
-			local x,y,z = d,0,0
+			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+			--~ local x,y,z = d,0,0
 			local r = 0
 			local ploc = cLocation:New(solroot,x,y,z,r)
 			table.insert(gPlanetsLocs,ploc)
@@ -148,7 +152,8 @@ function ShipTestStep ()
 			
 			-- player ship
 			if (o.bStartHere and (not gPlayerShip)) then 
-				local x,y,z = pr * 1.2,0,0
+				local d = - pr * 1.2,0,0
+				local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 				-- player ship
 				gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
 				--~ MyMoveWorldOriginAgainstLocation(ploc) -- already causes rounding errors even near planet earth for real planet sizes
@@ -220,6 +225,7 @@ function PlayerStep ()
 end
 
 function PlayerCam_Rot_Step ()
+	if (gGuiMouseModeActive) then return end
 	local mx,my = GetMousePos()
 	local cx,cy = gViewportW/2,gViewportH/2
 	local dx,dy = (mx-cx)/cx,(my-cy)/cy
@@ -240,6 +246,7 @@ function PlayerCam_Rot_Step ()
 end
 
 function PlayerCam_Roll_Step ()
+	if (gGuiMouseModeActive) then return end
 	local cam = GetMainCam()
 	local ang = math.pi*gSecondsSinceLastFrame*.5
 	local w0,x0,y0,z0 = cam:GetRot()
@@ -263,6 +270,7 @@ function Player_RotateShip_Step ()
 end
 
 function Player_MoveShip_Step ()
+	if (gGuiMouseModeActive) then return end
 	if (not gPlayerShip) then return end
 
 	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()

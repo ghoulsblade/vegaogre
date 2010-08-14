@@ -64,11 +64,10 @@ end
 
 
 
-BindDown("tab", function () GuiTest_DragDrop() end)
+BindDown("tab", function () ToggleGuiMouseMode() end)
 
 function GuiTest_CursorCrossHair_Step ()
-	if (gGuiTest_DragDrop_Active) then return end
-	
+	if (gGuiMouseModeActive) then return end
 	local mx,my = GetMousePos()
 	local cx,cy = gViewportW/2,gViewportH/2
 	local w,h = 32,32
@@ -78,10 +77,8 @@ function GuiTest_CursorCrossHair_Step ()
 	gMouseCross:SetPos(mx-w/2,my-h/2)
 end
 
-function GuiTest_DragDrop ()
-	gGuiTest_DragDrop_Active = not gGuiTest_DragDrop_Active
-	if (gGuiTest_DragDrop_Active) then 
-		if (gCrossHair) then gCrossHair:Destroy() gCrossHair = nil end
+function StartDragDropTest ()
+
 		local s = min(gViewportW,gViewportH) s = 1024
 		local w,h = s,s
 		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","ocean_concourse.dds"),w,h)})
@@ -134,9 +131,17 @@ function GuiTest_DragDrop ()
 		for i=1,6 do					w2:CreateContentChild("EquipSlot",{x=ox+1*ex, y=oy+(i-1)*ey, type="equip"}) end
 		for i,v in ipairs(fixslots1) do	w2:CreateContentChild("EquipSlot",{x=ox+2*ex, y=oy+(i-1)*ey, type=v}) end
 		for i,v in ipairs(fixslots2) do	w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+(i-1)*ey, type=v}) end
+end
+
+function ToggleGuiMouseMode ()
+	gGuiMouseModeActive = not gGuiMouseModeActive
+	if (gGuiMouseModeActive) then 
+		if (gCrossHair) then gCrossHair:Destroy() gCrossHair = nil end
+		if (gMouseCross) then gMouseCross:SetVisible(false) end
 	else 
-		gMyWindow1:Destroy()
-		gMyWindow2:Destroy()
+		if (gMouseCross) then gMouseCross:SetVisible(true) end
+		if (gMyWindow1) then gMyWindow1:Destroy() gMyWindow1 = nil end
+		if (gMyWindow2) then gMyWindow2:Destroy() gMyWindow2 = nil end
 		if (gBaseBackground) then gBaseBackground:Destroy() gBaseBackground = nil end
 		GuiTest_InitCrossHair()
 	end
