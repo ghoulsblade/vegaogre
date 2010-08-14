@@ -3,6 +3,7 @@ echo "envvar: $LD_LIBRARY_PATH"
 pushd bin
 LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH
+# note : for better solution see http://prefetch.net/articles/linkers.badldlibrary.html
 
 #../src/vegaogre
 # start, and transmit all parameters
