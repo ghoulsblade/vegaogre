@@ -53,6 +53,7 @@ end
 
 function PlayerCam_Rot_Step ()
 	if (gGuiMouseModeActive) then return end
+	if (gAutoPilotActive) then return end
 	local mx,my = GetMousePos()
 	local cx,cy = gViewportW/2,gViewportH/2
 	local dx,dy = (mx-cx)/cx,(my-cy)/cy
@@ -87,6 +88,10 @@ end
 function Player_RotateShip_Step ()
 	if (not gPlayerShip) then return end
 	if (gAutoPilotActive) then return end
+	Player_RotateShipToCam_Step()
+end
+
+function Player_RotateShipToCam_Step ()
 	local cam = GetMainCam()
 	local w0,x0,y0,z0 = cam:GetRot()
 	local w2,x2,y2,z2 = Quaternion.fromAngleAxis(math.pi,0,1,0)
@@ -94,7 +99,7 @@ function Player_RotateShip_Step ()
 	local w1,x1,y1,z1 = gPlayerShip.gfx:GetOrientation()
 	local bShortestPath = true 
 	local t = 0.9
-	gPlayerShip.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t))
+	gPlayerShip.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t, bShortestPath))
 end
 
 function Player_MoveShip_Step ()
