@@ -128,7 +128,8 @@ end
 function PlayerCam_Pos_Step ()
 	if (not gPlayerShip) then return end
 	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
-	local x,y,z = gPlayerShip:GetPos()
+	--~ local x,y,z = gPlayerShip:GetPos()
+	local x,y,z = gPlayerShip.gfx:GetDerivedPosition()
 	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
 	

@@ -27,10 +27,12 @@ function MySpaceInit ()
 	-- UpdateWorldLight() called depending on sun
 	
 	
+	gMLocZeroGfx = CreateRootGfx3D()
 	
 	-- prepare solarsystem : 
 	
 	local solroot = cLocation:New(nil,0,0,0,0)
+	gSolRoot = solroot
 	gWorldOrigin = solroot	
 	
 	-- planets
@@ -171,6 +173,36 @@ function MyMoveWorldOriginAgainstLocation (loc)
 end
 
 function MyMoveWorldOriginAgainstPlayerShip ()
+	--[[
+	local mloc = FindNearestMajorLoc(gPlayerShip) -- todo : consider gCurrentMajorLoc !
+	
+	local old = gCurrentMajorLoc
+	if (old ~= mloc) then
+		if (old) then -- re-integrate
+			old.gfx:SetPosition(old.x,old.y,old.z)
+			old.gfx:SetParent(old.loc.gfx)
+		end
+		gCurrentMajorLoc = mloc
+		mloc.gfx:SetPosition(0,0,0)
+		mloc.gfx:SetParent(gMLocZeroGfx)
+		
+		-- move ship to mloc
+		local x,y,z = mloc:GetVectorToObject(gPlayerShip)
+		gPlayerShip:MoveToNewLoc()
+		gPlayerShip:SetPos(x,y,z)
+		
+		-- move world origin
+		
+		-- gSolRoot == gWorldOrigin
+		local x,y,z = mloc:GetVectorToObject(gSolRoot)
+		mloc.oldx = mloc.x
+		mloc.oldy = mloc.y
+		mloc.oldz = mloc.z
+		mloc:SetPos()
+	end
+	]]--
+	
+
 	local loc = gPlayerShip.loc
 	local x,y,z = gPlayerShip.x+loc.x,gPlayerShip.y+loc.y,gPlayerShip.z+loc.z
 	local moveloc = gPlayerShip.moveloc
