@@ -81,7 +81,6 @@ function MySpaceInit ()
 			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 			-- player ship
 			gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
-			--~ MyMoveWorldOriginAgainstLocation(ploc) -- already causes rounding errors even near planet earth for real planet sizes
 			MyMoveWorldOriginAgainstPlayerShip()
 			
 			-- npc ship
@@ -142,19 +141,19 @@ function GetNodeHierarchyText (node)
 	return string.gsub(tostring(node:getRealAddress()),"userdata: ","").."("..x..","..y..","..z..")("..ax..","..ay..","..az.."):"..GetNodeHierarchyText(node:getParentSceneNode())
 end
 
-gWorldOriginX = 0
-gWorldOriginY = 0
-gWorldOriginZ = 0
+
+
+
+
+
+-- ***** ***** ***** ***** ***** world origin (against rounding errors)
+
+
+
 function MyMoveWorldOriginAgainstLocation (loc)
 	local x,y,z = loc.x,loc.y,loc.z
-	--~ print("######################################")
-	--~ print("### MyMoveWorldOriginAgainstLocation ###",x,y,z)
-	--~ print("######################################")
 	gWorldOrigin:SetPos(-x,-y,-z)
-	gWorldOriginX = x
-	gWorldOriginY = y
-	gWorldOriginZ = z
-	UpdateWorldLight(gWorldOriginX,gWorldOriginY,gWorldOriginZ)
+	UpdateWorldLight(x,y,z)
 end
 
 function MyMoveWorldOriginAgainstPlayerShip ()
@@ -185,3 +184,4 @@ function MyPlayerHyperMoveRel (dx,dy,dz)
 	MyMoveWorldOriginAgainstLocation(moveloc)
 end
 
+-- big problem : PlayerCam_Pos_Step () .. gPlayerShip:GetPos()   ..  relative to world origin ? 

@@ -75,32 +75,37 @@ function cObject:GetPosFromSun ()
 end
 function cObject:GetDistToPlayer () return self:GetDistToObject(gPlayerShip) end
 function cObject:GetDistToObject (o) return Vector.len(self:GetVectorToObject(o)) end
-function cObject:GetVectorToObject (a) 
-	local ao = a.loc
-	local so = self.loc
-	return	(a.x-self.x)+(ao.x-so.x),
-			(a.y-self.y)+(ao.y-so.y),
-			(a.z-self.z)+(ao.z-so.z)
+
+function cObject:GetNumberOfParents () local loc = self.loc  return loc and (1 + loc:GetNumberOfParents()) or 0 end
+
+function cObject:GetVectorToObject (b)
+	local a = self
+	--~ print("cObject:GetVectorToObject",a:GetNameForMessageText(),b:GetNameForMessageText())
+	local ax,ay,az = a.x,a.y,a.z
+	local bx,by,bz = b.x,b.y,b.z
+	if (a.loc ~= b.loc) then
+		-- walk down until a common parent is found
+		local anum = a:GetNumberOfParents()
+		local bnum = b:GetNumberOfParents()
+		--~ print(" parentdiffer",anum,bnum)
+		while anum > bnum do  a = a.loc  anum = anum-1  ax,ay,az = ax+a.x,ay+a.y,az+a.z  end
+		while bnum > anum do  b = b.loc  bnum = bnum-1  bx,by,bz = bx+b.x,by+b.y,bz+b.z  end
+		--~ print(" parentdiffer done",anum,bnum)
+		while (a.loc ~= b.loc) do
+			--~ print("  >ab< :",a:GetNameForMessageText(),b:GetNameForMessageText())
+			a = a.loc  ax,ay,az = ax+a.x,ay+a.y,az+a.z
+			b = b.loc  bx,by,bz = bx+b.x,by+b.y,bz+b.z
+		end
+		--~ print("  =ab= :",a:GetNameForMessageText(),b:GetNameForMessageText())
+	end
+	return	bx - ax,
+			by - ay,
+			bz - az
 end
 	
 function cObject:GetNameForMessageText ()  return (self.name or "").."("..self:GetClass()..")" end
 
-function cObject:GetPosForMarker () 
-	return self.gfx:GetDerivedPosition()
-	--~ local o = gPlayerShip.loc
-	--~ local p = self.loc
-	
-	--~ gWorldOriginX = x
-	--~ gWorldOriginY = y
-	--~ gWorldOriginZ = z
-	
-	--~ return (self.x+p.x)-o.x,(self.y+p.y)-o.y,(self.z+p.z)-o.z
-	--~ return self.x+(p.x-o.x),self.y+(p.y-o.y),self.z+(p.z-o.z)
-	--~ return self.x,self.y,self.z
-	--~ return self.x+(p.x),self.y+(p.y),self.z+(p.z)
-	--~ return self.x+(p.x-gWorldOriginX),self.y+(p.y-gWorldOriginY),self.z+(p.z-gWorldOriginZ)
-	--~ return self.x+p.x+gWorldOriginX,self.y+p.y+gWorldOriginY,self.z+p.z+gWorldOriginZ
-end
+function cObject:GetPosForMarker () return self.gfx:GetDerivedPosition() end
 
 -- ***** ***** ***** ***** ***** cShot
 

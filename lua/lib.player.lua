@@ -10,6 +10,8 @@ function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
 BindDown("tab", function () ToggleGuiMouseMode() end)
 BindDown("a",function () if (gGuiMouseModeActive) then ToggleAutoPilot() end end)
 
+gDebugJumpPlanetID = 0
+
 BindDown("n",function ()
 	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
 	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
@@ -17,7 +19,7 @@ BindDown("n",function ()
 	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
 end)
 
-gDebugJumpPlanetID = 0
+--[[
 BindDown("j",function ()
 	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
 	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
@@ -28,6 +30,7 @@ BindDown("j",function ()
 	MyMoveWorldOriginAgainstPlayerShip()
 	print("position from sun:",gPlayerShip:GetPosFromSun())
 end)
+]]--
 
 BindDown("k",function ()
 	MyMoveWorldOriginAgainstPlayerShip()
