@@ -2,6 +2,7 @@ cHudMarker	= RegisterWidgetClass("HudMarker","Group")
 
 gSelectedObject = nil
 
+RegisterIntervalStepper(500,function () if (gHudMarkerMouseOver) then gHudMarkerMouseOver:IntervalStep() end end)
 	
 function cHudMarker:Init (parentwidget, params)
 	local o = params.obj
@@ -22,8 +23,8 @@ function cHudMarker:Init (parentwidget, params)
 end
 
 function cHudMarker:on_mouse_left_down		() if (gGuiMouseModeActive) then self:SetSelected() end end
-function cHudMarker:on_mouse_enter			() self:ShowMouseOverText(true) end
-function cHudMarker:on_mouse_leave			() self:ShowMouseOverText(false) end
+function cHudMarker:on_mouse_enter			() self:ShowMouseOverText(true) gHudMarkerMouseOver = self end
+function cHudMarker:on_mouse_leave			() self:ShowMouseOverText(false) if (gHudMarkerMouseOver == self) then gHudMarkerMouseOver = nil end end
 
 function cHudMarker:GetColor ()
 	if (self.obj == gSelectedObject) then return 0,1,0 end
@@ -70,6 +71,9 @@ function cHudMarker:UpdateGfx ()
 	self.frame:SetGfxParam(p)
 	local o = self.obj
 	if (o.name and self.text) then self.text:SetCol(p.r,p.g,p.b,p.a) self.text:SetText(o.name) end
+end
+function cHudMarker:IntervalStep ()
+	self:ShowMouseOverText(true)
 end
 function cHudMarker:ShowMouseOverText (bVisible)
 	if (self.overtxt) then self.overtxt:Destroy() self.overtxt = nil end

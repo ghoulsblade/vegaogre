@@ -12,16 +12,15 @@ BindDown("a",function () if (gGuiMouseModeActive) then ToggleAutoPilot() end end
 BindDown("left",function () MyPlayerHyperMoveRel(-1,0,0) end)
 BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
 
-gDebugJumpPlanetID = 0
 
 BindDown("n",function ()
-	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
-	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
-	local p = newloc.planet 
+	gNextNavTargetIdx = ((gNextNavTargetIdx or 0) + 1) % #gNavTargets
+	local p = gNavTargets[gNextNavTargetIdx+1]
 	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
 end)
 
 --[[
+gDebugJumpPlanetID = 0
 BindDown("j",function ()
 	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
 	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
@@ -40,6 +39,8 @@ BindDown("k",function ()
 end)
 
 
+gNavTargets = {}
+function RegisterNavTarget (o) table.insert(gNavTargets,o) end
 
 
 

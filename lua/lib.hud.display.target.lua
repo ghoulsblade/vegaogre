@@ -37,6 +37,11 @@ function cHudTargetInfo:UpdateTexts ()
 	local o = self.obj
 	local txt1 = o:GetClass()
 	if (o.name) then txt1 = txt1 .. "\n" .. o.name end
+	if (o.r > 0) then txt1 = txt1 .. "\nradius: " .. GetDistText(o.r) end
+	if (o.orbit_master and o.orbit_master.name) then 
+		txt1 = txt1 .. "\nin orbit around " .. o.orbit_master.name 
+		txt1 = txt1 .. "\norbit height: " .. GetDistText(o:GetDistToObject(o.orbit_master) - o.orbit_master.r)
+	end
 	
 	local txt2 = GetDistText(o:GetDistToPlayer())
 	

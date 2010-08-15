@@ -37,22 +37,21 @@ function MySpaceInit ()
 	
 	-- planets
 	local planets = {
-		{ "earth"		,0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
-		--~ { "sun"			,0 			,6955*10e5*km	},
+		{ "sun"			,0 			,6955*10e5*km	,0},
 		{ "mercury"		,0.4*au 	,2439.7*km		},
-		--~ { "venus"		,0.7*au 	,6051.8*km		},
-		--~ { "earth"		,1.0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
-		--~ { "mars"		,1.5*au 	,3396.2*km	},
+		{ "venus"		,0.7*au 	,6051.8*km		},
+		{ "earth"		,1.0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
+		{ "mars"		,1.5*au 	,3396.2*km		},
 		-- asteroidbelt:2.3-3.3au   
 		-- Asteroids range in size from hundreds of kilometres across to microscopic
 		-- The asteroid belt contains tens of thousands, possibly millions, of objects over one kilometre in diameter.
 		-- [46] Despite this, the total mass of the main belt is unlikely to be more than a thousandth of that of the Earth.
 		-- [47] The main belt is very sparsely populated
 		-- outerplanets: 
-		--~ { "jupiter"		,5.2*au		,71492*km			},
-		--~ { "saturn"		,9.5*au     ,60268*km			},
-		--~ { "uranus"		,19.6*au    ,25559*km			},
-		--~ { "neptune"		,30*au      ,24764*km			},
+		{ "jupiter"		,5.2*au		,71492*km			},
+		{ "saturn"		,9.5*au     ,60268*km			},
+		{ "uranus"		,19.6*au    ,25559*km			},
+		{ "neptune"		,30*au      ,24764*km			},
 		-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
 	}
 	
@@ -65,7 +64,8 @@ function MySpaceInit ()
 	
 	gPlanetsLocs = {}
 	for k,o in pairs(planets) do 
-		local name,d,pr = unpack(o)
+		local name,d,pr,maxstations = unpack(o)
+		maxstations = maxstations or 2
 		local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 		--~ local x,y,z = d,0,0
 		local r = 0
@@ -78,14 +78,17 @@ function MySpaceInit ()
 		ploc.planet = planet
 		planet:SetRandomRot()
 		planet.name = name
+		RegisterNavTarget(planet)
 		
 		-- stations
-		for i = 0,math.random(0,2) do 
+		for i = 1,math.random(0,maxstations) do 
 			local d = pr * (1.2 + 0.3 * math.random())
 			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 			local sloc = cLocation:New(ploc,x,y,z,0,"station-loc under "..planet.name)
 			RegisterMajorLoc(sloc)
 			local s = cStation:New(sloc,0,0,0	,400,"agricultural_station.mesh")
+			s.orbit_master = planet
+			RegisterNavTarget(s)
 		end
 		
 		-- player ship
@@ -208,8 +211,8 @@ function RecenterPlayerMoveLoc ()
 	end
 		
 	-- move world origin so that moveloc is at global zero/origin
-	-- gSolRootGfx > solroot > all normal locations
-	-- gMLocBaseGfx > mloc
+	-- gSolRootGfx > solroot > all normal locations (hopefully far away from player)
+	-- gMLocBaseGfx > mloc = player-move-loc
 	local x,y,z = moveloc:GetVectorToObject(mloc)
 	gMLocBaseGfx:SetPosition(x,y,z)
 	local x,y,z = moveloc:GetVectorToObject(gSolRoot)
@@ -221,11 +224,6 @@ function RecenterPlayerMoveLoc ()
 	-- solution : target(or nearest major location) is 0  # , so movement gets closer to 0 and more exact the closer it gets -> no jitter
 	-- needed : re-attach major loc to world origin to avoid jitter there ? (maybe not needed)
 	-- needed : constantly recenter world so that player is at absolute 0  #  (conflict with other #)   to avoid relative move-jitter (>100km)
-
-	-- gMLocBaseGfx -> mloc, player-move-loc
-	-- gWorldOrigin -> rest (hopefully far away from player)
-	
-	-- move world against  player loc :  need to move 2 :  gMLocBaseGfx + gWorldOrigin
 end
 
 function MyMoveWorldOriginAgainstPlayerShip ()
