@@ -27,13 +27,13 @@ function MySpaceInit ()
 	-- UpdateWorldLight() called depending on sun
 	
 	
-	gMLocZeroGfx = CreateRootGfx3D()
+	gMLocBaseGfx = CreateRootGfx3D()
 	
 	-- prepare solarsystem : 
 	
-	local solroot = cLocation:New(nil,0,0,0,0)
+	local solroot = cLocation:New(nil,0,0,0,0,"sol-root-loc")
+	gSolRootGfx = solroot.gfx
 	gSolRoot = solroot
-	gWorldOrigin = solroot	
 	
 	-- planets
 	local planets = {
@@ -69,7 +69,7 @@ function MySpaceInit ()
 		local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 		--~ local x,y,z = d,0,0
 		local r = 0
-		local ploc = cLocation:New(solroot,x,y,z,r)
+		local ploc = cLocation:New(solroot,x,y,z,r,"planet-loc "..name)
 		table.insert(gPlanetsLocs,ploc)
 		RegisterMajorLoc(ploc)
 		ploc.name = name
@@ -83,7 +83,7 @@ function MySpaceInit ()
 		for i = 0,math.random(0,2) do 
 			local d = pr * (1.2 + 0.3 * math.random())
 			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
-			local sloc = cLocation:New(ploc,x,y,z,0)
+			local sloc = cLocation:New(ploc,x,y,z,0,"station-loc under "..planet.name)
 			RegisterMajorLoc(sloc)
 			local s = cStation:New(sloc,0,0,0	,400,"agricultural_station.mesh")
 		end
@@ -165,69 +165,83 @@ function FindNearestMajorLoc (o)
 	return minloc
 end
 
-
-function MyMoveWorldOriginAgainstLocation (loc)
-	local x,y,z = loc.x,loc.y,loc.z
-	gWorldOrigin:SetPos(-x,-y,-z)
-	UpdateWorldLight(x,y,z)
+function GetPlayerMoveLoc ()
+	local moveloc = gPlayerShip.moveloc 
+	if (moveloc) then return moveloc end
+	print("GetPlayerMoveLoc:create new")
+	local o = gPlayerShip
+	moveloc = cLocation:New(o.loc,o.x,o.y,o.z,0)
+	o.moveloc = moveloc
+	o:MoveToNewLoc(moveloc)
+	o:SetPos(0,0,0)
+	return moveloc,true
 end
 
-function MyMoveWorldOriginAgainstPlayerShip ()
-	--[[
-	local mloc = FindNearestMajorLoc(gPlayerShip) -- todo : consider gCurrentMajorLoc !
+function RecenterPlayerMoveLoc ()
+	local moveloc = GetPlayerMoveLoc()
+	local mloc = FindNearestMajorLoc(gPlayerShip) -- gCurrentMajorLoc must be considered, otherwise we'd constantly jitter between the nearest two
 	
+	-- recenter player in move loc
+	local o = gPlayerShip
+	--~ print("RecenterPlayerMoveLoc:",o.x,o.y,o.z)
+	moveloc:SetPos(	moveloc.x + o.x,
+					moveloc.y + o.y,
+					moveloc.z + o.z)
+	o:SetPos(0,0,0)
+	
+	-- change to new major loc if needed
 	local old = gCurrentMajorLoc
 	if (old ~= mloc) then
+		print("change major loc to "..(mloc.locname or "???"))
 		if (old) then -- re-integrate
 			old.gfx:SetPosition(old.x,old.y,old.z)
 			old.gfx:SetParent(old.loc.gfx)
 		end
 		gCurrentMajorLoc = mloc
 		mloc.gfx:SetPosition(0,0,0)
-		mloc.gfx:SetParent(gMLocZeroGfx)
+		mloc.gfx:SetParent(gMLocBaseGfx)
 		
 		-- move ship to mloc
-		local x,y,z = mloc:GetVectorToObject(gPlayerShip)
-		gPlayerShip:MoveToNewLoc()
-		gPlayerShip:SetPos(x,y,z)
-		
-		-- move world origin
-		
-		-- gSolRoot == gWorldOrigin
-		local x,y,z = mloc:GetVectorToObject(gSolRoot)
-		mloc.oldx = mloc.x
-		mloc.oldy = mloc.y
-		mloc.oldz = mloc.z
-		mloc:SetPos()
-	end
-	]]--
-	
-
-	local loc = gPlayerShip.loc
-	local x,y,z = gPlayerShip.x+loc.x,gPlayerShip.y+loc.y,gPlayerShip.z+loc.z
-	local moveloc = gPlayerShip.moveloc
-	if (not moveloc) then 
-		moveloc = cLocation:New(gWorldOrigin,x,y,z,r)
-		gPlayerShip.moveloc = moveloc
-		gPlayerShip:MoveToNewLoc(moveloc)
-	else
+		local x,y,z = mloc:GetVectorToObject(moveloc)
+		moveloc:MoveToNewLoc(mloc)
 		moveloc:SetPos(x,y,z)
 	end
-	--~ print("recenter on new loc",x,y,z) 
-	MyMoveWorldOriginAgainstLocation(moveloc)
-	gPlayerShip:SetPos(0,0,0)
+		
+	-- move world origin so that moveloc is at global zero/origin
+	-- gSolRootGfx > solroot > all normal locations
+	-- gMLocBaseGfx > mloc
+	local x,y,z = moveloc:GetVectorToObject(mloc)
+	gMLocBaseGfx:SetPosition(x,y,z)
+	local x,y,z = moveloc:GetVectorToObject(gSolRoot)
+	gSolRootGfx:SetPosition(x,y,z)
+	
+	UpdateWorldLight(-x,-y,-z)
+	
+	-- problem : hyper-moving to station at absolute pos results in jitter (small movement vs big relative hyper-coords )
+	-- solution : target(or nearest major location) is 0  # , so movement gets closer to 0 and more exact the closer it gets -> no jitter
+	-- needed : re-attach major loc to world origin to avoid jitter there ? (maybe not needed)
+	-- needed : constantly recenter world so that player is at absolute 0  #  (conflict with other #)   to avoid relative move-jitter (>100km)
+
+	-- gMLocBaseGfx -> mloc, player-move-loc
+	-- gWorldOrigin -> rest (hopefully far away from player)
+	
+	-- move world against  player loc :  need to move 2 :  gMLocBaseGfx + gWorldOrigin
+end
+
+function MyMoveWorldOriginAgainstPlayerShip ()
+	RecenterPlayerMoveLoc()
 end
 
 function MyPlayerHyperMoveRel (dx,dy,dz)
 	gPlayerShip.vx = 0
 	gPlayerShip.vy = 0
 	gPlayerShip.vz = 0
-	local moveloc = gPlayerShip.moveloc
-	if (not moveloc) then MyMoveWorldOriginAgainstPlayerShip()  moveloc = gPlayerShip.moveloc end
+	local moveloc = GetPlayerMoveLoc() 
+	--~ print("MyPlayerHyperMoveRel: moveloc abs.pos.len",sprintf("%0.0f",Vector.len(moveloc.x,moveloc.y,moveloc.z)))
 	moveloc:SetPos(	moveloc.x + dx,
 					moveloc.y + dy,
 					moveloc.z + dz )
-	MyMoveWorldOriginAgainstLocation(moveloc)
+	RecenterPlayerMoveLoc()
 end
 
 -- big problem : PlayerCam_Pos_Step () .. gPlayerShip:GetPos()   ..  relative to world origin ? 

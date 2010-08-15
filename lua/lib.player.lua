@@ -9,6 +9,8 @@ function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
 
 BindDown("tab", function () ToggleGuiMouseMode() end)
 BindDown("a",function () if (gGuiMouseModeActive) then ToggleAutoPilot() end end)
+BindDown("left",function () MyPlayerHyperMoveRel(-1,0,0) end)
+BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
 
 gDebugJumpPlanetID = 0
 
@@ -128,8 +130,9 @@ end
 function PlayerCam_Pos_Step ()
 	if (not gPlayerShip) then return end
 	local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
-	--~ local x,y,z = gPlayerShip:GetPos()
-	local x,y,z = gPlayerShip.gfx:GetDerivedPosition()
+	local x,y,z = gPlayerShip:GetPos()
+	--~ local x,y,z = gPlayerShip.gfx:GetDerivedPosition()
+	--~ local x,y,z = gPlayerShip.gfx:GetDerivedPosition()
 	local ax,ay,az = Quaternion.ApplyToVector(0,4,-5,w0,x0,y0,z0)
 	local ox,oy,oz = x+ax,y+ay,z+az
 	

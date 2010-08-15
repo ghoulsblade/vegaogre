@@ -192,7 +192,8 @@ function cStation:GetHUDImageName () return "Agricultural_Station-hud.dds" end
 cLocation = CreateClass(cObject)
 function cLocation:GetClass() return "Location" end
 
-function cLocation:Init (loc,x,y,z,r)
+function cLocation:Init (loc,x,y,z,r,locname)
+	self.locname = locname
 	self:InitObj(loc,x,y,z,r)
 end
 
