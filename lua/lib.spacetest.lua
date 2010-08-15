@@ -35,21 +35,22 @@ function MySpaceInit ()
 	
 	-- planets
 	local planets = {
-		{ "sun"			,0 			,6955*10e5*km	},
+		{ "earth"		,0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
+		--~ { "sun"			,0 			,6955*10e5*km	},
 		{ "mercury"		,0.4*au 	,2439.7*km		},
-		{ "venus"		,0.7*au 	,6051.8*km		},
-		{ "earth"		,1.0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
-		{ "mars"		,1.5*au 	,3396.2*km	},
+		--~ { "venus"		,0.7*au 	,6051.8*km		},
+		--~ { "earth"		,1.0*au 	,6371.0*km		,bStartHere=true}, -- see also http://en.wikipedia.org/wiki/Earth
+		--~ { "mars"		,1.5*au 	,3396.2*km	},
 		-- asteroidbelt:2.3-3.3au   
 		-- Asteroids range in size from hundreds of kilometres across to microscopic
 		-- The asteroid belt contains tens of thousands, possibly millions, of objects over one kilometre in diameter.
 		-- [46] Despite this, the total mass of the main belt is unlikely to be more than a thousandth of that of the Earth.
 		-- [47] The main belt is very sparsely populated
 		-- outerplanets: 
-		{ "jupiter"		,5.2*au		,71492*km			},
-		{ "saturn"		,9.5*au     ,60268*km			},
-		{ "uranus"		,19.6*au    ,25559*km			},
-		{ "neptune"		,30*au      ,24764*km			},
+		--~ { "jupiter"		,5.2*au		,71492*km			},
+		--~ { "saturn"		,9.5*au     ,60268*km			},
+		--~ { "uranus"		,19.6*au    ,25559*km			},
+		--~ { "neptune"		,30*au      ,24764*km			},
 		-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
 	}
 	
@@ -68,12 +69,22 @@ function MySpaceInit ()
 		local r = 0
 		local ploc = cLocation:New(solroot,x,y,z,r)
 		table.insert(gPlanetsLocs,ploc)
+		RegisterMajorLoc(ploc)
 		ploc.name = name
 		
 		local planet = cPlanet:New(ploc,0,0,0	,pr,"planetbase")
 		ploc.planet = planet
 		planet:SetRandomRot()
 		planet.name = name
+		
+		-- stations
+		for i = 0,math.random(0,2) do 
+			local d = pr * (1.2 + 0.3 * math.random())
+			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+			local sloc = cLocation:New(ploc,x,y,z,0)
+			RegisterMajorLoc(sloc)
+			local s = cStation:New(sloc,0,0,0	,400,"agricultural_station.mesh")
+		end
 		
 		-- player ship
 		if (o.bStartHere and (not gPlayerShip)) then 
@@ -89,13 +100,6 @@ function MySpaceInit ()
 				local o = cNPCShip:New(ploc,x+ax,y+ay,z+az,10,"ruizong.mesh") 
 				o:SetRandomRot()
 			end
-		end
-		
-		-- stations
-		for i = 0,math.random(0,2) do 
-			local d = pr * (1.2 + 0.3 * math.random())
-			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
-			local s = cStation:New(ploc,x,y,z	,400,"agricultural_station.mesh")
 		end
 	end
 	
@@ -148,6 +152,16 @@ end
 
 -- ***** ***** ***** ***** ***** world origin (against rounding errors)
 
+gMajorLocs = {}
+function RegisterMajorLoc (loc) gMajorLocs[loc] = true end
+function FindNearestMajorLoc (o) 
+	local mind,minloc
+	for loc,v in pairs(gMajorLocs) do 
+		local d = o:GetDistToObject(loc)
+		if ((not minloc) or d < mind) then mind,minloc = d,loc end
+	end
+	return minloc
+end
 
 
 function MyMoveWorldOriginAgainstLocation (loc)
