@@ -8,6 +8,7 @@ dofile(libpath .. "lib.hud.display.self.lua")
 dofile(libpath .. "lib.collision.lua")
 dofile(libpath .. "lib.player.lua")
 dofile(libpath .. "lib.autopilot.lua")
+dofile(libpath .. "lib.data.universe.lua")
 
 
 sin		= math.sin

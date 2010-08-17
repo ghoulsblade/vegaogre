@@ -1,5 +1,24 @@
 -- utilities for xml
 
+local gEasyXMLMeta = {}
+function gEasyXMLMeta.__index (node, key) return node._byname[key] or node._attr[key] end
+
+function EasyXMLWrap (node)
+	node._name = node.name	node.name = nil
+	node._attr = node.attr	node.attr = nil
+	local byname = {}
+	node._byname = byname
+	for k,child in ipairs(node) do
+		if (type(child) == "table") then 
+			local list = byname[child.name or "?"]
+			if (not list) then list = {} byname[child.name or "?"] = list end
+			table.insert(list,child)
+			EasyXMLWrap(child)
+		end
+	end
+	return setmetatable(node,gEasyXMLMeta)
+end
+
 -- use this instead of table.insert, as the .n field is not set by table.insert
 function XMLNodeAddChild (node,child)
 	local newsize = (node.n or 0) + 1
