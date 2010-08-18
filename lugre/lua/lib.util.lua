@@ -10,6 +10,7 @@ function pformat(...)
 end
 function printf(...) io.write(pformat(...)) end
 function sprintf(...) return pformat(...) end
+function pad(s,minlen) s = tostring(s) local padlen = minlen-#s if (padlen > 0) then return s .. string.rep(" ",padlen) end return s end
 
 function prints (...) -- summarizes variable argument like print(..) to a single string using tabs
 	local res = {}
