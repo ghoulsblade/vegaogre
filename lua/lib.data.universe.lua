@@ -2,8 +2,19 @@
 -- ./start.sh -testuniv
 
 gUnitTypes = {}
+gUniv_SectorByName = {}
+gUniv_SystemByPath = {}
 
-RegisterListener("Hook_CommandLine",function () if (gCommandLineSwitches["-testuniv"]) then print(lugrepcall(LoadUniverse)) os.exit(0) end end)
+RegisterListener("Hook_CommandLine",function () 
+	if (gCommandLineSwitches["-testuniv"]) then 
+		print(lugrepcall(function () 
+			gVegaUniverseDebugNoGfx = true
+			LoadUniverse() 
+			VegaLoadSystem("Crucible/Cephid_17") 
+			end))
+		os.exit(0) 
+	end
+end)
 
 local function GetVar (node,key) for k,v in ipairs(node.var) do if (v.name == key) then return v.value end end end
 local function GetJumpList (system) return explode(" ",GetVar(system,"jumps") or "") end
@@ -12,11 +23,145 @@ function GetPlanetUnitTypeIDFromTexture (texture)
 	local a,b,basename = string.find(texture,"([^/.]+)[^/]*$")
 	return (basename or texture).."__planets"
 end
-function GetUnitTypeForPlanetNode (planetnode) return gUnitTypes[GetPlanetUnitTypeIDFromTexture(GetVar(planetnode,"texture") or "???") or "???"] end
+function GetUnitTypeForPlanetNode (planetnode) return gUnitTypes[GetVar(planetnode,"unit") or GetPlanetUnitTypeIDFromTexture(GetVar(planetnode,"texture") or "???") or "???"] end
+
+function Univ_ParseVars (node) local res = {} for k,child in ipairs(node) do if (child._name == "var") then res[child.name or "?"] = child.value end end return res end
+
+function GetVegaDataDir () return gMainWorkingDir.."data/" end
+function GetVegaHomeDataDir () 
+	if (not gVegaHomeDataDir) then gVegaHomeDataDir = (GetHomePath() or ".").."/.vegastrike/" end
+	return gVegaHomeDataDir
+end
+
+
+function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system e.g. "Crucible/Cephid_17"
+	local system = gUniv_SystemByPath[systempath] assert(system)
+	print("WARNING! VegaGenerateSystem not yet implemented")
+end
+
+function GetOrbitMeanRadiusFromNode (node) -- ri="-468434.7" rj="-361541" rk="433559.750000" si="-412172.000000" sj="300463.5" sk="-498163.5"
+	local ri = tonumber(node.ri or "") or 0
+	local rj = tonumber(node.rj or "") or 0
+	local rk = tonumber(node.rk or "") or 0
+	local si = tonumber(node.si or "") or 0
+	local sj = tonumber(node.sj or "") or 0
+	local sk = tonumber(node.sk or "") or 0
+	return 0.5*(Vector.len(ri,rj,rk) + Vector.len(si,sj,sk))
+end
+
+function ImproveObjectName (name)
+	if (not name) then return end
+	name = string.gsub(name,"JumpTo","jump to ")
+	name = string.gsub(name,"_"," ")
+	return name
+end
+
+gSpawnSystemEntryID = 0
+function SpawnSystemEntry (child,parentloc,depth)
+	gSpawnSystemEntryID = gSpawnSystemEntryID + 1
+	if (child._name == "Light") then return end
+	if (child._name == "Fog") then return end     
+	if (child._name == "Atmosphere") then return end  
+	assert(parentloc)
+	local s = gCurSystemScale
+	local d = (GetOrbitMeanRadiusFromNode(child) or 0)*s
+	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+	local loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnMajorLoc(parentloc,x,y,z,child.name)
+	local r = child.radius and tonumber(child.radius)
+	if (r) then r = r * s end
+	print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),child.file)
+	
+	if (not gVegaUniverseDebugNoGfx) then
+		local obj
+		if (child._name == "Unit") then
+			obj = cStation:New(loc,0,0,0	,r or 400,"agricultural_station.mesh")
+		elseif (child._name == "Asteroid") then
+			obj = cPlanet:New(loc,0,0,0,10,"planetbase")  -- TODO!
+		elseif (child.file == "jump.texture" or child._name == "Jump") then
+			obj = cPlanet:New(loc,0,0,0,10,"planetbase")  -- TODO!
+		elseif (child._name == "Planet") then
+			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,"planetbase")
+		end
+		if (obj) then 
+			obj:SetRandomRot()
+			obj.name = ImproveObjectName(child.name)
+			--~ obj.name = "["..gSpawnSystemEntryID.."]"..obj.name
+			loc.primary_object = obj
+			obj.orbit_master = parentloc and parentloc.primary_object
+			RegisterNavTarget(obj)
+		end
+	end
+	
+	for k,subchild in ipairs(child) do SpawnSystemEntry(subchild,loc,depth+1) end
+end
+
+--[[
+SpawnSystemEntry        Asteroid                        0               AFieldJumpThin
+SpawnSystemEntry        Planet          JumpTo17-ar     0               jump.texture
+SpawnSystemEntry        Planet          Cephid_17 A     0               stars/white_star.texture
+SpawnSystemEntry        Planet          Atlantis        162788240       planets/oceanBase.texture|planets/ocean.texture
+SpawnSystemEntry        Planet          Phillies        723268          planets/rock.texture
+SpawnSystemEntry        Planet          JumpToEnyo      829181          jump.texture
+SpawnSystemEntry        Planet          JumpToCardell   660457          jump.texture
+SpawnSystemEntry        Unit            Ataraxia        61717           Fighter_Barracks
+SpawnSystemEntry        Planet          JumpToOldziey   145266170       jump.texture
+SpawnSystemEntry        Unit            Plainfield      35369           Relay
+SpawnSystemEntry        Planet          JumpToEverett   149724056       jump.texture
+SpawnSystemEntry        Planet          JumpToStirling  142012802       jump.texture
+SpawnSystemEntry        Planet          Cephid_17 B     4574264635      stars/red_star.texture
+SpawnSystemEntry        Planet          Wiley           177492695       planets/molten.texture
+SpawnSystemEntry        Unit            Serenity        44024           MiningBase
+SpawnSystemEntry        Planet          Broadway        120320579       sol/ganymede.texture|planets/rock.texture
+]]--
+
+function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucible/Cephid_17"
+	print("VegaLoadSystem start",systempath)
+	local univ_system = gUniv_SystemByPath[systempath] assert(univ_system)
+	local filepath1 = GetVegaDataDir().."sectors/"..systempath..".system"
+	local filepath2 = GetVegaHomeDataDir().."sectors/milky_way.xml/"..systempath..".system"
+	local exists1 = file_exists(filepath1)
+	local exists2 = file_exists(filepath2)
+	if (exists1 and exists2) then print("WARNING! VegaLoadSystem : both filepaths exist",filepath1,filepath2) end
+	local filepath = (exists1 and filepath1) or (exists2 and filepath2)
+	if (not filepath) then
+		filepath = filepath2
+		VegaGenerateSystem(filepath,systempath)
+		if (not file_exists(filepath)) then print("WARNING! VegaLoadSystem : failed to generate new system") return end
+	end
+	local system = EasyXMLWrap(LuaXML_ParseFile(filepath)[1]) assert(system)
+	
+	gCurSystemScale = tonumber(system.scalesystem or "") or 1
+	print("system:",system.name,system.background,gCurSystemScale) --~ "Cephid_17","backgrounds/green","1000"
+	
+	local system_root_loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnSystemRootLoc()
+	for k,child in ipairs(system) do 
+		SpawnSystemEntry(child,system_root_loc,0)
+	end
+	-- file="stars/white_star.texture" -> white_star__planets
+	--~ for ismoon,initial in string.gmatch(system.planets or "","(%*?)([^%s]+)") do 
+		--~ print("planet:",ismoon,initial)
+	--~ end
+end
+
+--[[
+		<system name="Cephid_17"><var name="planets" value="mol *r v a bs gd bd *r gg gg fr"/>
+			<var name="data" value="-932898433"/>
+			<var name="faction" value="klkk"/>
+			<var name="luminosity" value="0"/>
+			<var name="num_gas_giants" value="0"/>
+			<var name="num_moons" value="2"/>
+			<var name="num_natural_phenomena" value="2"/>
+			<var name="num_planets" value="3"/>
+			<var name="planetlist" value=""/>
+			<var name="sun_radius" value="16600.000000"/>
+			<var name="xyz" value="389.551310 -309.661278 348.064561"/>
+			<var name="jumps" value="Crucible/17-ar Crucible/Stirling Crucible/Cardell Crucible/Enyo Crucible/Everett Crucible/Oldziey"/>
+		</system>
+]]--
 
 function LoadUniverse ()
 	print("LoadUniverse")
-	local filepath = gMainWorkingDir.."data/units/units.csv"
+	local filepath = GetVegaDataDir().."units/units.csv"
 	local iLineNum = 0
 	for line in io.lines(filepath) do 
 		iLineNum = iLineNum + 1
@@ -58,19 +203,24 @@ function LoadUniverse ()
 			{Consumer_and_Commercial_Goods/Electronics;1;.1;;}....
 			{upgrades/Weapons/Mounted_Guns_Medium;1;.1;12;5}
 	]]--
-	print()
-	
+	--~ print()
 	--~ print("milky_way.planet:",pad("NAME",30),pad("TEXTURE",30),"INITIAL")
-	local filepath = gMainWorkingDir.."data/universe/milky_way.xml"
-	local galaxy = EasyXMLWrap(LuaXML_ParseFile(filepath)[1])
-	--~ for k,var in ipairs(galaxy.planets[1].var) do print("var:",var.name,var.value) end
-	--~ for k,planet in ipairs(galaxy.planets[1].planet) do 
+	local filepath = GetVegaDataDir().."universe/milky_way.xml"
+	gGalaxy = EasyXMLWrap(LuaXML_ParseFile(filepath)[1])
+	for k,sector in ipairs(gGalaxy.systems[1].sector) do 
+		gUniv_SectorByName[sector.name] = sector 
+		for k,system in ipairs(sector.system) do gUniv_SystemByPath[sector.name.."/"..system.name] = Univ_ParseVars(system) end
+	end
+	
+	--~ for k,var in ipairs(gGalaxy.planets[1].var) do print("var:",var.name,var.value) end
+	--~ for k,planet in ipairs(gGalaxy.planets[1].planet) do 
 		--~ local o = GetUnitTypeForPlanetNode(planet)
 		--~ print("milky_way.planet:",pad(planet.name,30),pad(GetVar(planet,"texture"),30),GetVar(planet,"initial"),pad(o.id,20),o.Hud_image)
 	--~ end
-	--~ for k,sector in ipairs(galaxy.systems[1].sector) do 
+	--~ for k,sector in ipairs(gGalaxy.systems[1].sector) do 
 		--~ print("sector:",sector.name) 
 		--~ for k,system in ipairs(sector.system) do print(" system",system.name,"jumps:",unpack(GetJumpList(system))) end
 	--~ end
+	
 end
 

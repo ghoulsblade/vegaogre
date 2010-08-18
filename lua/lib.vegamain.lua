@@ -53,6 +53,7 @@ end
 function VegaMainInit()
     --~ StartMainMenu()
 	BindDown("escape", function () os.exit(0) end)
+	LoadUniverse()
 	
 	InitGuiThemes()
 	MySpaceInit()

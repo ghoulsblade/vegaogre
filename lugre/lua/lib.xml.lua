@@ -4,8 +4,8 @@ local gEasyXMLMeta = {}
 function gEasyXMLMeta.__index (node, key) return node._byname[key] or node._attr[key] end
 
 function EasyXMLWrap (node)
-	node._name = node.name	node.name = nil
-	node._attr = node.attr	node.attr = nil
+	node._name = node.name			node.name = nil
+	node._attr = node.attr or {}	node.attr = nil
 	local byname = {}
 	node._byname = byname
 	for k,child in ipairs(node) do

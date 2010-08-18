@@ -40,7 +40,11 @@ function cHudTargetInfo:UpdateTexts ()
 	if (o.r > 0) then txt1 = txt1 .. "\nradius: " .. GetDistText(o.r) end
 	if (o.orbit_master and o.orbit_master.name) then 
 		txt1 = txt1 .. "\nin orbit around " .. o.orbit_master.name 
-		txt1 = txt1 .. "\norbit height: " .. GetDistText(o:GetDistToObject(o.orbit_master) - o.orbit_master.r)
+		if (o.orbit_master:GetClass() == "Planet") then 
+			txt1 = txt1 .. "\norbit height: " .. GetDistText(o:GetDistToObject(o.orbit_master) - o.orbit_master.r)
+		else
+			txt1 = txt1 .. "\norbit: " .. GetDistText(o:GetDistToObject(o.orbit_master))
+		end
 	end
 	
 	local txt2 = GetDistText(o:GetDistToPlayer())

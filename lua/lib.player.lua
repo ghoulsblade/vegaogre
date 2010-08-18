@@ -19,20 +19,6 @@ BindDown("n",function ()
 	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
 end)
 
---[[
-gDebugJumpPlanetID = 0
-BindDown("j",function ()
-	gDebugJumpPlanetID = (gDebugJumpPlanetID + 1) % #gPlanetsLocs
-	local newloc = gPlanetsLocs[gDebugJumpPlanetID+1]
-	print("recenter",newloc.name) 
-	gPlayerShip:MoveToNewLoc(newloc)
-	local r = newloc.planet and newloc.planet.r or 0
-	gPlayerShip:SetPos(r*1.2,0,0)
-	MyMoveWorldOriginAgainstPlayerShip()
-	print("position from sun:",gPlayerShip:GetPosFromSun())
-end)
-]]--
-
 BindDown("k",function ()
 	MyMoveWorldOriginAgainstPlayerShip()
 	print("position from sun:",gPlayerShip:GetPosFromSun())

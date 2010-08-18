@@ -29,11 +29,58 @@ function MySpaceInit ()
 	
 	gMLocBaseGfx = CreateRootGfx3D()
 	
-	-- prepare solarsystem : 
+	-- spawn solarsystem
+	VegaLoadSystem("Crucible/Cephid_17")
+	--~ VegaLoadExampleSystem()
+	local playerspawnbase
+	for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
+	playerspawnbase = playerspawnbase or gNavTargets[math.random((#gNavTargets > 0) and #gNavTargets or 1)]
+	SpawnPlayer(playerspawnbase)
 	
-	local solroot = cLocation:New(nil,0,0,0,0,"sol-root-loc")
+	HUD_UpdateDisplaySelf()
+end
+
+function GetRandomOrbitFlatXY (d,dzmax)
+	local ang = math.random()*math.pi*2
+	local x,y = d*sin(ang),d*cos(ang)
+	local z = (math.random()*2-1)*dzmax
+	return x,y,z
+end
+
+function SpawnPlayer (base)
+	if (gPlayerShip) then return end
+	local pr = base.r
+	local loc = base.loc or gSolRoot
+	local d = - pr * 1.2,0,0
+	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+	-- player ship
+	gPlayerShip = cPlayerShip:New(loc,x,y,z	,5,"llama.mesh")
+	MyMoveWorldOriginAgainstPlayerShip()
+	
+	-- npc ship
+	--~ local x,y,z = 0,0,0
+	--~ local loc = gPlayerShip.loc
+	--~ for i=1,10 do 
+		--~ local ax,ay,az = Vector.random3(400)
+		--~ local o = cNPCShip:New(loc,x+ax,y+ay,z+az,10,"ruizong.mesh") 
+		--~ o:SetRandomRot()
+	--~ end
+end
+
+function VegaSpawnMajorLoc (parentloc,x,y,z,debugname)
+	local loc = cLocation:New(parentloc,x,y,z,0,"majorloc:"..(debugname or "?"))
+	RegisterMajorLoc(loc)
+	return loc
+end
+function VegaSpawnSystemRootLoc (debugname)
+	local solroot = cLocation:New(nil,0,0,0,0,"system-root-loc")
 	gSolRootGfx = solroot.gfx
 	gSolRoot = solroot
+	return solroot
+end
+
+function VegaLoadExampleSystem ()
+	local solroot = VegaSpawnSystemRootLoc("sol-root-loc")
 	
 	-- planets
 	local planets = {
@@ -55,14 +102,7 @@ function MySpaceInit ()
 		-- kuiper belt: 30au-50au   pluto:39au   haumea:43.34au  makemake:45.79au
 	}
 	
-	function GetRandomOrbitFlatXY (d,dzmax)
-		local ang = math.random()*math.pi*2
-		local x,y = d*sin(ang),d*cos(ang)
-		local z = (math.random()*2-1)*dzmax
-		return x,y,z
-	end
 	
-	gPlanetsLocs = {}
 	for k,o in pairs(planets) do 
 		local name,d,pr,maxstations = unpack(o)
 		maxstations = maxstations or 2
@@ -70,7 +110,6 @@ function MySpaceInit ()
 		--~ local x,y,z = d,0,0
 		local r = 0
 		local ploc = cLocation:New(solroot,x,y,z,r,"planet-loc "..name)
-		table.insert(gPlanetsLocs,ploc)
 		RegisterMajorLoc(ploc)
 		ploc.name = name
 		
@@ -92,23 +131,8 @@ function MySpaceInit ()
 		end
 		
 		-- player ship
-		if (o.bStartHere and (not gPlayerShip)) then 
-			local d = - pr * 1.2,0,0
-			local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
-			-- player ship
-			gPlayerShip = cPlayerShip:New(ploc,x,y,z	,5,"llama.mesh")
-			MyMoveWorldOriginAgainstPlayerShip()
-			
-			-- npc ship
-			for i=1,10 do 
-				local ax,ay,az = Vector.random3(400)
-				local o = cNPCShip:New(ploc,x+ax,y+ay,z+az,10,"ruizong.mesh") 
-				o:SetRandomRot()
-			end
-		end
+		if (o.bStartHere and (not gPlayerShip)) then SpawnPlayer(planet) end
 	end
-	
-	HUD_UpdateDisplaySelf()
 end
 
 function UpdateWorldLight (x,y,z)
