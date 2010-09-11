@@ -232,7 +232,64 @@ material plaincolor_base
 	}
 }
 
-material planetbase
+material planetbase_ground
+{
+	technique
+	{
+		pass
+		{
+			// shading phong
+			ambient  0.0 0.0 0.0 1.0
+			diffuse  1.0 1.0 1.0 1.0
+			// specular 0.6 0.6 0.6 1.0 22.5
+			// normalise_normals on
+			texture_unit
+			{
+				texture carribean1.dds
+				// carribean1_spec.dds
+				filtering trilinear
+			}
+		}
+	}
+}
+
+
+material planetbase_ground_cloud
+{
+	receive_shadows on
+	technique
+	{
+		pass
+		{
+			// shading phong
+			ambient  0.0 0.0 0.0 1.0
+			diffuse  1.0 1.0 1.0 1.0
+			// specular 0.6 0.6 0.6 1.0 22.5
+			// normalise_normals on
+			texture_unit
+			{
+				texture carribean1.dds
+				// carribean1_spec.dds
+				filtering trilinear
+			}
+		}
+		
+		pass
+		{
+			scene_blend colour_blend 
+			ambient  1.0 1.0 1.0 1.0
+			specular 0.0 0.0 0.0 1.0
+			texture_unit
+			{
+				texture carribean1_cloud.dds
+				filtering trilinear
+				wave_xform scroll_x sawtooth 0 .001 0 1
+			}
+		}
+	}
+}
+
+material planetbase_ground_cloud_light
 {
 	receive_shadows on
 	technique

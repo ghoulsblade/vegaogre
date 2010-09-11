@@ -4,6 +4,7 @@
 gUnitTypes = {}
 gUniv_SectorByName = {}
 gUniv_SystemByPath = {}
+kJumpTextureName = "jump.texture"
 
 RegisterListener("Hook_CommandLine",function () 
 	if (gCommandLineSwitches["-testuniv"]) then 
@@ -56,6 +57,61 @@ function ImproveObjectName (name)
 	return name
 end
 
+function FindUnitTypeFromFileValue (file) 
+	if (not file) then return end
+	return gUnitTypes[file] or gUnitTypes[file.."__neutral"] or gUnitTypes[GetPlanetUnitTypeIDFromTexture(file)]
+end
+
+gPlanetMatCache = {}
+
+function VegaGetTexNameFromFileParam (fileparam)
+	local params = {} for param in string.gmatch(fileparam,"[^|]+") do table.insert(params,param) end
+	local lastparam = params[#params]
+	if (not lastparam) then print("VegaGetTexNameFromFileParam ERROR: no last param") return "carribean1.dds" end -- "oceanBase.dds"
+	-- lastparam=planets/ocean.texture
+	lastparam = string.gsub(lastparam,"%.texture$",".dds")
+	lastparam = string.gsub(lastparam,"^.*/","")
+	print("VegaGetTexNameFromFileParam",lastparam," from ",fileparam)
+	return lastparam
+	-- planetfile=planets/oceanBase.texture|planets/ocean.texture
+	-- atmosfile=sol/earthcloudmaptrans2.texture
+	--~ data/textures/planets/oceanBase.dds
+	--~ data/textures/planets/ocean.dds
+end
+
+function GetPlanetMaterialNameFromNode (node) 	
+	--~ if (1 == 1) then return CloneMaterial("planetbase") end
+	local planetfile = node.file
+	local atmosfile = node.Atmosphere and node.Atmosphere[1] -- <Atmosphere file="sol/earthcloudmaptrans2.texture" alpha="SRCALPHA INVSRCALPHA" radius="5020.0"/>
+	atmosfile = atmosfile and atmosfile.file
+	
+	local cachename = planetfile..(atmosfile and (",a="..atmosfile) or "")
+	local mat = gPlanetMatCache[cachename] if (mat ~= nil) then return mat end
+	
+	print("GetPlanetMaterialName",planetfile,atmosfile)
+	-- data/sectors/Crucible/Cephid_17.system : 
+	-- <Planet name="Cephid_17 A" 	file="stars/white_star.texture" Red="0.95" Green="0.93" Blue="0.64" ReflectNoLight="true" light="0">
+	-- <Planet name="Atlantis" 		file="planets/oceanBase.texture|planets/ocean.texture" ....>       
+	-- <Planet name="Phillies" 		file="planets/rock.texture">
+	-- <Planet name="Cephid_17 B" 	file="stars/red_star.texture"  Red="0.950000" Green="0.207289" Blue="0.119170" ReflectNoLight="true" light="1">
+	-- <Planet name="Wiley" 		file="planets/molten.texture"   >
+	-- <Planet name="Broadway" 		file="sol/ganymede.texture|planets/rock.texture"  >
+	
+	local tex_ground	= VegaGetTexNameFromFileParam(planetfile)
+	local tex_clouds	= atmosfile and VegaGetTexNameFromFileParam(atmosfile)
+
+	if (tex_clouds) then 
+		mat = CloneMaterial("planetbase_ground_cloud") -- pass1=base pass2=light pass3=cloud
+		SetTexture(mat,tex_ground,0,0,0)
+		SetTexture(mat,tex_clouds,0,1,0)
+	else 
+		mat = CloneMaterial("planetbase_ground") -- pass1=base pass2=cloud
+		SetTexture(mat,tex_ground,0,0,0)
+	end
+	gPlanetMatCache[cachename] = mat
+	return mat
+end
+
 gSpawnSystemEntryID = 0
 function SpawnSystemEntry (child,parentloc,depth)
 	gSpawnSystemEntryID = gSpawnSystemEntryID + 1
@@ -69,18 +125,23 @@ function SpawnSystemEntry (child,parentloc,depth)
 	local loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnMajorLoc(parentloc,x,y,z,child.name)
 	local r = child.radius and tonumber(child.radius)
 	if (r) then r = r * s end
-	print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),child.file)
+	local file = child.file
+	local unittype = FindUnitTypeFromFileValue(file)
+	local dbg_unitname = unittype and unittype.id or (file and ("NOTFOUND:"..GetPlanetUnitTypeIDFromTexture(file)))
+	print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),pad(dbg_unitname,20),child.file)
+	local unitid = child.file
 	
 	if (not gVegaUniverseDebugNoGfx) then
+		--~ destination="Crucible/Stirling" faction="klkk"
 		local obj
 		if (child._name == "Unit") then
 			obj = cStation:New(loc,0,0,0	,r or 400,"agricultural_station.mesh")
 		elseif (child._name == "Asteroid") then
-			obj = cPlanet:New(loc,0,0,0,10,"planetbase")  -- TODO!
-		elseif (child.file == "jump.texture" or child._name == "Jump") then
-			obj = cPlanet:New(loc,0,0,0,10,"planetbase")  -- TODO!
+			obj = cPlanet:New(loc,0,0,0,10,"planetbase_ground")  -- TODO!
+		elseif (child.file == kJumpTextureName or child._name == "Jump") then
+			obj = cPlanet:New(loc,0,0,0,10,"planetbase_ground")  -- TODO!
 		elseif (child._name == "Planet") then
-			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,"planetbase")
+			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child))
 		end
 		if (obj) then 
 			obj:SetRandomRot()
@@ -131,7 +192,7 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 	local system = EasyXMLWrap(LuaXML_ParseFile(filepath)[1]) assert(system)
 	
 	gCurSystemScale = tonumber(system.scalesystem or "") or 1
-	print("system:",system.name,system.background,gCurSystemScale) --~ "Cephid_17","backgrounds/green","1000"
+	print("system:",filepath,system.name,system.background,gCurSystemScale) --~ "Cephid_17","backgrounds/green","1000"
 	
 	local system_root_loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnSystemRootLoc()
 	for k,child in ipairs(system) do 
