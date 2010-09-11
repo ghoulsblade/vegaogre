@@ -1,5 +1,7 @@
 -- loads sectors and data/universe/milky_way.xml
 -- ./start.sh -testuniv
+-- TODO : VegaStrike/data/units/factions/planets  subfolders contain buy/sell infos
+
 
 gUnitTypes = {}
 gUniv_SectorByName = {}
@@ -17,7 +19,7 @@ RegisterListener("Hook_CommandLine",function ()
 	end
 end)
 
-local function GetVar (node,key) for k,v in ipairs(node.var) do if (v.name == key) then return v.value end end end
+local function GetVar (node,key) if (not node.var) then return end for k,v in ipairs(node.var) do if (v.name == key) then return v.value end end end
 local function GetJumpList (system) return explode(" ",GetVar(system,"jumps") or "") end
 
 function GetPlanetUnitTypeIDFromTexture (texture) 
@@ -59,6 +61,9 @@ end
 
 function FindUnitTypeFromFileValue (file) 
 	if (not file) then return end
+	--~ file = string.gsub(file,"|.*","")
+	file = string.gsub(file,".*|","")
+	--~ print("FindUnitTypeFromFileValue",file,file.."__neutral",GetPlanetUnitTypeIDFromTexture(file))
 	return gUnitTypes[file] or gUnitTypes[file.."__neutral"] or gUnitTypes[GetPlanetUnitTypeIDFromTexture(file)]
 end
 
@@ -71,7 +76,7 @@ function VegaGetTexNameFromFileParam (fileparam)
 	-- lastparam=planets/ocean.texture
 	lastparam = string.gsub(lastparam,"%.texture$",".dds")
 	lastparam = string.gsub(lastparam,"^.*/","")
-	print("VegaGetTexNameFromFileParam",lastparam," from ",fileparam)
+	--~ print("VegaGetTexNameFromFileParam",lastparam," from ",fileparam)
 	return lastparam
 	-- planetfile=planets/oceanBase.texture|planets/ocean.texture
 	-- atmosfile=sol/earthcloudmaptrans2.texture
@@ -88,7 +93,7 @@ function GetPlanetMaterialNameFromNode (node)
 	local cachename = planetfile..(atmosfile and (",a="..atmosfile) or "")
 	local mat = gPlanetMatCache[cachename] if (mat ~= nil) then return mat end
 	
-	print("GetPlanetMaterialName",planetfile,atmosfile)
+	--~ print("GetPlanetMaterialName",planetfile,atmosfile)
 	-- data/sectors/Crucible/Cephid_17.system : 
 	-- <Planet name="Cephid_17 A" 	file="stars/white_star.texture" Red="0.95" Green="0.93" Blue="0.64" ReflectNoLight="true" light="0">
 	-- <Planet name="Atlantis" 		file="planets/oceanBase.texture|planets/ocean.texture" ....>       
@@ -113,6 +118,21 @@ function GetPlanetMaterialNameFromNode (node)
 end
 
 gSpawnSystemEntryID = 0
+
+function GetUnitTypeFromSectorXMLNode (node) return FindUnitTypeFromFileValue(node.file) end
+
+
+function GetHUDImageTexFromNode (node)
+	local t = GetUnitTypeFromSectorXMLNode(node)
+	print("GetHUDImageTexFromNode",node.file,t and ((t.Hud_image == "") and "TYPE:EMPTYHUD" or t.Hud_image) or "TYPE:MISSING") 
+	if (not t) then return end
+	local tex = t.Hud_image
+	if (tex == "") then return end
+	tex = string.gsub(tex,".*/","")
+	tex = string.gsub(tex,"%.sprite$",".dds") -- todo : sprite = config file...
+	return tex
+end
+
 function SpawnSystemEntry (child,parentloc,depth)
 	gSpawnSystemEntryID = gSpawnSystemEntryID + 1
 	if (child._name == "Light") then return end
@@ -126,7 +146,7 @@ function SpawnSystemEntry (child,parentloc,depth)
 	local r = child.radius and tonumber(child.radius)
 	if (r) then r = r * s end
 	local file = child.file
-	local unittype = FindUnitTypeFromFileValue(file)
+	local unittype = GetUnitTypeFromSectorXMLNode(child)
 	local dbg_unitname = unittype and unittype.id or (file and ("NOTFOUND:"..GetPlanetUnitTypeIDFromTexture(file)))
 	print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),pad(dbg_unitname,20),child.file)
 	local unitid = child.file
@@ -137,11 +157,13 @@ function SpawnSystemEntry (child,parentloc,depth)
 		if (child._name == "Unit") then
 			obj = cStation:New(loc,0,0,0	,r or 400,"agricultural_station.mesh")
 		elseif (child._name == "Asteroid") then
-			obj = cPlanet:New(loc,0,0,0,10,"planetbase_ground")  -- TODO!
+			obj = cAsteroidField:New(loc,0,0,0,10,GetPlanetMaterialNameFromNode(child),child)  -- TODO!
 		elseif (child.file == kJumpTextureName or child._name == "Jump") then
-			obj = cPlanet:New(loc,0,0,0,10,"planetbase_ground")  -- TODO!
+			obj = cJumpPoint:New(loc,0,0,0,10,GetPlanetMaterialNameFromNode(child),child)  -- TODO!
+		elseif (child._name == "Planet" and child.light) then
+			obj = cSun:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child),child)
 		elseif (child._name == "Planet") then
-			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child))
+			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child),child)
 		end
 		if (obj) then 
 			obj:SetRandomRot()

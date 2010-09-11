@@ -203,15 +203,18 @@ function cLocation:PhysStep(dt) end -- DONT MOVE GFX! (hard to find error if it 
 
 function cLocation:SetPos(x,y,z) self.x,self.y,self.z = x,y,z self.gfx:SetPosition(x,y,z) end
 
+
 -- ***** ***** ***** ***** ***** cPlanet
 
 cPlanet = CreateClass(cObject)
 function cPlanet:GetClass() return "Planet" end
 
-function cPlanet:Init (loc,x,y,z,r,matname)
+function cPlanet:Init (loc,x,y,z,r,matname,xmlnode)
 	self:InitObj(loc,x,y,z,r)
 	local res = 51 -- 31
 	local steps_h,steps_v,cx,cy,cz = res,res,r,r,r
+	self.xmlnode = xmlnode
+	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
 	self.gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
 	self.gfx:GetEntity():setMaterialName(matname or "planetbase")
 end
@@ -219,6 +222,27 @@ end
 function cPlanet:CanDock (o) return true end
 
 function cPlanet:HUDStep () stepHudMarker(self) end
-function cPlanet:GetHUDImageName () return "planet-carribean-hud.dds" end
+function cPlanet:GetHUDImageName () return self.hudimage end
+
+-- ***** ***** ***** ***** ***** cAsteroidField
+
+cAsteroidField = CreateClass(cPlanet)
+function cAsteroidField:GetClass() return "AsteroidField" end
+function cAsteroidField:Init (...) cPlanet.Init(self,...) end
+function cAsteroidField:GetHUDImageName () return "asteroid-hud.dds" end -- normal would be to load data/units/factions/neutral/AField/af-hud.spr cfg -> asteroid-hud.png
+
+-- ***** ***** ***** ***** ***** cAsteroidField
+
+cJumpPoint = CreateClass(cPlanet)
+function cJumpPoint:GetClass() return "JumpPoint" end
+function cJumpPoint:Init (...) cPlanet.Init(self,...) end
+function cJumpPoint:GetHUDImageName () return "jump-hud.dds" end 
+
+-- ***** ***** ***** ***** ***** cSun
+
+cSun = CreateClass(cPlanet)
+function cSun:GetClass() return "Sun" end
+function cSun:Init (...) cPlanet.Init(self,...) end
+function cSun:GetHUDImageName () return "sun-hud.dds" end 
 
 -- ***** ***** ***** ***** ***** 

@@ -44,6 +44,7 @@ function VegaMainAddResLocs (mydatapath)
 	MyAddSubDirs(mydatapath.."sprites/bases/")
 	OgreAddResLoc(mydatapath.."sprites"										,"FileSystem","General")
 	
+	OgreAddResLoc(mydatapath.."textures"								,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."textures/weapons"							,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."textures/planets"							,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."textures/sol"								,"FileSystem","General")
