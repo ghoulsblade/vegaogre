@@ -23,6 +23,10 @@ function MySpaceInit ()
 	local gStarColorFactor = 0.5 -- somewhat colorful stars
 	gStarField = CreateRootGfx3D()
 	gStarField:SetStarfield(gNumberOfStars,gStarsDist,gStarColorFactor,"starbase")
+	local node = gStarField:GetSceneNode()
+	local movable = (node:numAttachedObjects() > 0) and node:getAttachedObject(0)
+	if (movable) then movable:setRenderQueueGroup(RENDER_QUEUE_1) end -- render stars early to skip depth problems
+		
 	
 	-- UpdateWorldLight() called depending on sun
 	
@@ -264,6 +268,7 @@ function MyPlayerHyperMoveRel (dx,dy,dz)
 					moveloc.y + dy,
 					moveloc.z + dz )
 	RecenterPlayerMoveLoc()
+	NotifyListener("Hook_PlayerHyperMoveStep",dx,dy,dz)
 end
 
 -- big problem : PlayerCam_Pos_Step () .. gPlayerShip:GetPos()   ..  relative to world origin ? 

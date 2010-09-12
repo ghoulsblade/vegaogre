@@ -216,7 +216,7 @@ function cPlanet:Init (loc,x,y,z,r,matname,xmlnode)
 	self.xmlnode = xmlnode
 	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
 	self.gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
-	self.gfx:GetEntity():setMaterialName(matname or "planetbase")
+	self.gfx:GetEntity():setMaterialName(matname or "planetbase_ground")
 end
 
 function cPlanet:CanDock (o) return true end

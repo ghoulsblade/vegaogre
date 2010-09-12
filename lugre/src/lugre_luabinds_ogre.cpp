@@ -123,6 +123,24 @@ class cLugreLuaBind_Ogre_MovableObject : public cLuaBindDirect<Ogre::MovableObje
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													setDebugDisplayEnabled,						,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,								isDebugDisplayEnabled,						,()	);
 		
+		
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_BACKGROUND)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_SKIES_EARLY)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_1)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_2)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_WORLD_GEOMETRY_1)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_3)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_4)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_MAIN)	/// The default render queue
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_6)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_7)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_WORLD_GEOMETRY_2)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_8)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_9)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_SKIES_LATE)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_OVERLAY)
+		LUABIND_PrefixConstant(Ogre,RENDER_QUEUE_MAX)
+		
 		/*
 		Sphere & 			getWorldBoundingSphere,			(ParamBoolDefault(L,2,false))   );
 		Matrix4 & 			_getParentNodeFullTransform,	()                          	 );

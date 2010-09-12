@@ -12,12 +12,14 @@ BindDown("a",function () if (gGuiMouseModeActive) then ToggleAutoPilot() end end
 BindDown("left",function () MyPlayerHyperMoveRel(-1,0,0) end)
 BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
 
-
-BindDown("n",function ()
+function Player_SelectNextNavTarget (idx)
 	gNextNavTargetIdx = ((gNextNavTargetIdx or 0) + 1) % #gNavTargets
-	local p = gNavTargets[gNextNavTargetIdx+1]
+	local p = gNavTargets[idx or (gNextNavTargetIdx+1)]
+	if (p) then stepHudMarker(p) end -- make sure p.guiMarker has been constructed, used for automatic tests
 	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
-end)
+end
+
+BindDown("n",function () Player_SelectNextNavTarget() end)
 
 BindDown("k",function ()
 	MyMoveWorldOriginAgainstPlayerShip()

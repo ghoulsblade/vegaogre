@@ -150,6 +150,8 @@ material starbase
 			lighting off
 			scene_blend add
 			depth_write off
+			depth_check off
+			// should be used with  RENDER_QUEUE_1
 		}
 	}
 }
@@ -228,6 +230,26 @@ material plaincolor_base
 			lighting on
 			ambient 1.0 1.0 1.0
 			diffuse 1.0 1.0 1.0
+		}
+	}
+}
+
+material hyperspeedmat
+{
+	technique
+	{
+		pass
+		{	
+			lighting off
+			depth_write off
+			// depth_check off
+			// should be used with  RENDER_QUEUE_6
+			scene_blend alpha_blend
+			texture_unit
+			{
+				texture hyperspeed.dds
+				wave_xform scroll_x sawtooth 0 -.5 0 1
+			}
 		}
 	}
 }

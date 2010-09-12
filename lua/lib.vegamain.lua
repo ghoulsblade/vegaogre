@@ -9,6 +9,7 @@ dofile(libpath .. "lib.collision.lua")
 dofile(libpath .. "lib.player.lua")
 dofile(libpath .. "lib.autopilot.lua")
 dofile(libpath .. "lib.data.universe.lua")
+dofile(libpath .. "lib.gfx.hyper.lua")
 
 
 sin		= math.sin
@@ -61,6 +62,7 @@ function VegaMainInit()
 	InitGuiThemes()
 	MySpaceInit()
 	GuiTest_InitCrossHair()
+	NotifyListener("Hook_VegaInit")
 end
 
 
