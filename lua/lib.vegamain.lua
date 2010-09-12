@@ -1,3 +1,4 @@
+dofile(libpath .. "lib.hotkey.lua") -- early so key settings can use it 
 dofile(libpath .. "lib.spacetest.lua")
 dofile(libpath .. "lib.guitest.dragdrop.lua")
 dofile(libpath .. "lib.boltmesh.lua")

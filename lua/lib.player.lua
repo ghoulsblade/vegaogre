@@ -4,13 +4,17 @@ RegisterIntervalStepper(100,function ()
 	if (gKeyPressed[key_mouse_left]) then FireShot() end
 end)
 
-function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
-
-
 BindDown("tab", function () ToggleGuiMouseMode() end)
-BindDown("a",function () if (gGuiMouseModeActive) then ToggleAutoPilot() end end)
+SetMacro("alt+a",function () ToggleAutoPilot() end)
+SetMacro("ctrl+a",function () ToggleAutoPilot() end)
 BindDown("left",function () MyPlayerHyperMoveRel(-1,0,0) end)
 BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
+BindDown("n",function () Player_SelectNextNavTarget() end)
+BindDown("k",function () MyMoveWorldOriginAgainstPlayerShip() print("position from sun:",gPlayerShip:GetPosFromSun()) end)
+
+
+gNavTargets = {}
+function RegisterNavTarget (o) table.insert(gNavTargets,o) end
 
 function Player_SelectNextNavTarget (idx)
 	gNextNavTargetIdx = ((gNextNavTargetIdx or 0) + 1) % #gNavTargets
@@ -19,18 +23,8 @@ function Player_SelectNextNavTarget (idx)
 	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
 end
 
-BindDown("n",function () Player_SelectNextNavTarget() end)
 
-BindDown("k",function ()
-	MyMoveWorldOriginAgainstPlayerShip()
-	print("position from sun:",gPlayerShip:GetPosFromSun())
-end)
-
-
-gNavTargets = {}
-function RegisterNavTarget (o) table.insert(gNavTargets,o) end
-
-
+function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
 
 
 function PlayerStep ()
