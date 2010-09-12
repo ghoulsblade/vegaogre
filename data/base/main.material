@@ -248,7 +248,7 @@ material hyperspeedmat
 			texture_unit
 			{
 				texture hyperspeed.dds
-				wave_xform scroll_x sawtooth 0 -.5 0 1
+				wave_xform scroll_x sawtooth 0 .2 0 1
 			}
 		}
 	}

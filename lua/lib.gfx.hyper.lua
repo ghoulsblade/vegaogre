@@ -68,29 +68,45 @@ function CreateTunnelMeshGeometry ()
 	
 	local function vertex	(x,y,z,u,v)	vb0:Vertex(x,y,z,u,v) end
 	local function tri		(a,b,c)		ib:MultiIndex(a,b,c) end
+	
+	
+	local rbase0 = 0
+	local rbase1 = 40
+	local zlen = 100
+	local sin = math.sin
+	local cos = math.cos
+	local pi = math.pi
+	local waverep = 5
+	local wavestr = 0.01
+	
+	local izsegs = 32 -- "down" the tunnel
+	local radsegs = 31
+	local vc_per_z = radsegs+1 -- (start and end have same pos but different texcoords : two vertices)
+	for iz = 0,izsegs do 
+		local u = iz/izsegs
+		local u_inv = 1 - u
+		local z = zlen * u
+		local r = u * rbase0 + u_inv * rbase1 * ( 1 + wavestr * sin(u*waverep*pi*2))  -- todo : * sinus?
+		for iv = 0,radsegs do 
+			local v = iv/radsegs
+			local ang = v*pi*2
+			local x,y = r*sin(ang),r*cos(ang)
+			vertex(x,y,z,u,v)
+		end
+		if (iz < izsegs) then 
+			local i0 = iz * vc_per_z
+			local i1 = i0 + vc_per_z
+			for i = 0,radsegs-1 do 
+				tri(i0+i  ,i1+i+1,i1+i)
+				tri(i0+i+1,i1+i+1,i0+i)
+			end
+		end
+	end
+	
 	-- geometry (normals ? nah..)
-	local e = 1/256
-	local s = -10
-	vertex( 0, 0,-4*s,	  0*e,128*e)
-	
-	vertex( 0, s, 0,	200*e, 91*e)
-	vertex( s, 0, 0,	200*e,128*e)
-	vertex( 0,-s, 0,	200*e,160*e)
-	vertex(-s, 0, 0,	200*e,128*e)
-	
-	vertex( 0, 0, s,	250*e,128*e)
-	tri(0,1,2)
-	tri(0,2,3)
-	tri(0,3,4)
-	tri(0,4,1)
-	
-	tri(5,2,1)
-	tri(5,3,2)
-	tri(5,4,3)
-	tri(5,1,4)
 	
 	vb0:CheckSize()
-	return vb0,ib,4*s
+	return vb0,ib,math.max(zlen,rbase0,rbase1)
 end
 
 function CreateTunnelMesh (msMatName,szMeshName,...)
