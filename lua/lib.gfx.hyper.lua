@@ -13,14 +13,15 @@ function cHyperGfx:Init ()
 	self.dx = 0
 	self.dy = 0
 	self.dz = 1
-	RegisterStepper(function () self:Step() end)
+	--~ RegisterStepper(function () self:Step() end)
+	RegisterListener("Hook_PlayerEffectStep",function (...) self:Step(...) end)  -- depends on player pos
 	RegisterListener("Hook_PlayerHyperMoveStep",function (...) self:PlayerHyperMoveStep(...) end) 
 	
 	InvokeLater(1000,function () Player_SelectNextNavTarget() ToggleAutoPilot() end) -- easy testing
 end
 
 function cHyperGfx:PlayerHyperMoveStep (dx,dy,dz)
-	self.lastmovet = gMyTicks
+	self.last_move_t = gMyTicks
 	self.dx = dx
 	self.dy = dy
 	self.dz = dz
@@ -28,35 +29,45 @@ end
 
 
 function cHyperGfx:Step ()
-	local fadet = 1000
-	local age = gMyTicks - self.lastmovet
-	local f = (age > fadet) and 0 or (1 - age/fadet)
-	--~ print("cHyperGfx",f)
-	local bActive = true
-	
-	if (bActive) then 
-		local gfx = self.gfx
-		if (not gfx) then gfx = GetPlayerMoveLoc().gfx:CreateChild() self.gfx = gfx end
-		
-		if (not gfx.bHyperInit) then 
-			gfx.bHyperInit = true
-			if (1 == 1) then 
-				gfx:SetMesh(CreateTunnelMesh("hyperspeedmat"))
-			else 
-				local r = 7
-				local res = 51 -- 31
-				local steps_h,steps_v,cx,cy,cz = res,res,r,r,r
-				gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
-				gfx:GetEntity():setMaterialName("hyperspeedmat")
-			end
-			-- Ogre::MovableObject::setRenderQueueGroup(uint8 queueID)  see RenderQueue for details , see RenderQueueGroupID enum (OgreRenderQueue.h)
-			gfx:GetEntity():setRenderQueueGroup(RENDER_QUEUE_6) -- one after default
-		end
-		
-		gfx:SetOrientation(Quaternion.getRotation(0,0,1,self.dx,self.dy,self.dz))
-		
+	local fade_in_t		= 2000
+	local fade_out_t	= 2000
+	local time_since_move = gMyTicks - (self.last_move_t or 0)
+	local bActive = time_since_move < 200
+	if (not bActive) then self.last_stop_t = gMyTicks end
+	local time_since_stop = gMyTicks - (self.last_stop_t or 0)
+	local f_in	=	max(0,min(1,time_since_stop/fade_in_t))
+	local f_out	=	max(0,min(1,1-time_since_move/fade_out_t))
+	local f = bActive and (f_in*f_out) or f_out 
+	--~ print("cHyperGfx",bActive,f,f_in,f_out)
+
+	local gfx = self.gfx
+	if (not gfx) then 
+		--~ gfx = GetPlayerMoveLoc().gfx:CreateChild() 
+		--~ gfx = CreateCamPosGfx3D() 
+		gfx = CreateRootGfx3D() 
+		self.gfx = gfx 
 	end
 	
+	gfx:SetPosition(gPlayerShip:GetPos())
+	
+	if (not gfx.bHyperInit) then 
+		gfx.bHyperInit = true
+		if (1 == 1) then 
+			gfx:SetMesh(CreateTunnelMesh("hyperspeedmat"))
+		else 
+			local r = 7
+			local res = 51 -- 31
+			local steps_h,steps_v,cx,cy,cz = res,res,r,r,r
+			gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
+			gfx:GetEntity():setMaterialName("hyperspeedmat")
+		end
+		-- Ogre::MovableObject::setRenderQueueGroup(uint8 queueID)  see RenderQueue for details , see RenderQueueGroupID enum (OgreRenderQueue.h)
+		gfx:GetEntity():setRenderQueueGroup(RENDER_QUEUE_6) -- one after default
+	end
+	
+	gfx:SetOrientation(Quaternion.getRotation(0,0,1,self.dx,self.dy,self.dz))
+	
+	SetDiffuse("hyperspeedmat",0,0, 0,0,0, f * (.05+.01*sin(gMyTicks/2000*math.pi*2)))
 end
 
 -- ***** ***** ***** ***** ***** tunnelgfx
@@ -86,12 +97,13 @@ function CreateTunnelMeshGeometry ()
 		local u = iz/izsegs
 		local u_inv = 1 - u
 		local z = zlen * u
-		local r = u * rbase0 + u_inv * rbase1 * ( 1 + wavestr * sin(u*waverep*pi*2))  -- todo : * sinus?
+		local usinus = sin(u*waverep*pi*2)
+		local r = u * rbase0 + u_inv * rbase1 * ( 1 + wavestr * usinus)  -- todo : * sinus?
 		for iv = 0,radsegs do 
 			local v = iv/radsegs
 			local ang = v*pi*2
 			local x,y = r*sin(ang),r*cos(ang)
-			vertex(x,y,z,u,v)
+			vertex(x,y,z,u,v + usinus * 0.05)
 		end
 		if (iz < izsegs) then 
 			local i0 = iz * vc_per_z

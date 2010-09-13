@@ -231,7 +231,7 @@ function cAsteroidField:GetClass() return "AsteroidField" end
 function cAsteroidField:Init (...) cPlanet.Init(self,...) end
 function cAsteroidField:GetHUDImageName () return "asteroid-hud.dds" end -- normal would be to load data/units/factions/neutral/AField/af-hud.spr cfg -> asteroid-hud.png
 
--- ***** ***** ***** ***** ***** cAsteroidField
+-- ***** ***** ***** ***** ***** cJumpPoint
 
 cJumpPoint = CreateClass(cPlanet)
 function cJumpPoint:GetClass() return "JumpPoint" end

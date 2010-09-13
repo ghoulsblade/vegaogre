@@ -48,7 +48,7 @@ function StepAutoPilot ()
 	
 	local min_d_hyper = 10*km
 	local min_d_auto = 1*km
-	local per_second = 0.5
+	local per_second = 0.9
 	
 	if (d > min_d_hyper) then 
 		local f = per_second*gSecondsSinceLastFrame

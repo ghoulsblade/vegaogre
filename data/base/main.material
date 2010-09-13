@@ -240,15 +240,21 @@ material hyperspeedmat
 	{
 		pass
 		{	
-			lighting off
-			depth_write off
-			// depth_check off
-			// should be used with  RENDER_QUEUE_6
+			lighting	on
+			depth_write	off
 			scene_blend alpha_blend
+			ambient		0.0 0.0 0.0 0.0
+			diffuse		0.0 0.0 0.0 0.5
+			specular	0.0 0.0 0.0 0.0 0.0
+			emissive	1.0 1.0 1.0 0.0
+			
+			// should be used with  RENDER_QUEUE_6 (transparent, after all non transparent objects)
+			// diffuse alpha used as multitex input (even on single tex)
+			// color comes from emissive component completely
 			texture_unit
 			{
 				texture hyperspeed.dds
-				wave_xform scroll_x sawtooth 0 .2 0 1
+				wave_xform scroll_x sawtooth 0 .05 0 1
 			}
 		}
 	}

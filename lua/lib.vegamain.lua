@@ -87,6 +87,7 @@ function VegaMainStep ()
 	
 	PlayerStep() -- moves cam and handles player keyboard, changes player velocity, but not position.  call before HUD stuff so cam is up to date for render
 	
+	NotifyListener("Hook_PlayerEffectStep") -- hyperspeed effect etc
 	NotifyListener("Hook_HUDStep") -- updates special hud elements dependant on object positions that don't have auto-tracking
 	
 	for o,v in pairs(gObjects) do o:HUDStep(dt) end -- update hud markers, should be done AFTER moving objects and updating cam
