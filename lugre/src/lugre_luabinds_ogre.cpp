@@ -64,6 +64,7 @@ class cLugreLuaBind_Ogre_MovableObject : public cLuaBindDirect<Ogre::MovableObje
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushString,								getMovableType,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNode,								getParentNode,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneNode,							getParentSceneNode,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isParentTagPoint,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													_notifyAttached,								,(ParamNode(L,2),ParamBool(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,								isAttached,									,()	);
 #if OGRE_VERSION < 0x10700
@@ -84,11 +85,12 @@ class cLugreLuaBind_Ogre_MovableObject : public cLuaBindDirect<Ogre::MovableObje
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,								isVisible,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													setRenderingDistance,						,(ParamNumber(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,								getRenderingDistance,						,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setUserObject,										,(ParamUserDefinedObject*(L,2))	);
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserDefinedObject*,							getUserObject,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setUserAny,											,(ParamAny(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushAny,										getUserAny,											,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,2								,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													setRenderQueueGroup,							,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setRenderQueueGroupAndPriority,						,(ParamInt(L,2),ParamInt(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,								getRenderQueueGroup,							,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushMatrix4,									_getParentNodeFullTransform,						,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													setQueryFlags,								,(ParamInt(L,2))	);
@@ -106,6 +108,8 @@ class cLugreLuaBind_Ogre_MovableObject : public cLuaBindDirect<Ogre::MovableObje
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setListener,										,(ParamListener*(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushListener*,									getListener,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLightList,									queryLights,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getLightMask,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightMask,										,(ParamInt(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLightList*,									_getLightList,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushEdgeData*,									getEdgeList,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasEdgeList,										,()	);
@@ -157,7 +161,7 @@ class cLugreLuaBind_Ogre_Renderable : public cLuaBindDirect<Ogre::Renderable>, p
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRenderable():,								mPolygonModeOverrideable,							,(Paramtrue)(L,2),ParammUseIdentityProjection(false)(L,3),ParammUseIdentityView(false)(L,4),ParammRenderSystemData(NULL(L,5))	);
 		// unknown syntax:~Renderable();
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMaterialPtr,								getMaterial,										,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTechnique*,									getTechnique,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									getTechnique,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																getRenderOperation,									,(ParamByRefRenderOperation(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										preRender,											,(ParamSceneManager(L,2),ParamRenderSystem*(L,3))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															postRender,											,(ParamSceneManager(L,2),ParamRenderSystem*(L,3))	);
@@ -177,6 +181,8 @@ class cLugreLuaBind_Ogre_Renderable : public cLuaBindDirect<Ogre::Renderable>, p
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(		PushBool,		getPolygonModeOverrideable,	,() );
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setUserAny,											,(ParamAny(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushAny,										getUserAny,											,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,2								,()	);
 		// unknown syntax:class Visitor;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRenderSystemData*,							getRenderSystemData,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setRenderSystemData,								,(ParamRenderSystemData*(L,2))	);
@@ -205,7 +211,7 @@ class cLugreLuaBind_Ogre_Resource : public cLuaBindDirect<Ogre::Resource>, publi
 		// unknown syntax:enum LoadingState;
 		// unknown syntax:Resource(ResourceManager* creator,String name,ResourceHandle handle,String group,bool isManual,ManualResourceLoader* loader);
 		// unknown syntax:~Resource();
-		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																prepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																prepare,											,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																load,												,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																reload,												,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isReloadable,										,()	);
@@ -235,6 +241,9 @@ class cLugreLuaBind_Ogre_Resource : public cLuaBindDirect<Ogre::Resource>, publi
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_fireBackgroundLoadingComplete,						,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_fireBackgroundPreparingComplete,					,()	);
 #endif
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_fireLoadingComplete,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_firePreparingComplete,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_fireUnloadingComplete,								,()	);
 		
 		LUABIND_PrefixConstant(Ogre::Resource,LOADSTATE_UNLOADED)
 		LUABIND_PrefixConstant(Ogre::Resource,LOADSTATE_LOADING)
@@ -257,6 +266,7 @@ class cLugreLuaBind_Ogre_Node : public cLuaBindDirect<Ogre::Node>, public cLuaBi
 		// unknown syntax:typedef MapIterator<ChildNodeMap> ChildNodeIterator;
 		// unknown syntax:typedef ConstMapIterator<ChildNodeMap> ConstChildNodeIterator;
 		// unknown syntax:class _OgreExport Listener;
+		// unknown syntax:class DebugRenderable : public Renderable,public NodeAlloc;
 		// unknown syntax:Node();
 		// unknown syntax:Node(String name);
 		// unknown syntax:~Node();
@@ -300,6 +310,8 @@ class cLugreLuaBind_Ogre_Node : public cLuaBindDirect<Ogre::Node>, public cLuaBi
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNode,										removeChild,2										,(ParamNode(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNode,										removeChild,3										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(							 removeAllChildren,			,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_setDerivedPosition,								,(ParamVector3(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_setDerivedOrientation,								,(ParamQuaternion(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(	PushQuaternion			,_getDerivedOrientation,	,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(	PushVector3				,_getDerivedPosition,		,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(	PushVector3				,_getDerivedScale,			,()	);
@@ -307,21 +319,26 @@ class cLugreLuaBind_Ogre_Node : public cLuaBindDirect<Ogre::Node>, public cLuaBi
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(							 _update,					,(ParamBool(L,2),ParamBool(L,3))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setListener,										,(ParamListener*(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushListener*,									getListener,										,()	);
-		// in parent: MaterialPtr getMaterial(void);
-		// in parent: void getRenderOperation(RenderOperation op);
-		// in parent: void getWorldTransforms(Matrix4* xform);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(							 setInitialState,			,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(							 resetToInitialState,		,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(	PushVector3				,getInitialPosition,		,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVector3,									convertWorldToLocalPosition,						,(ParamVector3(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVector3,									convertLocalToWorldPosition,						,(ParamVector3(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushQuaternion,									convertWorldToLocalOrientation,						,(ParamQuaternion(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushQuaternion,									convertLocalToWorldOrientation,						,(ParamQuaternion(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(	PushQuaternion			,getInitialOrientation,		,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(	PushVector3				,getInitialScale,			,()	);
 		// in parent: Real getSquaredViewDepth(Camera* cam);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																needUpdate,											,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																requestUpdate,										,(ParamNode(L,2),ParamBool(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																cancelUpdate,										,(ParamNode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushDebugRenderable*,							getDebugRenderable,									,(ParamNumber(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																queueNeedUpdate,									,(ParamNode(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																processQueuedUpdates,								,()	);
-		// in parent: LightList getLights(void);
+		// in parent: void setUserAny(Any anything);
+		// in parent: Any getUserAny(void);
+		// in parent: UserObjectBindings getUserObjectBindings();
+		// in parent: UserObjectBindings getUserObjectBindings();
 		
 		LUABIND_PrefixConstant(Ogre::Node,TS_LOCAL)
 		LUABIND_PrefixConstant(Ogre::Node,TS_PARENT)
@@ -392,7 +409,16 @@ class cLugreLuaBind_Ogre_Light : public cLuaBindDirect<Ogre::Light>, public cLua
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															resetShadowFarDistance,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,										getShadowFarDistance,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,										getShadowFarDistanceSquared,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowNearClipDistance,							,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getShadowNearClipDistance,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										_deriveShadowNearClipDistance,						,(ParamCamera(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowFarClipDistance,							,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getShadowFarClipDistance,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										_deriveShadowFarClipDistance,						,(ParamCamera(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_setCameraRelative,									,(ParamCamera(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setCustomParameter,									,(Paramuint16(L,2),ParamVector4(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVector4,									getCustomParameter,									,(Paramuint16(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_updateCustomGpuParameter,							,(Paramuint16(L,2),ParamGpuProgramParameters::AutoConstantEntry(L,3),ParamGpuProgramParameters*(L,4))	);
 	
 		LUABIND_PrefixConstant(Ogre::Light,LT_POINT)
 		LUABIND_PrefixConstant(Ogre::Light,LT_DIRECTIONAL)
@@ -422,6 +448,10 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		// unknown syntax:class Listener;
 		// unknown syntax:class _OgreExport SceneMgrQueuedRenderableVisitor : public QueuedRenderableVisitor;
 		// unknown syntax:friend class SceneMgrQueuedRenderableVisitor;
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															prepareShadowTextures,								,(ParamCamera(L,2),ParamViewport(L,3),ParamLightList*(L,4))	);
+		// unknown syntax:struct RenderContext;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRenderContext*,								_pauseRendering,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_resumeRendering,									,(ParamRenderContext*(L,2))	);
 		// unknown syntax:SceneManager(String instanceName);
 		// unknown syntax:~SceneManager();
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushString,									getName,												,()	);
@@ -433,6 +463,7 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyCamera,2										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														destroyAllCameras,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLight,									createLight,											,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushLight,										createLight,2										,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLight,									getLight,											,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									hasLight,											,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPlaneList,									getLightClippingPlanes,								,(ParamLight(L,2))	);
@@ -443,7 +474,8 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														_notifyLightsDirty,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,									_getLightsDirtyCounter,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLightList,									_getLightsAffectingFrustum,							,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_populateLightList,									,(ParamVector3(L,2),ParamNumber(L,3),ParamLightList(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_populateLightList,									,(ParamVector3(L,2),ParamNumber(L,3),ParamLightList(L,4),ParamInt(L,5))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_populateLightList,2								,(ParamSceneNode(L,2),ParamNumber(L,3),ParamLightList(L,4),ParamInt(L,5))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSceneNode,									createSceneNode,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSceneNode,									createSceneNode,2									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroySceneNode,									,(ParamString(L,2))	);
@@ -451,27 +483,32 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneNode,								getRootSceneNode,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneNode,								getSceneNode,										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									hasSceneNode,										,(ParamString(L,2))	);
-		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										createEntity,										,(ParamString(L,2),ParamString(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										createEntity,										,(ParamString(L,2),ParamString(L,3),ParamString(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										createEntity,2										,(ParamString(L,2))	);
 		// unknown syntax:enum PrefabType;
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushEntity,										createEntity,2										,(ParamString(L,2),ParamPrefabType(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushEntity,										createEntity,3										,(ParamString(L,2),ParamPrefabType(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushEntity,										createEntity,4										,(ParamPrefabType(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										getEntity,											,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									hasEntity,											,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyEntity,										,(ParamEntity(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyEntity,2										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														destroyAllEntities,									,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushManualObject*,								createManualObject,									,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushManualObject*,								createManualObject,2								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushManualObject*,								getManualObject,									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasManualObject,									,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															destroyManualObject,								,(ParamManualObject*(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyManualObject,2								,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllManualObjects,							,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBillboardChain*,							createBillboardChain,								,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBillboardChain*,							createBillboardChain,2								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBillboardChain*,							getBillboardChain,									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasBillboardChain,									,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															destroyBillboardChain,								,(ParamBillboardChain*(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyBillboardChain,2								,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllBillboardChains,							,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRibbonTrail*,								createRibbonTrail,									,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRibbonTrail*,								createRibbonTrail,2									,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRibbonTrail*,								getRibbonTrail,										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasRibbonTrail,										,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															destroyRibbonTrail,									,(ParamRibbonTrail*(L,2))	);
@@ -479,6 +516,7 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllRibbonTrails,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushParticleSystem*,							createParticleSystem,								,(ParamString(L,2),ParamString(L,3))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushParticleSystem*,							createParticleSystem,2								,(ParamString(L,2),ParamInt(L,3),ParamString(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushParticleSystem*,							createParticleSystem,3								,(ParamInt(L,2),ParamString(L,3))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushParticleSystem*,							getParticleSystem,									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasParticleSystem,									,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															destroyParticleSystem,								,(ParamParticleSystem*(L,2))	);
@@ -528,6 +566,7 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,									getFogEnd,											,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,									getFogDensity,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBillboardSet*,								createBillboardSet,									,(ParamString(L,2),ParamInt(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBillboardSet*,								createBillboardSet,2								,(ParamInt(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBillboardSet*,								getBillboardSet,									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasBillboardSet,									,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															destroyBillboardSet,								,(ParamBillboardSet*(L,2))	);
@@ -545,10 +584,13 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasAnimationState,									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAnimationState,								,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllAnimationStates,							,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															manualRender,										,(ParamRenderOperation(L,2),ParamPass*(L,3),ParamViewport(L,4),ParamMatrix4(L,5),ParamMatrix4(L,6),ParamMatrix4(L,7),ParamBool(L,8))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																manualRender,										,(ParamRenderOperation(L,2),ParamPass(L,3),ParamViewport(L,4),ParamMatrix4(L,5),ParamMatrix4(L,6),ParamMatrix4(L,7),ParamBool(L,8))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															manualRender,2										,(ParamRenderable(L,2),ParamPass(L,3),ParamViewport(L,4),ParamMatrix4(L,5),ParamMatrix4(L,6),ParamBool(L,7),ParamBool(L,8),ParamBool(L,9),ParamLightList*(L,10))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushRenderQueue,								getRenderQueue,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addRenderQueueListener,								,(ParamRenderQueueListener*(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeRenderQueueListener,							,(ParamRenderQueueListener*(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addRenderObjectListener,							,(ParamRenderObjectListener*(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeRenderObjectListener,							,(ParamRenderObjectListener*(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														addSpecialCaseRenderQueue,							,(ParamInt(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														removeSpecialCaseRenderQueue,						,(ParamInt(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														clearSpecialCaseRenderQueues,						,()	);
@@ -569,7 +611,9 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		// unknown syntax:typedef MapIterator<CameraList> CameraIterator;
 		// unknown syntax:typedef MapIterator<AnimationList> AnimationIterator;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCameraIterator,								getCameraIterator,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCameraList,									getCameras,											,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushAnimationIterator,							getAnimationIterator,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushAnimationList,								getAnimations,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushAnimationStateIterator,						getAnimationStateIterator,							,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														setShadowTechnique,									,(ParamShadowTechnique(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,									getShadowTechnique,									,()	);
@@ -616,6 +660,10 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									isShadowTechniqueInUse,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														setShadowUseLightClipPlanes,							,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									getShadowUseLightClipPlanes,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_setActiveCompositorChain,							,(ParamCompositorChain*(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLateMaterialResolving,							,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isLateMaterialResolving,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCompositorChain*,							_getActiveCompositorChain,							,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addListener,										,(ParamListener*(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeListener,										,(ParamListener*(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushStaticGeometry*,							createStaticGeometry,								,(ParamString(L,2))	);
@@ -630,6 +678,7 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyInstancedGeometry,2							,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllInstancedGeometry,						,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMovableObject,								createMovableObject,								,(ParamString(L,2),ParamString(L,3),ParamNameValuePairList*(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMovableObject,								createMovableObject,2								,(ParamString(L,2),ParamNameValuePairList*(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														destroyMovableObject,								,(ParamString(L,2),ParamString(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyMovableObject,2								,(ParamMovableObject(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														destroyAllMovableObjectsByType,						,(ParamString(L,2))	);
@@ -651,10 +700,10 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									getNormaliseNormalsOnScale,							,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														setFlipCullingOnNegativeScale,						,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									getFlipCullingOnNegativeScale,						,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_injectRenderWithPass,								,(ParamPass*(L,2),ParamRenderable(L,3),ParamBool(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_injectRenderWithPass,								,(ParamPass(L,2),ParamRenderable(L,3),ParamBool(L,4),ParamBool(L,5),ParamLightList*(L,6))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														_suppressRenderStateChanges,							,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									_areRenderStateChangesSuppressed,					,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPass*,										_setPass,											,(ParamPass*(L,2),ParamBool(L,3),ParamBool(L,4))	);
+		// CONST RETURN LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushPass,										_setPass,											,(ParamPass(L,2),ParamBool(L,3),ParamBool(L,4))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														_suppressShadows,									,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									_areShadowsSuppressed,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_renderQueueGroupObjects,							,(ParamRenderQueueGroup*(L,2),ParamQueuedRenderableCollection::OrganisationMode(L,3))	);
@@ -666,6 +715,12 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVisibleObjectsBoundsInfo,					getShadowCasterBoundsInfo,							,(ParamLight(L,2),ParamInt(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(														setCameraRelativeRendering,							,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,									getCameraRelativeRendering,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addLodListener,										,(ParamLodListener*(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeLodListener,									,(ParamLodListener*(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_notifyMovableObjectLodChanged,						,(ParamMovableObjectLodChangedEvent(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_notifyEntityMeshLodChanged,						,(ParamEntityMeshLodChangedEvent(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_notifyEntityMaterialLodChanged,					,(ParamEntityMaterialLodChangedEvent(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_handleLodEvents,									,()	);
 		
 		LUABIND_PrefixConstant(Ogre::SceneManager,SCRQM_INCLUDE)
 		LUABIND_PrefixConstant(Ogre::SceneManager,SCRQM_EXCLUDE)
@@ -676,6 +731,12 @@ class cLugreLuaBind_Ogre_SceneManager : public cLuaBindDirect<Ogre::SceneManager
 		LUABIND_PrefixConstant(Ogre::SceneManager,IRS_RENDER_TO_TEXTURE)
 		LUABIND_PrefixConstant(Ogre::SceneManager,IRS_RENDER_RECEIVER_PASS)
 		
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::SceneManager,BP_FRONT)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::SceneManager,BP_BACK)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::SceneManager,BP_LEFT)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::SceneManager,BP_RIGHT)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::SceneManager,BP_UP)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::SceneManager,BP_DOWN)
 	}
 	virtual const char* GetLuaTypeName () { return "lugre.ogre.SceneManager"; }
 };	
@@ -751,6 +812,9 @@ class cLugreLuaBind_Ogre_Frustum : public cLuaBindDirect<Ogre::Frustum>, public 
 		// unknown syntax:Real INFINITE_FAR_PLANE_ADJUST;
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVector3,				getPositionForViewUpdate,				,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushQuaternion,				getOrientationForViewUpdate,				,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPlaneBoundedVolume,							getPlaneBoundedVolume,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setOrientationMode,									,(ParamOrientationMode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushOrientationMode,							getOrientationMode,									,()	);
 		
 	}
 	virtual const char* GetLuaTypeName () { return "lugre.ogre.Frustum"; }
@@ -760,8 +824,11 @@ class cLugreLuaBind_Ogre_Camera : public cLuaBindDirect<Ogre::Camera>, public cL
 	virtual void RegisterMethods	(lua_State *L) { PROFILE 
 		LUABIND_DIRECTWRAP_BASECLASS(Ogre::Frustum);
 		
+		// unknown syntax:class _OgreExport Listener;
 		// unknown syntax:Camera(String name,SceneManager* sm);
 		// unknown syntax:~Camera();
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addListener,										,(ParamListener*(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeListener,										,(ParamListener*(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneManager,						getSceneManager,						,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushString,								getName,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													setPolygonMode,						,(ParamPolygonMode(L,2))	);
@@ -817,7 +884,7 @@ class cLugreLuaBind_Ogre_Camera : public cLuaBindDirect<Ogre::Camera>, public cL
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													setWindow,							,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(													resetWindow,							,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,								isWindowSet,							,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			Pushstd::vector<Plane>,							getWindowPlanes,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			Pushvector<Plane>::type,						getWindowPlanes,									,()	);
 		// in parent: Real getBoundingRadius(void);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneNode,							getAutoTrackTarget,					,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVector3,							getAutoTrackOffset,					,()	);
@@ -827,7 +894,7 @@ class cLugreLuaBind_Ogre_Camera : public cLuaBindDirect<Ogre::Camera>, public cL
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,								getAutoAspectRatio,					,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setCullingFrustum,									,(ParamFrustum(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushFrustum,									getCullingFrustum,									,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															forwardIntersect,									,(ParamPlane(L,2),Paramstd::vector<Vector4>*(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															forwardIntersect,									,(ParamPlane(L,2),Paramvector<Vector4>::type*(L,3))	);
 		// in parent: bool isVisible(AxisAlignedBox bound,FrustumPlane* culledBy);
 		// in parent: bool isVisible(Sphere bound,FrustumPlane* culledBy);
 		// in parent: bool isVisible(Vector3 vert,FrustumPlane* culledBy);
@@ -881,11 +948,12 @@ class cLugreLuaBind_Ogre_SceneNode : public cLuaBindDirect<Ogre::SceneNode>, pub
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									removeAndDestroyChild,2				,(ParamInt(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									removeAndDestroyAllChildren,			,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									showBoundingBox,						,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																hideBoundingBox,									,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_addBoundingBoxToQueue,								,(ParamRenderQueue(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,				getShowBoundingBox,					,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneNode,			createChildSceneNode,				,(ParamVector3(L,2),ParamQuaternion(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneNode,			createChildSceneNode,2				,(ParamString(L,2),ParamVector3(L,3),ParamQuaternion(L,4))	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															findLights,											,(ParamLightList(L,2),ParamNumber(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															findLights,											,(ParamLightList(L,2),ParamNumber(L,3),ParamInt(L,4))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									setFixedYawAxis,						,(ParamBool(L,2),ParamVector3(L,3))	);
 		// in parent: void yaw(Radian angle,TransformSpace relativeTo);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									setDirection,						,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamTransformSpace(L,5),ParamVector3(L,6))	);
@@ -900,6 +968,7 @@ class cLugreLuaBind_Ogre_SceneNode : public cLuaBindDirect<Ogre::SceneNode>, pub
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									setVisible,							,(ParamBool(L,2),ParamBool(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									flipVisibility,						,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(									setDebugDisplayEnabled,				,(ParamBool(L,2),ParamBool(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushDebugRenderable*,							getDebugRenderable,									,()	);
 		
 	}
 	virtual const char* GetLuaTypeName () { return "lugre.ogre.SceneNode"; }
@@ -968,14 +1037,16 @@ class cLugreLuaBind_Ogre_VertexData : public cLuaBindDirect<Ogre::VertexData>, p
 		});
 		
 			
-		// unknown syntax:VertexData();
+		// unknown syntax:VertexData(HardwareBufferManagerBase* mgr);
+		// unknown syntax:VertexData(VertexDeclaration* dcl,VertexBufferBinding* bind);
 		// unknown syntax:~VertexData();
 		// unknown syntax:VertexDeclaration* vertexDeclaration;
 		// unknown syntax:VertexBufferBinding* vertexBufferBinding;
+		// unknown syntax:bool mDeleteDclBinding;
 		// unknown syntax:size_t vertexStart;
 		// unknown syntax:size_t vertexCount;
 		// unknown syntax:struct HardwareAnimationData;
-		// unknown syntax:typedef std::vector<HardwareAnimationData> HardwareAnimationDataList;
+		// unknown syntax:typedef vector<HardwareAnimationData>::type HardwareAnimationDataList;
 		// unknown syntax:HardwareAnimationDataList hwAnimationDataList;
 		// unknown syntax:size_t hwAnimDataItemsUsed;
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVertexData,									clone,												,(ParamBool(L,2))	);
@@ -1086,7 +1157,7 @@ class cLugreLuaBind_Ogre_Skeleton : public cLuaBindDirect<Ogre::Skeleton>, publi
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBone,										createBone,4										,(ParamString(L,2),ParamInt(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumBones,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBone,										getRootBone,										,()	);
-		// unknown syntax:typedef std::vector<Bone* > BoneList;
+		// unknown syntax:typedef vector<Bone* >::type BoneList;
 		// unknown syntax:typedef VectorIterator<BoneList> BoneIterator;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBoneIterator,								getRootBoneIterator,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBoneIterator,								getBoneIterator,									,()	);
@@ -1112,7 +1183,7 @@ class cLugreLuaBind_Ogre_Skeleton : public cLuaBindDirect<Ogre::Skeleton>, publi
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																optimiseAllAnimations,								,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																addLinkedSkeletonAnimationSource,					,(ParamString(L,2),ParamNumber(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeAllLinkedSkeletonAnimationSources,			,()	);
-		// unknown syntax:typedef std::vector<LinkedSkeletonAnimationSource> LinkedSkeletonAnimSourceList;
+		// unknown syntax:typedef vector<LinkedSkeletonAnimationSource>::type LinkedSkeletonAnimSourceList;
 		// unknown syntax:typedef ConstVectorIterator<LinkedSkeletonAnimSourceList> LinkedSkeletonAnimSourceIterator;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLinkedSkeletonAnimSourceIterator,			getLinkedSkeletonAnimationSourceIterator,			,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyManualBonesDirty,							,()	);
@@ -1185,9 +1256,12 @@ class cLugreLuaBind_Ogre_Animation : public cLuaBindDirect<Ogre::Animation>, pub
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllNumericTracks,							,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroyAllVertexTracks,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																apply,												,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																applyToNode,										,(ParamNode(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																apply,2												,(ParamSkeleton(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															apply,3												,(ParamSkeleton(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamAnimationState::BoneBlendMask*(L,5),ParamNumber(L,6))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																apply,4												,(ParamEntity(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamBool(L,5),ParamBool(L,6))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															applyToAnimable,									,(ParamAnimableValuePtr(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																applyToVertexData,									,(ParamVertexData(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setInterpolationMode,								,(ParamInterpolationMode(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushInterpolationMode,							getInterpolationMode,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setRotationInterpolationMode,						,(ParamRotationInterpolationMode(L,2))	);
@@ -1196,11 +1270,11 @@ class cLugreLuaBind_Ogre_Animation : public cLuaBindDirect<Ogre::Animation>, pub
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushInterpolationMode,							getDefaultInterpolationMode,						,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setDefaultRotationInterpolationMode,				,(ParamRotationInterpolationMode(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushRotationInterpolationMode,					getDefaultRotationInterpolationMode,				,()	);
-		// unknown syntax:typedef std::map< short,NodeAnimationTrack* > NodeTrackList;
+		// unknown syntax:typedef map< short,NodeAnimationTrack* >::type NodeTrackList;
 		// unknown syntax:typedef ConstMapIterator<NodeTrackList> NodeTrackIterator;
-		// unknown syntax:typedef std::map< short,NumericAnimationTrack* > NumericTrackList;
+		// unknown syntax:typedef map< short,NumericAnimationTrack* >::type NumericTrackList;
 		// unknown syntax:typedef ConstMapIterator<NumericTrackList> NumericTrackIterator;
-		// unknown syntax:typedef std::map< short,VertexAnimationTrack* > VertexTrackList;
+		// unknown syntax:typedef map< short,VertexAnimationTrack* >::type VertexTrackList;
 		// unknown syntax:typedef ConstMapIterator<VertexTrackList> VertexTrackIterator;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNodeTrackList,								_getNodeTrackList,									,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNodeTrackIterator,							getNodeTrackIterator,								,()	);
@@ -1209,7 +1283,7 @@ class cLugreLuaBind_Ogre_Animation : public cLuaBindDirect<Ogre::Animation>, pub
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVertexTrackList,							_getVertexTrackList,								,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVertexTrackIterator,						getVertexTrackIterator,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																optimise,											,(ParamBool(L,2))	);
-		// unknown syntax:typedef std::set<ushort> TrackHandleList;
+		// unknown syntax:typedef set<ushort>::type TrackHandleList;
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_collectIdentityNodeTracks,							,(ParamTrackHandleList(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_destroyNodeTracks,									,(ParamTrackHandleList(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushAnimation,									clone,												,(ParamString(L,2))	);
@@ -1261,21 +1335,25 @@ class cLugreLuaBind_Ogre_Mesh : public cLuaBindDirect<Ogre::Mesh>, public cLuaBi
 			return 1;
 		});
 		
-		// unknown syntax:typedef std::vector<Real> LodDistanceList;
-		// unknown syntax:typedef std::multimap<size_t,VertexBoneAssignment> VertexBoneAssignmentList;
+		// unknown syntax:typedef vector<Real>::type LodValueList;
+		// unknown syntax:typedef vector<MeshLodUsage>::type MeshLodUsageList;
+		// unknown syntax:typedef multimap<size_t,VertexBoneAssignment>::type VertexBoneAssignmentList;
 		// unknown syntax:typedef MapIterator<VertexBoneAssignmentList> BoneAssignmentIterator;
-		// unknown syntax:typedef std::vector<SubMesh* > SubMeshList;
-		// unknown syntax:typedef std::vector< short> IndexMap;
+		// unknown syntax:typedef vector<SubMesh* >::type SubMeshList;
+		// unknown syntax:typedef vector< short>::type IndexMap;
 		// unknown syntax:typedef HashMap<String,ushort> SubMeshNameMap;
 		// unknown syntax:Mesh(ResourceManager* creator,String name,ResourceHandle handle,String group,bool isManual,ManualResourceLoader* loader);
 		// unknown syntax:~Mesh();
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubMesh,									createSubMesh,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubMesh,									createSubMesh,2										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																nameSubMesh,										,(ParamString(L,2),ParamInt(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																unnameSubMesh,										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										_getSubMeshIndex,									,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumSubMeshes,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubMesh,									getSubMesh,											,(ParamInt(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubMesh,									getSubMesh,2										,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroySubMesh,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																destroySubMesh,2									,(ParamString(L,2))	);
 		// unknown syntax:typedef VectorIterator<SubMeshList> SubMeshIterator;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSubMeshIterator,							getSubMeshIterator,									,()	);
 		// unknown syntax:VertexData* sharedVertexData;
@@ -1297,10 +1375,10 @@ class cLugreLuaBind_Ogre_Mesh : public cLuaBindDirect<Ogre::Mesh>, public cLuaBi
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_notifySkeleton,									,(ParamSkeletonPtr(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBoneAssignmentIterator,						getBoneAssignmentIterator,							,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVertexBoneAssignmentList,					getBoneAssignments,									,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															generateLodLevels,									,(ParamLodDistanceList(L,2),ParamProgressiveMesh::VertexReductionQuota(L,3),ParamNumber(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															generateLodLevels,									,(ParamLodValueList(L,2),ParamProgressiveMesh::VertexReductionQuota(L,3),ParamNumber(L,4))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumLodLevels,									,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMeshLodUsage,								getLodLevel,										,(ParamInt(L,2))	);
-		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																createManualLodLevel,								,(ParamNumber(L,2),ParamString(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																createManualLodLevel,								,(ParamNumber(L,2),ParamString(L,3),ParamString(L,4))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																updateManualLodLevel,								,(ParamInt(L,2),ParamString(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getLodIndex,										,(ParamNumber(L,2))	);
 #if OGRE_VERSION < 0x10700
@@ -1332,7 +1410,7 @@ class cLugreLuaBind_Ogre_Mesh : public cLuaBindDirect<Ogre::Mesh>, public cLuaBi
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															prepareMatricesForVertexBlend,						,(ParamMatrix4**(L,2),ParamMatrix4*(L,3),ParamIndexMap(L,4))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															softwareVertexBlend,								,(ParamVertexData(L,2),ParamVertexData(L,3),ParamMatrix4**(L,4),ParamInt(L,5),ParamBool(L,6))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															softwareVertexMorph,								,(ParamNumber(L,2),ParamHardwareVertexBufferSharedPtr(L,3),ParamHardwareVertexBufferSharedPtr(L,4),ParamVertexData(L,5))	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															softwareVertexPoseBlend,							,(ParamNumber(L,2),Paramstd::map<size_t(L,3),ParamVector3>(L,4),ParamVertexData(L,5))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															softwareVertexPoseBlend,							,(ParamNumber(L,2),Parammap<size_t(L,3),ParamVector3>::type(L,4),ParamVertexData(L,5))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSubMeshNameMap,								getSubMeshNameMap,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAutoBuildEdgeLists,								,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getAutoBuildEdgeLists,								,()	);
@@ -1361,6 +1439,8 @@ class cLugreLuaBind_Ogre_Mesh : public cLuaBindDirect<Ogre::Mesh>, public cLuaBi
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPoseIterator,								getPoseIterator,									,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushConstPoseIterator,							getPoseIterator,2									,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPoseList,									getPoseList,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLodStrategy*,								getLodStrategy,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setLodStrategy,										,(ParamLodStrategy*(L,2))	);
 		
 	}
 	virtual const char* GetLuaTypeName () { return "lugre.ogre.Mesh"; }
@@ -1413,18 +1493,18 @@ class cLugreLuaBind_Ogre_SubMesh : public cLuaBindDirect<Ogre::SubMesh>, public 
 		// unknown syntax:RenderOperation::OperationType operationType;
 		// unknown syntax:VertexData* vertexData;
 		// unknown syntax:IndexData* indexData;
-		// unknown syntax:typedef std::vector< short> IndexMap;
+		// unknown syntax:typedef vector< short>::type IndexMap;
 		// unknown syntax:IndexMap blendIndexToBoneIndexMap;
 		// unknown syntax:ProgressiveMesh::LODFaceList mLodFaceList;
-		// unknown syntax:std::vector<Vector3> extremityPoints;
+		// unknown syntax:vector<Vector3>::type extremityPoints;
 		// unknown syntax:Mesh* parent;
-		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getMaterialName,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isMatInitialised,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_getRenderOperation,								,(ParamByRefRenderOperation(L,2),ParamInt(L,3))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addBoneAssignment,									,(ParamVertexBoneAssignment(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																clearBoneAssignments,								,()	);
-		// unknown syntax:typedef std::multimap<size_t,VertexBoneAssignment> VertexBoneAssignmentList;
+		// unknown syntax:typedef multimap<size_t,VertexBoneAssignment>::type VertexBoneAssignmentList;
 		// unknown syntax:typedef MapIterator<VertexBoneAssignmentList> BoneAssignmentIterator;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBoneAssignmentIterator,						getBoneAssignmentIterator,							,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushVertexBoneAssignmentList,					getBoneAssignments,									,()	);
@@ -1451,7 +1531,7 @@ class cLugreLuaBind_Ogre_SubEntity : public cLuaBindDirect<Ogre::SubEntity>, pub
 		LUABIND_DIRECTWRAP_BASECLASS(Ogre::Renderable);
 		
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getMaterialName,									,()	);
-		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2),ParamString(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setMaterial,										,(ParamMaterialPtr(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setVisible,											,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isVisible,											,()	);
@@ -1486,18 +1566,19 @@ class cLugreLuaBind_Ogre_Entity : public cLuaBindDirect<Ogre::Entity>, public cL
 	virtual void RegisterMethods	(lua_State *L) { PROFILE
 		LUABIND_DIRECTWRAP_BASECLASS(Ogre::MovableObject);
 		
-		// unknown syntax:typedef std::set<Entity* > EntitySet;
-		// unknown syntax:typedef std::map<String,MovableObject* > ChildObjectList;
+		// unknown syntax:typedef set<Entity* >::type EntitySet;
+		// unknown syntax:typedef map<String,MovableObject* >::type ChildObjectList;
 		// unknown syntax:~Entity();
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushMeshPtr,									getMesh,											,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubEntity,									getSubEntity,										,(ParamInt(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubEntity,									getSubEntity,2										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumSubEntities,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										clone,												,(ParamString(L,2))	);
-		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setMaterial,										,(ParamMaterialPtr(L,2))	);
 		// in parent: void _notifyCurrentCamera(Camera* cam);
 		// in parent: void setRenderQueueGroup(uint8 queueID);
+		// in parent: void setRenderQueueGroupAndPriority(uint8 queueID,ushort priority);
 		// in parent: AxisAlignedBox getBoundingBox(void);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushAxisAlignedBox,								getChildObjectsBoundingBox,							,()	);
 		// in parent: void _updateRenderQueue(RenderQueue* queue);
@@ -1559,6 +1640,9 @@ class cLugreLuaBind_Ogre_Entity : public cLuaBindDirect<Ogre::Entity>, public cL
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_deinitialise,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																backgroundLoadingComplete,							,(ParamResource(L,2))	);
 		// in parent: void visitRenderables(Renderable::Visitor* visitor,bool debugRenderables);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										_getMeshLodFactorTransformed,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSkipAnimationStateUpdate,						,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getSkipAnimationStateUpdate,						,()	);
 		
 		LUABIND_PrefixConstant(Ogre::Entity,BIND_ORIGINAL)
 		LUABIND_PrefixConstant(Ogre::Entity,BIND_SOFTWARE_SKELETAL)
@@ -1585,8 +1669,8 @@ class cLugreLuaBind_Ogre_AnimationTrack : public cLuaBindDirect<Ogre::AnimationT
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_keyFrameDataChanged,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasNonZeroKeyFrames,								,()	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																optimise,											,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_collectKeyFrameTimes,								,(Paramstd::vector<Real>(L,2))	);
-		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_buildKeyFrameIndexMap,								,(Paramstd::vector<Real>(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_collectKeyFrameTimes,								,(Paramvector<Real>::type(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_buildKeyFrameIndexMap,								,(Paramvector<Real>::type(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setListener,										,(ParamListener*(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushAnimation,									getParent,											,()	);
 		
@@ -1719,7 +1803,7 @@ class cLugreLuaBind_Ogre_VertexPoseKeyFrame : public cLuaBindDirect<Ogre::Vertex
 		// unknown syntax:VertexPoseKeyFrame(AnimationTrack* parent,Real time);
 		// unknown syntax:~VertexPoseKeyFrame();
 		// unknown syntax:struct PoseRef;
-		// unknown syntax:typedef std::vector<PoseRef> PoseRefList;
+		// unknown syntax:typedef vector<PoseRef>::type PoseRefList;
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																addPoseReference,									,(ParamInt(L,2),ParamNumber(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																updatePoseReference,								,(ParamInt(L,2),ParamNumber(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removePoseReference,								,(ParamInt(L,2))	);
@@ -1798,6 +1882,9 @@ class cLugreLuaBind_Ogre_Image : public cLuaBindDirect<Ogre::Image>, public cLua
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									loadRawData,2										,(ParamDataStreamPtr(L,2),ParamInt(L,3),ParamInt(L,4),ParamPixelFormat(L,5))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									load,												,(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									load,2												,(ParamDataStreamPtr(L,2),ParamString(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									loadTwoImagesAsRGBA,								,(ParamString(L,2),ParamString(L,3),ParamString(L,4),ParamPixelFormat(L,5))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									loadTwoImagesAsRGBA,2								,(ParamDataStreamPtr(L,2),ParamDataStreamPtr(L,3),ParamPixelFormat(L,4),ParamString(L,5),ParamString(L,6))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									combineTwoImagesAsRGBA,								,(ParamByRefImage(L,2),ParamByRefImage(L,3),ParamPixelFormat(L,4))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																save,												,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushDataStreamPtr,								encode,												,(ParamString(L,2))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			Pushuchar*,										getData,											,()	);
@@ -1816,6 +1903,7 @@ class cLugreLuaBind_Ogre_Image : public cLuaBindDirect<Ogre::Image>, public cLua
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																applyGamma,											,((uchar*)ParamFIFOData(L,2),ParamNumber(L,3),ParamInt(L,4),ParamInt(L,5))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getColourAt,										,(ParamInt(L,2),ParamInt(L,3),ParamInt(L,4))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPixelBox,									getPixelBox,										,(ParamInt(L,2),ParamInt(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																freeMemory,											,()	);
 		// unknown syntax:enum Filter;
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															scale,												,(ParamPixelBox(L,2),ParamPixelBox(L,3),ParamFilter(L,4))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															resize,												,(ParamInt(L,2),ParamInt(L,3),ParamFilter(L,4))	);
@@ -1857,6 +1945,7 @@ class cLugreLuaBind_Ogre_Texture : public cLuaBindDirect<Ogre::Texture>, public 
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setFSAA,											,(ParamInt(L,2),ParamString(L,3))	);
 #endif
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getFSAA,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getFSAAHint,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getHeight,											,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getWidth,											,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getDepth,											,()	);
@@ -1888,6 +1977,7 @@ class cLugreLuaBind_Ogre_Texture : public cLuaBindDirect<Ogre::Texture>, public 
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getTreatLuminanceAsAlpha,							,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumFaces,										,()	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushHardwarePixelBufferSharedPtr,				getBuffer,											,(ParamInt(L,2),ParamInt(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																convertToImage,										,(ParamByRefImage(L,2),ParamBool(L,3))	);
 		
 		
 		LUABIND_PrefixConstant(Ogre,TEX_TYPE_1D)
@@ -1896,6 +1986,544 @@ class cLugreLuaBind_Ogre_Texture : public cLuaBindDirect<Ogre::Texture>, public 
 		LUABIND_PrefixConstant(Ogre,TEX_TYPE_CUBE_MAP)
 	}
 	virtual const char* GetLuaTypeName () { return "lugre.ogre.Texture"; }
+};
+
+class cLugreLuaBind_Ogre_Material : public cLuaBindDirect<Ogre::Material>, public cLuaBindDirectOgreHelper { public:
+	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		// unknown syntax:typedef vector<Real>::type LodValueList;
+		// unknown syntax:typedef ConstVectorIterator<LodValueList> LodValueIterator;
+		// unknown syntax:Material(ResourceManager* creator,String name,ResourceHandle handle,String group,bool isManual,ManualResourceLoader* loader);
+		// unknown syntax:~Material();
+		// unknown syntax:Material operator);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isTransparent,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setReceiveShadows,									,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getReceiveShadows,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTransparencyCastsShadows,						,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getTransparencyCastsShadows,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									createTechnique,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									getTechnique,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									getTechnique,2										,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumTechniques,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeTechnique,									,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeAllTechniques,								,()	);
+		// unknown syntax:typedef VectorIterator<Techniques> TechniqueIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTechniqueIterator,							getTechniqueIterator,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTechniqueIterator,							getSupportedTechniqueIterator,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									getSupportedTechnique,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumSupportedTechniques,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getUnsupportedTechniquesExplanation,				,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumLodLevels,									,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumLodLevels,2									,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									getBestTechnique,									,(ParamInt(L,2),ParamRenderable(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMaterialPtr,								clone,												,(ParamString(L,2),ParamBool(L,3),ParamString(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															copyDetailsTo,										,(ParamMaterialPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																compile,											,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointSize,										,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAmbient,											,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAmbient,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDiffuse,											,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDiffuse,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSpecular,										,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSpecular,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShininess,										,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSelfIllumination,								,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSelfIllumination,2								,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthCheckEnabled,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthWriteEnabled,								,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setDepthFunction,									,(ParamCompareFunction(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setColourWriteEnabled,								,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setCullingMode,										,(ParamCullingMode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setManualCullingMode,								,(ParamManualCullingMode(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightingEnabled,									,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadingMode,										,(ParamShadeOptions(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setFog,												,(ParamBool(L,2),ParamFogMode(L,3),ParamColourValue(L,4),ParamNumber(L,5),ParamNumber(L,6),ParamNumber(L,7))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthBias,										,(ParamNumber(L,2),ParamNumber(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureFiltering,								,(ParamTextureFilterOptions(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureAnisotropy,								,(ParamInt(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlending,									,(ParamSceneBlendType(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlending,							,(ParamSceneBlendType(L,2),ParamSceneBlendType(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlending,2									,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlending,2							,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3),ParamSceneBlendFactor(L,4),ParamSceneBlendFactor(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyNeedsRecompile,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setLodLevels,										,(ParamLodValueList(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLodValueIterator,							getLodValueIterator,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getLodIndex,										,(ParamNumber(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLodStrategy*,								getLodStrategy,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setLodStrategy,										,(ParamLodStrategy*(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																touch,												,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										applyTextureAliases,								,(ParamAliasTextureNamePairList(L,2),ParamBool(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getCompilationRequired,								,()	);
+		
+	}
+	virtual const char* GetLuaTypeName () { return "lugre.ogre.Material"; }
+};
+
+class cLugreLuaBind_Ogre_Technique : public cLuaBindDirect<Ogre::Technique>, public cLuaBindDirectOgreHelper { public:
+	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		// unknown syntax:enum IncludeOrExclude;
+		// unknown syntax:struct GPUVendorRule;
+		// unknown syntax:struct GPUDeviceNameRule;
+		// unknown syntax:typedef vector<GPUVendorRule>::type GPUVendorRuleList;
+		// unknown syntax:typedef vector<GPUDeviceNameRule>::type GPUDeviceNameRuleList;
+		// unknown syntax:Technique(Material* parent);
+		// unknown syntax:Technique(Material* parent,Technique oth);
+		// unknown syntax:~Technique();
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isSupported,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										_compile,											,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										checkGPURules,										,(ParamStringUtil::StrStreamType(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										checkHardwareSupport,								,(ParamBool(L,2),ParamStringUtil::StrStreamType(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_compileIlluminationPasses,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushPass,										createPass,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushPass,										getPass,											,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushPass,										getPass,2											,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumPasses,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removePass,											,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeAllPasses,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										movePass,											,(ParamInt(L,2),ParamInt(L,3))	);
+		// unknown syntax:typedef VectorIterator<Passes> PassIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPassIterator,								getPassIterator,									,()	);
+		// unknown syntax:typedef VectorIterator<IlluminationPassList> IlluminationPassIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushIlluminationPassIterator,					getIlluminationPassIterator,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushMaterial,									getParent,											,()	);
+		// unknown syntax:Technique operator);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getResourceGroup,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isTransparent,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isTransparentSortingEnabled,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isTransparentSortingForced,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_prepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_unprepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_load,												,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_unload,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isLoaded,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyNeedsRecompile,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMaterialPtr,								getShadowCasterMaterial,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadowCasterMaterial,							,(ParamMaterialPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowCasterMaterial,2							,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushMaterialPtr,								getShadowReceiverMaterial,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadowReceiverMaterial,							,(ParamMaterialPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowReceiverMaterial,2							,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointSize,										,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAmbient,											,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAmbient,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDiffuse,											,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDiffuse,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSpecular,										,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSpecular,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShininess,										,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSelfIllumination,								,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSelfIllumination,2								,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthCheckEnabled,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthWriteEnabled,								,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setDepthFunction,									,(ParamCompareFunction(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setColourWriteEnabled,								,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setCullingMode,										,(ParamCullingMode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setManualCullingMode,								,(ParamManualCullingMode(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightingEnabled,									,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadingMode,										,(ParamShadeOptions(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setFog,												,(ParamBool(L,2),ParamFogMode(L,3),ParamColourValue(L,4),ParamNumber(L,5),ParamNumber(L,6),ParamNumber(L,7))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthBias,										,(ParamNumber(L,2),ParamNumber(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureFiltering,								,(ParamTextureFilterOptions(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureAnisotropy,								,(ParamInt(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlending,									,(ParamSceneBlendType(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlending,							,(ParamSceneBlendType(L,2),ParamSceneBlendType(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlending,2									,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlending,2							,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3),ParamSceneBlendFactor(L,4),ParamSceneBlendFactor(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLodIndex,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getLodIndex,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSchemeName,										,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getSchemeName,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										_getSchemeIndex,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isDepthWriteEnabled,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isDepthCheckEnabled,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasColourWriteDisabled,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setName,											,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getName,											,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										applyTextureAliases,								,(ParamAliasTextureNamePairList(L,2),ParamBool(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addGPUVendorRule,									,(ParamGPUVendor(L,2),ParamIncludeOrExclude(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addGPUVendorRule,2									,(ParamGPUVendorRule(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeGPUVendorRule,								,(ParamGPUVendor(L,2))	);
+		// unknown syntax:typedef ConstVectorIterator<GPUVendorRuleList> GPUVendorRuleIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGPUVendorRuleIterator,						getGPUVendorRuleIterator,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addGPUDeviceNameRule,								,(ParamString(L,2),ParamIncludeOrExclude(L,3),ParamBool(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addGPUDeviceNameRule,2								,(ParamGPUDeviceNameRule(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeGPUDeviceNameRule,							,(ParamString(L,2))	);
+		// unknown syntax:typedef ConstVectorIterator<GPUDeviceNameRuleList> GPUDeviceNameRuleIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGPUDeviceNameRuleIterator,					getGPUDeviceNameRuleIterator,						,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,2								,()	);
+		
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::Technique,INCLUDE)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::Technique,EXCLUDE)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::Technique,IPS_COMPILE_DISABLED)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::Technique,IPS_NOT_COMPILED)
+		// PROTECTED! LUABIND_PrefixConstant(Ogre::Technique,IPS_COMPILED)
+	}
+	virtual const char* GetLuaTypeName () { return "lugre.ogre.Technique"; }
+};
+
+class cLugreLuaBind_Ogre_Pass : public cLuaBindDirect<Ogre::Pass>, public cLuaBindDirectOgreHelper { public:
+	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		// unknown syntax:struct HashFunc;
+		// unknown syntax:typedef set<Pass* >::type PassSet;
+		// unknown syntax:OGRE_STATIC_MUTEX(msDirtyHashListMutex)OGRE_STATIC_MUTEX(msPassGraveyardMutex)Pass(Technique* parent,short index);
+		// unknown syntax:Pass(Technique* parent,short index,Pass oth);
+		// unknown syntax:Pass operator);
+		// unknown syntax:~Pass();
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isProgrammable,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasVertexProgram,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasFragmentProgram,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasGeometryProgram,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasShadowCasterVertexProgram,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasShadowReceiverVertexProgram,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasShadowReceiverFragmentProgram,					,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getIndex,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setName,											,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getName,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAmbient,											,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAmbient,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDiffuse,											,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDiffuse,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSpecular,										,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSpecular,2										,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShininess,										,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSelfIllumination,								,(ParamNumber(L,2),ParamNumber(L,3),ParamNumber(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setSelfIllumination,2								,(ParamColourValue(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setVertexColourTracking,							,(ParamTrackVertexColourType(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPointSize,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointSize,										,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointSpritesEnabled,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getPointSpritesEnabled,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointAttenuation,								,(ParamBool(L,2),ParamNumber(L,3),ParamNumber(L,4),ParamNumber(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isPointAttenuationEnabled,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPointAttenuationConstant,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPointAttenuationLinear,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPointAttenuationQuadratic,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointMinSize,									,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPointMinSize,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPointMaxSize,									,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPointMaxSize,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getAmbient,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getDiffuse,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getSpecular,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getSelfIllumination,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getShininess,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTrackVertexColourType,						getVertexColourTracking,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTextureUnitState,							createTextureUnitState,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTextureUnitState,							createTextureUnitState,2							,(ParamString(L,2),ParamInt(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																addTextureUnitState,								,(ParamTextureUnitState(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTextureUnitState,							getTextureUnitState,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTextureUnitState,							getTextureUnitState,2								,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTextureUnitState,							getTextureUnitState,3								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTextureUnitState,							getTextureUnitState,4								,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureUnitStateIndex,							,(ParamTextureUnitState(L,2))	);
+		// unknown syntax:typedef VectorIterator<TextureUnitStates> TextureUnitStateIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTextureUnitStateIterator,					getTextureUnitStateIterator,						,()	);
+		// unknown syntax:typedef ConstVectorIterator<TextureUnitStates> ConstTextureUnitStateIterator;
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushConstTextureUnitStateIterator,				getTextureUnitStateIterator,2						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeTextureUnitState,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeAllTextureUnitStates,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumTextureUnitStates,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlending,									,(ParamSceneBlendType(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlending,							,(ParamSceneBlendType(L,2),ParamSceneBlendType(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlending,2									,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlending,2							,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3),ParamSceneBlendFactor(L,4),ParamSceneBlendFactor(L,5))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasSeparateSceneBlending,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendFactor,							getSourceBlendFactor,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendFactor,							getDestBlendFactor,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendFactor,							getSourceBlendFactorAlpha,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendFactor,							getDestBlendFactorAlpha,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSceneBlendingOperation,							,(ParamSceneBlendOperation(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setSeparateSceneBlendingOperation,					,(ParamSceneBlendOperation(L,2),ParamSceneBlendOperation(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasSeparateSceneBlendingOperations,					,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendOperation,						getSceneBlendingOperation,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendOperation,						getSceneBlendingOperationAlpha,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isTransparent,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthCheckEnabled,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getDepthCheckEnabled,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthWriteEnabled,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getDepthWriteEnabled,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setDepthFunction,									,(ParamCompareFunction(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCompareFunction,							getDepthFunction,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setColourWriteEnabled,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getColourWriteEnabled,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setCullingMode,										,(ParamCullingMode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCullingMode,								getCullingMode,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setManualCullingMode,								,(ParamManualCullingMode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushManualCullingMode,							getManualCullingMode,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightingEnabled,									,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getLightingEnabled,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaxSimultaneousLights,							,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getMaxSimultaneousLights,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setStartLight,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getStartLight,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadingMode,										,(ParamShadeOptions(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushShadeOptions,								getShadingMode,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPolygonMode,										,(ParamPolygonMode(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPolygonMode,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPolygonModeOverrideable,							,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getPolygonModeOverrideable,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setFog,												,(ParamBool(L,2),ParamFogMode(L,3),ParamColourValue(L,4),ParamNumber(L,5),ParamNumber(L,6),ParamNumber(L,7))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getFogOverride,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getFogMode,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getFogColour,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getFogStart,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getFogEnd,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getFogDensity,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDepthBias,										,(ParamNumber(L,2),ParamNumber(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getDepthBiasConstant,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getDepthBiasSlopeScale,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setIterationDepthBias,								,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getIterationDepthBias,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setAlphaRejectSettings,								,(ParamCompareFunction(L,2),Paramchar(L,3),ParamBool(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setAlphaRejectFunction,								,(ParamCompareFunction(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setAlphaRejectValue,								,(Paramchar(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCompareFunction,							getAlphaRejectFunction,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			Pushchar,										getAlphaRejectValue,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAlphaToCoverageEnabled,							,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isAlphaToCoverageEnabled,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTransparentSortingEnabled,						,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getTransparentSortingEnabled,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTransparentSortingForced,						,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getTransparentSortingForced,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setIteratePerLight,									,(ParamBool(L,2),ParamBool(L,3),ParamLightTypes(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getIteratePerLight,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getRunOnlyForOneLightType,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLight::LightTypes,							getOnlyLightType,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightCountPerIteration,							,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getLightCountPerIteration,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushTechnique,									getParent,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getResourceGroup,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setVertexProgram,									,(ParamString(L,2),ParamBool(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setVertexProgramParameters,							,(ParamGpuProgramParametersSharedPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getVertexProgramName,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramParametersSharedPtr,				getVertexProgramParameters,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramPtr,								getVertexProgram,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowCasterVertexProgram,						,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadowCasterVertexProgramParameters,				,(ParamGpuProgramParametersSharedPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getShadowCasterVertexProgramName,					,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramParametersSharedPtr,				getShadowCasterVertexProgramParameters,				,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramPtr,								getShadowCasterVertexProgram,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowReceiverVertexProgram,						,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadowReceiverVertexProgramParameters,			,(ParamGpuProgramParametersSharedPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setShadowReceiverFragmentProgram,					,(ParamString(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setShadowReceiverFragmentProgramParameters,			,(ParamGpuProgramParametersSharedPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getShadowReceiverVertexProgramName,					,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramParametersSharedPtr,				getShadowReceiverVertexProgramParameters,			,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramPtr,								getShadowReceiverVertexProgram,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getShadowReceiverFragmentProgramName,				,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramParametersSharedPtr,				getShadowReceiverFragmentProgramParameters,			,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramPtr,								getShadowReceiverFragmentProgram,					,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setFragmentProgram,									,(ParamString(L,2),ParamBool(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setFragmentProgramParameters,						,(ParamGpuProgramParametersSharedPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getFragmentProgramName,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramParametersSharedPtr,				getFragmentProgramParameters,						,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramPtr,								getFragmentProgram,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setGeometryProgram,									,(ParamString(L,2),ParamBool(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setGeometryProgramParameters,						,(ParamGpuProgramParametersSharedPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getGeometryProgramName,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramParametersSharedPtr,				getGeometryProgramParameters,						,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushGpuProgramPtr,								getGeometryProgram,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushPass,										_split,												,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyIndex,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_prepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_unprepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_load,												,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_unload,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isLoaded,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getHash,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_dirtyHash,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_recalculateHash,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyNeedsRecompile,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_updateAutoParams,									,(ParamAutoParamDataSource*(L,2),Paramuint16(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushNumber,										_getTextureUnitWithContentTypeIndex,				,(ParamTextureUnitState::ContentType(L,2),ParamInt(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureFiltering,								,(ParamTextureFilterOptions(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureAnisotropy,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setNormaliseNormals,								,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getNormaliseNormals,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPassSet,									getDirtyHashList,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushPassSet,									getPassGraveyard,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																clearDirtyHashList,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																processPendingPassUpdates,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																queueForDeletion,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isAmbientOnly,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setPassIterationCount,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getPassIterationCount,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										applyTextureAliases,								,(ParamAliasTextureNamePairList(L,2),ParamBool(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightScissoringEnabled,							,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getLightScissoringEnabled,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setLightClipPlanesEnabled,							,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getLightClipPlanesEnabled,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setIlluminationStage,								,(ParamIlluminationStage(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushIlluminationStage,							getIlluminationStage,								,()	);
+		// unknown syntax:enum BuiltinHashFunction;
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setHashFunction,									,(ParamBuiltinHashFunction(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setHashFunction,2									,(ParamHashFunc*(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushHashFunc*,									getHashFunction,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushHashFunc*,									getBuiltinHashFunction,								,(ParamBuiltinHashFunction(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUserObjectBindings,							getUserObjectBindings,2								,()	);
+		
+		LUABIND_PrefixConstant(Ogre::Pass,MIN_TEXTURE_CHANGE)
+		LUABIND_PrefixConstant(Ogre::Pass,MIN_GPU_PROGRAM_CHANGE)
+	}
+	virtual const char* GetLuaTypeName () { return "lugre.ogre.Pass"; }
+};
+
+class cLugreLuaBind_Ogre_TextureUnitState : public cLuaBindDirect<Ogre::TextureUnitState>, public cLuaBindDirectOgreHelper { public:
+	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		// unknown syntax:enum TextureEffectType;
+		// unknown syntax:enum EnvMapType;
+		// unknown syntax:enum TextureTransformType;
+		// unknown syntax:enum TextureAddressingMode;
+		// unknown syntax:struct UVWAddressingMode;
+		// unknown syntax:enum TextureCubeFace;
+		// unknown syntax:struct TextureEffect;
+		// unknown syntax:typedef multimap<TextureEffectType,TextureEffect>::type EffectMap;
+		// unknown syntax:TextureUnitState(Pass* parent);
+		// unknown syntax:TextureUnitState(Pass* parent,TextureUnitState oth);
+		// unknown syntax:TextureUnitState operator);
+		// unknown syntax:~TextureUnitState();
+		// unknown syntax:TextureUnitState(Pass* parent,String texName,int texCoordSet);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getTextureName,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureName,										,(ParamString(L,2),ParamTextureType(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setCubicTextureName,								,(ParamString(L,2),ParamBool(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setCubicTextureName,2								,(ParamString*(L,2),ParamBool(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setAnimatedTextureName,								,(ParamString(L,2),ParamInt(L,3),ParamNumber(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setAnimatedTextureName,2							,(ParamString*(L,2),ParamInt(L,3),ParamNumber(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			Pushstd::pair< size_t,size_t >,					getTextureDimensions,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setCurrentFrame,									,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getCurrentFrame,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getFrameTextureName,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setFrameTextureName,								,(ParamString(L,2),ParamInt(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																addFrameTextureName,								,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																deleteFrameTextureName,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumFrames,										,()	);
+		// unknown syntax:enum BindingType;
+		// unknown syntax:enum ContentType;
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setBindingType,										,(ParamBindingType(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBindingType,								getBindingType,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setContentType,										,(ParamContentType(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushContentType,								getContentType,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isCubic,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										is3D,												,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureType,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setDesiredFormat,									,(ParamPixelFormat(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getDesiredFormat,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setNumMipmaps,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumMipmaps,										,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setIsAlpha,											,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										getIsAlpha,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setHardwareGammaEnabled,							,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isHardwareGammaEnabled,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureCoordSet,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureCoordSet,									,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureTransform,								,(ParamMatrix4(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushMatrix4,									getTextureTransform,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureScroll,									,(ParamNumber(L,2),ParamNumber(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureUScroll,									,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureUScroll,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureVScroll,									,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureVScroll,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureUScale,									,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureUScale,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureVScale,									,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureVScale,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureScale,									,(ParamNumber(L,2),ParamNumber(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureRotate,									,(ParamRadian(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushRadian,										getTextureRotate,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushUVWAddressingMode,							getTextureAddressingMode,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureAddressingMode,							,(ParamTextureAddressingMode(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureAddressingMode,2							,(ParamTextureAddressingMode(L,2),ParamTextureAddressingMode(L,3),ParamTextureAddressingMode(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureAddressingMode,3							,(ParamUVWAddressingMode(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureBorderColour,								,(ParamColourValue(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushColourValue,								getTextureBorderColour,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setColourOperationEx,								,(ParamLayerBlendOperationEx(L,2),ParamLayerBlendSource(L,3),ParamLayerBlendSource(L,4),ParamColourValue(L,5),ParamColourValue(L,6),ParamNumber(L,7))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setColourOperation,									,(ParamLayerBlendOperation(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setColourOpMultipassFallback,						,(ParamSceneBlendFactor(L,2),ParamSceneBlendFactor(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLayerBlendModeEx,							getColourBlendMode,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushLayerBlendModeEx,							getAlphaBlendMode,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendFactor,							getColourBlendFallbackSrc,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSceneBlendFactor,							getColourBlendFallbackDest,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setAlphaOperation,									,(ParamLayerBlendOperationEx(L,2),ParamLayerBlendSource(L,3),ParamLayerBlendSource(L,4),ParamNumber(L,5),ParamNumber(L,6),ParamNumber(L,7))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															addEffect,											,(ParamTextureEffect(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setEnvironmentMap,									,(ParamBool(L,2),ParamEnvMapType(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setScrollAnimation,									,(ParamNumber(L,2),ParamNumber(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setRotateAnimation,									,(ParamNumber(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTransformAnimation,								,(ParamTextureTransformType(L,2),ParamWaveformType(L,3),ParamNumber(L,4),ParamNumber(L,5),ParamNumber(L,6),ParamNumber(L,7))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setProjectiveTexturing,								,(ParamBool(L,2),ParamFrustum(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																removeAllEffects,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															removeEffect,										,(ParamTextureEffectType(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isBlank,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setBlank,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isTextureLoadFailing,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																retryTextureLoad,									,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushEffectMap,									getEffects,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getAnimationDuration,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureFiltering,								,(ParamTextureFilterOptions(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureFiltering,2								,(ParamFilterType(L,2),ParamFilterOptions(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setTextureFiltering,3								,(ParamFilterOptions(L,2),ParamFilterOptions(L,3),ParamFilterOptions(L,4))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushFilterOptions,								getTextureFiltering,								,(ParamFilterType(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureAnisotropy,								,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureAnisotropy,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureMipmapBias,								,(ParamNumber(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getTextureMipmapBias,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setCompositorReference,								,(ParamString(L,2),ParamString(L,3),ParamInt(L,4))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getReferencedCompositorName,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getReferencedTextureName,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getReferencedMRTIndex,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushPass,										getParent,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_prepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_unprepare,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_load,												,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_unload,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										hasViewRelativeTextureCoordinateGeneration,			,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isLoaded,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyNeedsRecompile,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setName,											,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getName,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setTextureNameAlias,								,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getTextureNameAlias,								,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										applyTextureAliases,								,(ParamAliasTextureNamePairList(L,2),ParamBool(L,3))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_notifyParent,										,(ParamPass(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTexturePtr,									_getTexturePtr,										,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTexturePtr,									_getTexturePtr,2									,(ParamInt(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_setTexturePtr,										,(ParamTexturePtr(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															_setTexturePtr,2									,(ParamTexturePtr(L,2),ParamInt(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushController<Real>*,							_getAnimController,									,()	);
+		
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CONTENT_NAMED)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CONTENT_SHADOW)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CONTENT_COMPOSITOR)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CUBE_FRONT)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CUBE_BACK)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CUBE_LEFT)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CUBE_RIGHT)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CUBE_UP)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,CUBE_DOWN)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ENV_PLANAR)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ENV_CURVED)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ENV_REFLECTION)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ENV_NORMAL)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,BT_FRAGMENT)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,BT_VERTEX)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TAM_WRAP)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TAM_MIRROR)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TAM_CLAMP)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TAM_BORDER)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TT_TRANSLATE_U)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TT_TRANSLATE_V)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TT_SCALE_U)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TT_SCALE_V)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,TT_ROTATE)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_ENVIRONMENT_MAP)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_PROJECTIVE_TEXTURE)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_UVSCROLL)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_USCROLL)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_VSCROLL)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_ROTATE)
+		LUABIND_PrefixConstant(Ogre::TextureUnitState,ET_TRANSFORM)
+	}
+	virtual const char* GetLuaTypeName () { return "lugre.ogre.TextureUnitState"; }
 };
 
 class cLugreLuaBind_Ogre_RenderOperation : public cLuaBindDirect<Ogre::RenderOperation>, public cLuaBindDirectOgreHelper { public:
@@ -1941,7 +2569,7 @@ class cLugreLuaBind_Ogre_VertexDeclaration : public cLuaBindDirect<Ogre::VertexD
 		LUABIND_QUICKWRAP_STATIC(CreateVertexDeclaration, { return CreateUData(L,Ogre::HardwareBufferManager::getSingleton().createVertexDeclaration()); });
 		LUABIND_QUICKWRAP(Destroy,				{ delete checkudata_alive(L); });
 		
-		// unknown syntax:typedef std::list<VertexElement> VertexElementList;
+		// unknown syntax:typedef list<VertexElement>::type VertexElementList;
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushBool,										vertexElementLess,									,(ParamVertexElement(L,2),ParamVertexElement(L,3))	);
 		// unknown syntax:VertexDeclaration();
 		// unknown syntax:~VertexDeclaration();
@@ -2001,10 +2629,8 @@ class cLugreLuaBind_Ogre_VertexDeclaration : public cLuaBindDirect<Ogre::VertexD
 		LUABIND_PrefixConstant(Ogre,VES_BINORMAL)				// 	Binormal (Y axis if normal is Z).
 		LUABIND_PrefixConstant(Ogre,VES_TANGENT)				// 	Tangent (X axis if normal is Z). 
 	}
-	
-	virtual const char* GetLuaTypeName () { return "lugre.VertexDeclaration"; }
+	virtual const char* GetLuaTypeName () { return "lugre.ogre.VertexDeclaration"; }
 };
-
 
 /// lua binding
 void	LuaRegister_LuaBinds_Ogre 	(lua_State *L) { PROFILE
@@ -2037,6 +2663,10 @@ void	LuaRegister_LuaBinds_Ogre 	(lua_State *L) { PROFILE
 	cLuaBindDirect<Ogre::VertexPoseKeyFrame		>::GetSingletonPtr(new cLugreLuaBind_Ogre_VertexPoseKeyFrame(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::Image		>::GetSingletonPtr(new cLugreLuaBind_Ogre_Image(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::Texture		>::GetSingletonPtr(new cLugreLuaBind_Ogre_Texture(		))->LuaRegister(L);
+	cLuaBindDirect<Ogre::Material		>::GetSingletonPtr(new cLugreLuaBind_Ogre_Material(		))->LuaRegister(L);
+	cLuaBindDirect<Ogre::Technique		>::GetSingletonPtr(new cLugreLuaBind_Ogre_Technique(		))->LuaRegister(L);
+	cLuaBindDirect<Ogre::Pass		>::GetSingletonPtr(new cLugreLuaBind_Ogre_Pass(		))->LuaRegister(L);
+	cLuaBindDirect<Ogre::TextureUnitState		>::GetSingletonPtr(new cLugreLuaBind_Ogre_TextureUnitState(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::RenderOperation	>::GetSingletonPtr(new cLugreLuaBind_Ogre_RenderOperation(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::VertexDeclaration	>::GetSingletonPtr(new cLugreLuaBind_Ogre_VertexDeclaration(	))->LuaRegister(L);
 	LUABIND_QUICKWRAP_STATIC(getMaximumDepthInputValue, { return PushNumber(L,Ogre::Root::getSingleton().getRenderSystem()->getMaximumDepthInputValue()); });
