@@ -249,9 +249,10 @@ function cJumpPoint:Init (loc,x,y,z,r,matname,xmlnode)
 	self:InitObj(loc,x,y,z,r)
 	self.xmlnode = xmlnode
 	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
-	Gfx_SetJumpPoint(self.gfx,r)
+	JumpPointGfx_Init(self.gfx,r)
 end
 function cJumpPoint:GetHUDImageName () return "jump-hud.dds" end 
+function cJumpPoint:Step() JumpPointGfx_Step(self.gfx) end
 
 -- ***** ***** ***** ***** ***** cSun
 
