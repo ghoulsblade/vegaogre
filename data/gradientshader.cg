@@ -1,0 +1,42 @@
+// --------------------------------------------------------------------
+ // Gradient shader : vertex program
+ // Author : David de Lorenzo
+ // -----------------------------------------------------------------
+ void gradient_vp( in      float4   position  : POSITION,
+                  uniform float4x4 worldViewProj,
+                  uniform float3   camera_position_object_space,
+                  uniform float4   customParamColour,
+                  uniform float4   customParamRadius,
+                  out     float4   oPosition : POSITION,
+                  out     float4   oColor    : COLOR
+              )
+ {
+     // Get the custom parameters
+     float  objectradius = customParamRadius.x;
+ 
+     // calculate output position
+     oPosition = mul(worldViewProj, position);
+ 
+     // Calculate the color value, depending on the position
+     float3 vect_center_to_cam =  camera_position_object_space;
+     float3 position_closest   =  normalize(vect_center_to_cam) * objectradius;
+	
+	// Ratio on Center-to-Cam axis
+	float Rc = (position_closest.z * position.z ) + (position_closest.x * position.x);  
+     Rc =  Rc / (objectradius * objectradius);   // recalibrate (-1..1)
+     float ratio  = (1+Rc);                      // recalibrate ( 0..2) - (x2 to emphasis the color)
+ 
+     oColor= ratio * customParamColour;
+     oColor.r = oPosition.x;
+     oColor.g = oPosition.y;
+     oColor.b = oPosition.z;
+ }
+ 
+ // -----------------------------------------------------------------
+ // Gradient shader : fragment program
+ // Author : David de Lorenzo
+ // -----------------------------------------------------------------
+ float4 main_fp(in  float4 color  : COLOR) :  COLOR0
+ {
+   return (color);
+ }

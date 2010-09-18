@@ -38,3 +38,32 @@ function resolveCollision(collidingObject, staticObject, overlappLen)
 	collidingObject.y = collidingObject.y + resolveY
 	collidingObject.z = collidingObject.z + resolveZ
 end
+
+
+cCollisionHandler = CreateClass()
+
+function cCollisionHandler:Init ()
+	self.groups = {}
+end
+
+function cCollisionHandler:addObjectToGroup(object, groupNr)
+	if not self.groups[groupNr] then
+		self.groups[groupNr] = {}
+	end
+	
+	self.groups[groupNr][object] = true
+end
+
+function cCollisionHandler:removeObjectFromAllGroups(object)
+	for nr,list in pairs(self.groups) do
+		self:removeObjectFromGroup(object, nr)
+	end
+end
+
+function cCollisionHandler:removeObjectFromGroup(object, groupNr)
+	self.groups[groupNr][object] = nil
+end
+
+function cCollisionHandler:handleCollisionWithGroup(object, groupNr)
+	
+end
