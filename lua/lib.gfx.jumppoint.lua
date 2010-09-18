@@ -7,7 +7,7 @@ function JumpPointGfx_Init (gfx,r)
 end
 
 function JumpPointGfx_Step (gfx)
-	--~ gfx:SetOrientation(GetMainCam():GetRot())
+	gfx:SetOrientation(GetMainCam():GetRot())
 end
 
 function CreateJumpPointMeshGeometry ()
@@ -20,7 +20,7 @@ function CreateJumpPointMeshGeometry ()
 	
 	local rbase0 = 0
 	local rbase1 = 410
-	local zlen = 200
+	local zlen = -200
 	local sin = math.sin
 	local cos = math.cos
 	local pi = math.pi
