@@ -1446,6 +1446,42 @@ class cLugreLuaBind_Ogre_SubMesh : public cLuaBindDirect<Ogre::SubMesh>, public 
 	virtual const char* GetLuaTypeName () { return "lugre.ogre.SubMesh"; }
 };
 
+class cLugreLuaBind_Ogre_SubEntity : public cLuaBindDirect<Ogre::SubEntity>, public cLuaBindDirectOgreHelper { public:
+	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		LUABIND_DIRECTWRAP_BASECLASS(Ogre::Renderable);
+		
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushString,										getMaterialName,									,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2),ParamString(L,3))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(															setMaterial,										,(ParamMaterialPtr(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setVisible,											,(ParamBool(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isVisible,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubMesh,									getSubMesh,											,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										getParent,											,()	);
+		// in parent: MaterialPtr getMaterial(void);
+		// in parent: Technique* getTechnique(void);
+		// in parent: void getRenderOperation(RenderOperation op);
+		// in parent: void getWorldTransforms(Matrix4* xform);
+		// in parent: short getNumWorldTransforms(void);
+		// in parent: Real getSquaredViewDepth(Camera* cam);
+		// in parent: LightList getLights(void);
+		// in parent: bool getCastsShadows(void);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVertexData,									_getSkelAnimVertexData,								,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVertexData,									_getSoftwareVertexAnimVertexData,					,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVertexData,									_getHardwareVertexAnimVertexData,					,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTempBlendedBufferInfo*,						_getSkelAnimTempBufferInfo,							,()	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushTempBlendedBufferInfo*,						_getVertexAnimTempBufferInfo,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushVertexData,									getVertexDataForBinding,							,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_markBuffersUnusedForAnimation,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_markBuffersUsedForAnimation,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										_getBuffersMarkedForAnimation,						,()	);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_restoreBuffersForUnusedAnimation,					,(ParamBool(L,2))	);
+		// in parent: void _updateCustomGpuParameter(GpuProgramParameters::AutoConstantEntry antEntry,GpuProgramParameters* params);
+		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																_invalidateCameraCache,								,()	);
+		
+	}
+	virtual const char* GetLuaTypeName () { return "lugre.ogre.SubEntity"; }
+};
+
 class cLugreLuaBind_Ogre_Entity : public cLuaBindDirect<Ogre::Entity>, public cLuaBindDirectOgreHelper { public:
 	virtual void RegisterMethods	(lua_State *L) { PROFILE
 		LUABIND_DIRECTWRAP_BASECLASS(Ogre::MovableObject);
@@ -1454,8 +1490,8 @@ class cLugreLuaBind_Ogre_Entity : public cLuaBindDirect<Ogre::Entity>, public cL
 		// unknown syntax:typedef std::map<String,MovableObject* > ChildObjectList;
 		// unknown syntax:~Entity();
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushMeshPtr,									getMesh,											,()	);
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSubEntity*,									getSubEntity,										,(ParamInt(L,2))	);
-		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushSubEntity*,									getSubEntity,2										,(ParamString(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubEntity,									getSubEntity,										,(ParamInt(L,2))	);
+		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushSubEntity,									getSubEntity,2										,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushNumber,										getNumSubEntities,									,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushEntity,										clone,												,(ParamString(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																setMaterialName,									,(ParamString(L,2))	);
@@ -1989,6 +2025,7 @@ void	LuaRegister_LuaBinds_Ogre 	(lua_State *L) { PROFILE
 	cLuaBindDirect<Ogre::Animation			>::GetSingletonPtr(new cLugreLuaBind_Ogre_Animation(			))->LuaRegister(L);
 	cLuaBindDirect<Ogre::Mesh				>::GetSingletonPtr(new cLugreLuaBind_Ogre_Mesh(					))->LuaRegister(L);
 	cLuaBindDirect<Ogre::SubMesh			>::GetSingletonPtr(new cLugreLuaBind_Ogre_SubMesh(				))->LuaRegister(L);
+	cLuaBindDirect<Ogre::SubEntity		>::GetSingletonPtr(new cLugreLuaBind_Ogre_SubEntity(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::Entity		>::GetSingletonPtr(new cLugreLuaBind_Ogre_Entity(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::AnimationTrack		>::GetSingletonPtr(new cLugreLuaBind_Ogre_AnimationTrack(		))->LuaRegister(L);
 	cLuaBindDirect<Ogre::NodeAnimationTrack		>::GetSingletonPtr(new cLugreLuaBind_Ogre_NodeAnimationTrack(		))->LuaRegister(L);
