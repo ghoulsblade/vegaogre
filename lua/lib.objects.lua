@@ -107,6 +107,16 @@ function cObject:GetNameForMessageText ()  return (self.name or "").."("..self:G
 
 function cObject:GetPosForMarker () return self.gfx:GetDerivedPosition() end
 
+function cObject:SelectObject ()
+	if (self == gSelectedObject) then return end
+	local oldmarker = gSelectedObject and gSelectedObject.guiMarker
+	gSelectedObject = self
+	stepHudMarker(self) -- make sure self.guiMarker has been constructed, used for automatic tests
+	if (self.guiMarker) then self.guiMarker:UpdateGfx() end
+	if (oldmarker) then oldmarker:UpdateGfx() end
+	NotifyListener("Hook_SelectObject",self)
+end
+
 -- ***** ***** ***** ***** ***** cShot
 
 cShot = CreateClass(cObject)
@@ -235,7 +245,12 @@ function cAsteroidField:GetHUDImageName () return "asteroid-hud.dds" end -- norm
 
 cJumpPoint = CreateClass(cPlanet)
 function cJumpPoint:GetClass() return "JumpPoint" end
-function cJumpPoint:Init (...) cPlanet.Init(self,...) end
+function cJumpPoint:Init (loc,x,y,z,r,matname,xmlnode)
+	self:InitObj(loc,x,y,z,r)
+	self.xmlnode = xmlnode
+	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
+	Gfx_SetJumpPoint(self.gfx,r)
+end
 function cJumpPoint:GetHUDImageName () return "jump-hud.dds" end 
 
 -- ***** ***** ***** ***** ***** cSun

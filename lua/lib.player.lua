@@ -19,8 +19,7 @@ function RegisterNavTarget (o) table.insert(gNavTargets,o) end
 function Player_SelectNextNavTarget (idx)
 	gNextNavTargetIdx = ((gNextNavTargetIdx or 0) + 1) % #gNavTargets
 	local p = gNavTargets[idx or (gNextNavTargetIdx+1)]
-	if (p) then stepHudMarker(p) end -- make sure p.guiMarker has been constructed, used for automatic tests
-	if (p and p.guiMarker) then p.guiMarker:SetSelected() end
+	if (p) then p:SelectObject() end
 end
 
 

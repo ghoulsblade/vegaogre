@@ -1,3 +1,4 @@
+dofile(libpath .. "lib.vegautil.lua")
 dofile(libpath .. "lib.hotkey.lua") -- early so key settings can use it 
 dofile(libpath .. "lib.spacetest.lua")
 dofile(libpath .. "lib.guitest.dragdrop.lua")
@@ -11,7 +12,7 @@ dofile(libpath .. "lib.player.lua")
 dofile(libpath .. "lib.autopilot.lua")
 dofile(libpath .. "lib.data.universe.lua")
 dofile(libpath .. "lib.gfx.hyper.lua")
-
+dofile(libpath .. "lib.gfx.jumppoint.lua")
 
 sin		= math.sin
 cos		= math.cos

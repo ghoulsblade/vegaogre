@@ -37,7 +37,9 @@ function MySpaceInit ()
 	VegaLoadSystem("Crucible/Cephid_17")
 	--~ VegaLoadExampleSystem()
 	local playerspawnbase
-	for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
+	--~ for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
+	for k,v in ipairs(gNavTargets) do if (v.name == "jump to Cardell") then playerspawnbase = v break end end
+	--~ for k,v in ipairs(gNavTargets) do if (v:GetClass() == "JumpPoint") then playerspawnbase = v break end end
 	playerspawnbase = playerspawnbase or gNavTargets[math.random((#gNavTargets > 0) and #gNavTargets or 1)]
 	SpawnPlayer(playerspawnbase)
 	

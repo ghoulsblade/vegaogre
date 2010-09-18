@@ -17,7 +17,7 @@ function cHyperGfx:Init ()
 	RegisterListener("Hook_PlayerEffectStep",function (...) self:Step(...) end)  -- depends on player pos
 	RegisterListener("Hook_PlayerHyperMoveStep",function (...) self:PlayerHyperMoveStep(...) end) 
 	
-	InvokeLater(1000,function () Player_SelectNextNavTarget() ToggleAutoPilot() end) -- easy testing
+	--~ InvokeLater(1000,function () Player_SelectNextNavTarget() ToggleAutoPilot() end) -- easy testing
 end
 
 function cHyperGfx:PlayerHyperMoveStep (dx,dy,dz)

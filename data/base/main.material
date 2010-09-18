@@ -260,6 +260,34 @@ material hyperspeedmat
 	}
 }
 
+
+material jumppointmat
+{
+	technique
+	{
+		pass
+		{	
+			lighting	off
+			depth_write	off
+			scene_blend alpha_blend
+			ambient		0.0 0.0 0.0 0.0
+			diffuse		0.0 0.0 0.0 1.0
+			specular	0.0 0.0 0.0 0.0 0.0
+			emissive	1.0 1.0 1.0 0.0
+			
+			// should be used with  RENDER_QUEUE_6 (transparent, after all non transparent objects)
+			// diffuse alpha used as multitex input (even on single tex)
+			// color comes from emissive component completely
+			texture_unit
+			{
+				texture jumppoint.dds
+				wave_xform scroll_x sawtooth 0 -.01 0 1
+			}
+		}
+	}
+}
+
+
 material planetbase_ground
 {
 	technique

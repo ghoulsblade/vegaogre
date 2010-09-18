@@ -31,23 +31,8 @@ function cHudMarker:GetColor ()
 	return 1,1,1
 end
 
-function cHudMarker:SetSelected () 
-	if (self.obj == gSelectedObject) then return end
-	local old = gSelectedObject and gSelectedObject.guiMarker
-	gSelectedObject = self.obj
-	if (old) then old:UpdateGfx() end
-	self:UpdateGfx()
-	HUD_UpdateSelectedObject(self.obj)
-end
+function cHudMarker:SetSelected () self.obj:SelectObject() end
 
-function GetDistText (d) 
-	local thres = 0.5
-	local u=au				if (d >= thres*u) then return sprintf("%0.2fau",d/u) end
-	local u=light_minute	if (d >= thres*u) then return sprintf("%0.2fLm",d/u) end
-	local u=light_second	if (d >=   0.1*u) then return sprintf("%0.2fLs",d/u) end
-	local u=km				if (d >= thres*u) then return sprintf("%0.2fkm",d/u) end
-	return sprintf("%0.0fm",d)
-end
 function cHudMarker:UpdateDistanceFade ()
 	local s = 1
 	if (self.obj ~= gSelectedObject) then 
