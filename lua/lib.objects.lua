@@ -173,6 +173,13 @@ function cPlayerShip:GetClass() return "PlayerShip" end
 
 function cPlayerShip:Init (x,y,z,r,meshname)
 	cShip.Init(self,x,y,z,r,meshname)
+	self.gfx:GetEntity():setMaterialName("shader/glow")
+	--~ self.gfx:GetEntity():setMaterialName("shader/gradient")
+	local entity = self.gfx:GetEntity()
+	local subentity = entity:getSubEntity(0)
+	subentity:setCustomParameter(0, {1, 0, 0, 1})
+	--~ local s = 100000
+	--~ self.gfx:SetScale(s,s,s)
 end
 function cPlayerShip:Step ()
 	

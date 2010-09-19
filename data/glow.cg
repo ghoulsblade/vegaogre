@@ -1,0 +1,33 @@
+float4 fp_main(float3 WorldNormal : TEXCOORD0,
+			float3 WorldView : TEXCOORD1,
+			uniform float3 GlowColor,
+			uniform float GlowExpon
+			) : COLOR
+{
+    float3 Nn = normalize(WorldNormal);
+    float3 Vn = normalize(WorldView);
+    float edge = 1.0 - dot(Nn, Vn);
+    edge = pow(edge, GlowExpon);
+    float3 result = edge * GlowColor.rgb;
+    return float4(result, edge);
+}
+
+
+void vp_main(float3 Position : POSITION,
+		    float4 Normal : NORMAL,
+			uniform float Inflate,
+			uniform float4x4 WorldITXf, // our four standard "untweakable" xforms
+			uniform float4x4 WorldXf,
+			uniform float4x4 ViewIXf,
+			uniform float4x4 WvpXf,
+			out float4 HPosition : POSITION,
+			out float3 WorldNormal : TEXCOORD0,
+			out float3 WorldView : TEXCOORD1
+) {
+    WorldNormal = mul(WorldITXf, Normal).xyz;
+    float4 Po = float4(Position.xyz, 1);
+    Po += (Inflate * normalize(float4(Normal.xyz, 0))) * Normal; // the balloon effect
+    float4 Pw = mul(WorldXf, Po);
+    WorldView = normalize(float3(ViewIXf[0].w, ViewIXf[1].w, ViewIXf[2].w) - Pw.xyz);
+    HPosition = mul(WvpXf, Po);
+}

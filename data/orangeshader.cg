@@ -1,0 +1,24 @@
+// -----------------------------------------------------------
+// Very simple shader
+// The object is colored in orange
+// -----------------------------------------------------------
+
+float4 main_fp(in float3 TexelPos : TEXCOORD0, 
+	uniform   sampler1D colorBand,
+	uniform float4   customColour, 
+	uniform float4   sinTime) : COLOR
+{
+	float4 oColor;
+	float4 band;
+
+	oColor.r = customColour.r * sinTime.r;
+	oColor.g = customColour.g;
+	oColor.b = customColour.b;
+	oColor.a = sinTime.r / 2;
+	
+	band = tex1D(colorBand, TexelPos.x * TexelPos.y);
+	
+	oColor.rgb = oColor.rgb * band.rgb * band.rgb;
+	
+	return oColor;
+}
