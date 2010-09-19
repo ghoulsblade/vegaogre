@@ -35,13 +35,16 @@ function MySpaceInit ()
 	
 	-- spawn solarsystem
 	VegaLoadSystem("Crucible/Cephid_17")
+	--~ VegaLoadSystem("Sol/Sol")
 	--~ VegaLoadExampleSystem()
 	local playerspawnbase
-	for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
-	--~ for k,v in ipairs(gNavTargets) do if (v.name == "jump to Cardell") then playerspawnbase = v break end end
+	--~ for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
+	for k,v in ipairs(gNavTargets) do if (v.name == "jump to Oldziey") then playerspawnbase = v break end end
 	--~ for k,v in ipairs(gNavTargets) do if (v:GetClass() == "JumpPoint") then playerspawnbase = v break end end
 	playerspawnbase = playerspawnbase or gNavTargets[math.random((#gNavTargets > 0) and #gNavTargets or 1)]
 	SpawnPlayer(playerspawnbase)
+	
+	if (playerspawnbase) then playerspawnbase:SelectObject() end
 	
 	HUD_UpdateDisplaySelf()
 end
@@ -84,6 +87,23 @@ function VegaSpawnSystemRootLoc (debugname)
 	gSolRoot = solroot
 	return solroot
 end
+
+function VegaUnloadSystem ()
+	--~ VegaDestroySystemRootLoc() --gSolRoot ....  undoes VegaSpawnSystemRootLoc    done by DestroyAllObjectsExceptPlayer
+	DestroyAllObjectsExceptPlayer()  -- delete children...     foreach  gObjects[o] .. gNewObjects[o]  o~= playership ??
+	gPlayerShip.loc = nil
+	gPlayerShip.moveloc = nil
+	gSolRoot = nil
+	gCurrentMajorLoc = nil
+	-- SpawnSystemEntry(..,system_root_loc,...
+	ClearNavTargets() -- RegisterNavTarget(obj)
+	ClearMajorLocs() -- RegisterMajorLoc
+	-- player loc to new ?
+	--~ RecenterPlayerMoveLoc() -- bad idea, no major locs currently
+	-- TODO : delete hud markers
+	-- TODO : recenter player ? move player to travel-back jumppoint if possible
+end
+
 
 function VegaLoadExampleSystem ()
 	local solroot = VegaSpawnSystemRootLoc("sol-root-loc")
@@ -188,6 +208,8 @@ end
 -- ***** ***** ***** ***** ***** world origin (against rounding errors)
 
 gMajorLocs = {}
+
+function ClearMajorLocs () gMajorLocs = {} end
 function RegisterMajorLoc (loc) gMajorLocs[loc] = true end
 function FindNearestMajorLoc (o) 
 	local mind,minloc

@@ -7,6 +7,11 @@ local kRenderQueueGroup_PlayerShip = RENDER_QUEUE_6 -- two after default
 gObjects = {}
 gNewObjects = {} -- delayed insert into the main list
 
+function DestroyAllObjectsExceptPlayer ()
+	for o,v in pairs(gObjects) do if (o ~= gPlayerShip) then o:Destroy() gObjects[o] = nil end end
+	for o,v in pairs(gNewObjects) do if (o ~= gPlayerShip) then o:Destroy() gNewObjects[o] = nil end end
+end
+
 -- ***** ***** ***** ***** ***** cObject
 
 cObject = CreateClass()
@@ -18,6 +23,7 @@ end
 
 function cObject:Destroy ()
 	if (self.gfx) then self.gfx:Destroy() self.gfx = nil end
+	destroyHudMarker(self)
 	gObjects[self] = nil
 	gNewObjects[self] = nil
 end
@@ -66,6 +72,7 @@ function cObject:SetScaledMesh(meshname,r)
 end
 
 function cObject:CanDock (o) return false end
+function cObject:DockIsJump () return false end
 
 function cObject:MoveToNewLoc (loc)
 	self.gfx:SetParent(loc.gfx)
@@ -75,7 +82,7 @@ function cObject:GetPosFromSun ()
 	local p = self.loc
 	return self.x+p.x,self.y+p.y,self.z+p.z
 end
-function cObject:GetDistToPlayer () return self:GetDistToObject(gPlayerShip) end
+function cObject:GetDistToPlayer () return gPlayerShip and self:GetDistToObject(gPlayerShip) or 0 end
 function cObject:GetDistToObject (o) return Vector.len(self:GetVectorToObject(o)) end
 
 function cObject:GetNumberOfParents () local loc = self.loc  return loc and (1 + loc:GetNumberOfParents()) or 0 end
@@ -256,8 +263,9 @@ function cAsteroidField:GetHUDImageName () return "asteroid-hud.dds" end -- norm
 
 cJumpPoint = CreateClass(cPlanet)
 function cJumpPoint:GetClass() return "JumpPoint" end
-function cJumpPoint:Init (loc,x,y,z,r,matname,xmlnode)
+function cJumpPoint:Init (loc,x,y,z,r,destination,xmlnode)
 	self:InitObj(loc,x,y,z,r)
+	self.dest = destination
 	self.xmlnode = xmlnode
 	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
 	JumpPointGfx_Init(self.gfx,r)
@@ -265,6 +273,8 @@ end
 function cJumpPoint:GetHUDImageName () return "jump-hud.dds" end 
 function cJumpPoint:Step() JumpPointGfx_Step(self.gfx) end
 function cJumpPoint:CanDock (o) return true end
+function cJumpPoint:DockIsJump () return true end
+--~ function cJumpPoint:GetJumpTarget ()  end
 
 -- ***** ***** ***** ***** ***** cSun
 

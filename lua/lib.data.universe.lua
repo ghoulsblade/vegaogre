@@ -122,6 +122,8 @@ gSpawnSystemEntryID = 0
 function GetUnitTypeFromSectorXMLNode (node) return FindUnitTypeFromFileValue(node.file) end
 
 
+function GetJumpDestinationFromNode (node) return node and node.destination end
+
 function GetHUDImageTexFromNode (node)
 	local t = GetUnitTypeFromSectorXMLNode(node)
 	print("GetHUDImageTexFromNode",node.file,t and ((t.Hud_image == "") and "TYPE:EMPTYHUD" or t.Hud_image) or "TYPE:MISSING") 
@@ -159,7 +161,7 @@ function SpawnSystemEntry (child,parentloc,depth)
 		elseif (child._name == "Asteroid") then
 			obj = cAsteroidField:New(loc,0,0,0,10,GetPlanetMaterialNameFromNode(child),child)  -- TODO!
 		elseif (child.file == kJumpTextureName or child._name == "Jump") then
-			obj = cJumpPoint:New(loc,0,0,0,10,GetPlanetMaterialNameFromNode(child),child)  -- TODO!
+			obj = cJumpPoint:New(loc,0,0,0,10,GetJumpDestinationFromNode(child),child)  -- TODO!
 		elseif (child._name == "Planet" and child.light) then
 			obj = cSun:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child),child)
 		elseif (child._name == "Planet") then

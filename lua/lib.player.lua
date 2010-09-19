@@ -19,15 +19,34 @@ SetMacro("alt+g",function () ToggleDockedMode(gSelectedObject) end)
 SetMacro("ctrl+g",function () ToggleDockedMode(gSelectedObject) end)
 
 function Player_DockToSelected ()
-	if (not gSelectedObject) then print("Player_DockToSelected:no selected obj") return end
-	if (not gSelectedObject:CanDock(gPlayerShip)) then print("Player_DockToSelected: dock not allowed") return end
-	local d = gSelectedObject:GetDistToPlayer() - (2*gSelectedObject.r + 1000)
+	local base = gSelectedObject
+	if (not base) then print("Player_DockToSelected:no selected obj") return end
+	if (not base:CanDock(gPlayerShip)) then print("Player_DockToSelected: dock not allowed") return end
+	local d = base:GetDistToPlayer() - (2*base.r + 1000)
 	if (d > 0) then print("Player_DockToSelected:too far",GetDistText(d)) return end
-	print("Player_DockToSelected: OK")
-	StartDockedMode(gSelectedObject)
+	print("Player_DockToSelected: OK",base:GetClass(),base:DockIsJump())
+	if (base:DockIsJump()) then Player_ExecuteJump(base) return end
+	StartDockedMode(base)
+end
+
+function Player_ClearSelectedObject ()
+	if (not gSelectedObject) then return end
+	local old = gSelectedObject
+	gSelectedObject = nil
+	if (old.guiMarker) then old.guiMarker:UpdateGfx() end
+	NotifyListener("Hook_SelectObject")
+end
+function Player_ExecuteJump (jumppoint)
+	print("Player_ExecuteJump",jumppoint)
+	Player_ClearSelectedObject()
+	VegaUnloadSystem()
+	--~ VegaLoadSystem("Crucible/Cephid_17")
+	--~ VegaLoadSystem("Sol/Sol") 
+	VegaLoadSystem(jumppoint.dest or "Crucible/Cephid_17") 
 end
 
 gNavTargets = {}
+function ClearNavTargets () gNavTargets = {} end
 function RegisterNavTarget (o) table.insert(gNavTargets,o) end
 
 function Player_SelectNextNavTarget (idx)
