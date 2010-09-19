@@ -15,8 +15,8 @@ BindDown("k",function () MyMoveWorldOriginAgainstPlayerShip() print("position fr
 SetMacro("alt+d",function () Player_DockToSelected() end)
 SetMacro("ctrl+d",function () Player_DockToSelected() end)
 
-SetMacro("alt+g",function () ToggleDockedMode() end)
-SetMacro("ctrl+g",function () ToggleDockedMode() end)
+SetMacro("alt+g",function () ToggleDockedMode(gSelectedObject) end)
+SetMacro("ctrl+g",function () ToggleDockedMode(gSelectedObject) end)
 
 function Player_DockToSelected ()
 	if (not gSelectedObject) then print("Player_DockToSelected:no selected obj") return end
@@ -24,7 +24,7 @@ function Player_DockToSelected ()
 	local d = gSelectedObject:GetDistToPlayer() - (2*gSelectedObject.r + 1000)
 	if (d > 0) then print("Player_DockToSelected:too far",GetDistText(d)) return end
 	print("Player_DockToSelected: OK")
-	StartDockedMode()
+	StartDockedMode(gSelectedObject)
 end
 
 gNavTargets = {}

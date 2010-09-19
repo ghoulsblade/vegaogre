@@ -74,11 +74,6 @@ end
 
 function StartDragDropTest ()
 
-		local s = min(gViewportW,gViewportH) s = 1024
-		local w,h = s,s
-		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","ocean_concourse.dds"),w,h)})
-		--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat","military_concourse.dds"),w,h)})
-		--~ gBaseBackground:SetPos(gViewportW/2-w/2,gViewportH/2-h/2)
 
 		--~ local widget = CreateWidgetFromXMLString(GetDesktopWidget(),"<Window x=100 y=100 w=300 h=200> <Button x=10 y=10 label='testbutton' /> </Window>")	
 		--~ GetDesktopWidget():CreateContentChild("Button",{x=10, y=10, label='testbutton'})
@@ -137,7 +132,6 @@ function ToggleGuiMouseMode ()
 		if (gMouseCross) then gMouseCross:SetVisible(true) end
 		if (gMyWindow1) then gMyWindow1:Destroy() gMyWindow1 = nil end
 		if (gMyWindow2) then gMyWindow2:Destroy() gMyWindow2 = nil end
-		if (gBaseBackground) then gBaseBackground:Destroy() gBaseBackground = nil end
 		GuiTest_InitCrossHair()
 	end
 end

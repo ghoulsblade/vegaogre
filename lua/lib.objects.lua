@@ -1,5 +1,7 @@
 -- objecttypes 
 
+local kRenderQueueGroup_PlayerShip = RENDER_QUEUE_6 -- two after default
+
 -- ***** ***** ***** ***** ***** global object list 
 
 gObjects = {}
@@ -178,6 +180,8 @@ function cPlayerShip:Init (x,y,z,r,meshname)
 	local entity = self.gfx:GetEntity()
 	local subentity = entity:getSubEntity(0)
 	subentity:setCustomParameter(0, {1, 0, 0, 1})
+	entity:setRenderQueueGroup(kRenderQueueGroup_PlayerShip)
+	
 	--~ local s = 100000
 	--~ self.gfx:SetScale(s,s,s)
 end

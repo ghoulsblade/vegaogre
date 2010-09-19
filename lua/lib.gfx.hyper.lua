@@ -1,6 +1,7 @@
 -- hyperspeed graphical effect
 -- tex : data/hyperspeed.dds  nat : hyperspeedmat
 
+local kRenderQueueGroup_HyperSpeed = RENDER_QUEUE_7 -- two after default
 
 cHyperGfx = CreateClass()
 
@@ -62,7 +63,7 @@ function cHyperGfx:Step ()
 			gfx:GetEntity():setMaterialName("hyperspeedmat")
 		end
 		-- Ogre::MovableObject::setRenderQueueGroup(uint8 queueID)  see RenderQueue for details , see RenderQueueGroupID enum (OgreRenderQueue.h)
-		gfx:GetEntity():setRenderQueueGroup(RENDER_QUEUE_6) -- one after default
+		gfx:GetEntity():setRenderQueueGroup(kRenderQueueGroup_HyperSpeed) -- one after default
 	end
 	
 	gfx:SetOrientation(Quaternion.getRotation(0,0,1,self.dx,self.dy,self.dz))

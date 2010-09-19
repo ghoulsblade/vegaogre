@@ -1,8 +1,8 @@
-
+local kRenderQueueGroup_JumpPoint = RENDER_QUEUE_7 -- two after default
 
 function JumpPointGfx_Init (gfx,r)
 	gfx:SetMesh(CreateJumpPointMesh(r))
-	gfx:GetEntity():setRenderQueueGroup(RENDER_QUEUE_6) -- one after default
+	gfx:GetEntity():setRenderQueueGroup(kRenderQueueGroup_JumpPoint)
 	SetDiffuse("jumppointmat",0,0, 0,0,0, 1)
 end
 
