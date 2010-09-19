@@ -12,6 +12,20 @@ BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
 BindDown("n",function () Player_SelectNextNavTarget() end)
 BindDown("k",function () MyMoveWorldOriginAgainstPlayerShip() print("position from sun:",gPlayerShip:GetPosFromSun()) end)
 
+SetMacro("alt+d",function () Player_DockToSelected() end)
+SetMacro("ctrl+d",function () Player_DockToSelected() end)
+
+SetMacro("alt+g",function () ToggleDockedMode() end)
+SetMacro("ctrl+g",function () ToggleDockedMode() end)
+
+function Player_DockToSelected ()
+	if (not gSelectedObject) then print("Player_DockToSelected:no selected obj") return end
+	if (not gSelectedObject:CanDock(gPlayerShip)) then print("Player_DockToSelected: dock not allowed") return end
+	local d = gSelectedObject:GetDistToPlayer() - (2*gSelectedObject.r + 1000)
+	if (d > 0) then print("Player_DockToSelected:too far",GetDistText(d)) return end
+	print("Player_DockToSelected: OK")
+	StartDockedMode()
+end
 
 gNavTargets = {}
 function RegisterNavTarget (o) table.insert(gNavTargets,o) end

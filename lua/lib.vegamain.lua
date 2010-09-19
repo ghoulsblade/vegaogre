@@ -11,6 +11,7 @@ dofile(libpath .. "lib.collision.lua")
 dofile(libpath .. "lib.player.lua")
 dofile(libpath .. "lib.autopilot.lua")
 dofile(libpath .. "lib.data.universe.lua")
+dofile(libpath .. "lib.docked.lua")
 dofile(libpath .. "lib.gfx.hyper.lua")
 dofile(libpath .. "lib.gfx.jumppoint.lua")
 
@@ -103,3 +104,4 @@ function VegaMainStep ()
 	end
 end
 
+function GetHUDBaseWidget () return GetGUILayer_HUDFX() end 

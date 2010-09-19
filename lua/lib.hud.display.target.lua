@@ -2,7 +2,7 @@
 
 RegisterListener("Hook_SelectObject",function (o)
 	if (gHudTargetInfo) then gHudTargetInfo:Destroy() gHudTargetInfo = nil end
-	gHudTargetInfo = o and GetDesktopWidget():CreateChild("HudTargetInfo",{obj=o})
+	gHudTargetInfo = o and GetHUDBaseWidget():CreateChild("HudTargetInfo",{obj=o})
 end)
 RegisterIntervalStepper(500,function () if (gHudTargetInfo) then gHudTargetInfo:IntervalStep() end end)
 

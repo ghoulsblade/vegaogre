@@ -2,7 +2,7 @@
 
 function HUD_UpdateDisplaySelf ()
 	if (gHudDisplaySelf) then gHudDisplaySelf:Destroy() gHudDisplaySelf = nil end
-	gHudDisplaySelf = GetDesktopWidget():CreateChild("HudDisplaySelf")
+	gHudDisplaySelf = GetHUDBaseWidget():CreateChild("HudDisplaySelf")
 end
 --~ RegisterIntervalStepper(500,function () if (gHudDisplaySelf) then gHudDisplaySelf:IntervalStep() end end)
 

@@ -44,6 +44,7 @@ function GetGUIRootWidget ()
 	return gRootWidget
 end
 
+function GetGUILayer_HUDFX		() return GetGUIRootWidget().hudfx end
 function GetGUILayer_Dialogs	() return GetGUIRootWidget().dialogs end
 function GetGUILayer_Menus		() return GetGUIRootWidget().menus end
 

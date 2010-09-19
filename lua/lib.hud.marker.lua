@@ -93,11 +93,10 @@ end
 
 -- draws hud markers at obj.x/y/z with size obj.r
 function stepHudMarker(obj)
-	if (not obj.guiMarker) then obj.guiMarker = GetDesktopWidget():CreateContentChild("HudMarker",{obj=obj}) end
+	if (not obj.guiMarker) then obj.guiMarker = GetHUDBaseWidget():CreateContentChild("HudMarker",{obj=obj}) end
 	if (obj.guiMarker) then obj.guiMarker:Step(obj) end
 end
 
 function destroyHudMarker(obj)
 	if (obj.guiMarker) then obj.guiMarker:Destroy() obj.guiMarker = nil end
 end
-

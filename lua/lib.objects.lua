@@ -253,6 +253,7 @@ function cJumpPoint:Init (loc,x,y,z,r,matname,xmlnode)
 end
 function cJumpPoint:GetHUDImageName () return "jump-hud.dds" end 
 function cJumpPoint:Step() JumpPointGfx_Step(self.gfx) end
+function cJumpPoint:CanDock (o) return true end
 
 -- ***** ***** ***** ***** ***** cSun
 
@@ -260,5 +261,6 @@ cSun = CreateClass(cPlanet)
 function cSun:GetClass() return "Sun" end
 function cSun:Init (...) cPlanet.Init(self,...) end
 function cSun:GetHUDImageName () return "sun-hud.dds" end 
+function cSun:CanDock (o) return false end
 
 -- ***** ***** ***** ***** ***** 
