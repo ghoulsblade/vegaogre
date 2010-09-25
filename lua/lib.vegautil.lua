@@ -8,3 +8,5 @@ function GetDistText (d)
 	local u=km				if (d >= thres*u) then return sprintf("%0.2fkm",d/u) end
 	return sprintf("%0.0fm",d)
 end
+
+function CreateDirIfNoExists (path) mkdir(path) end

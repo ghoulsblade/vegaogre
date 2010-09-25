@@ -85,20 +85,20 @@ void LuaXML_FillNode (lua_State *L,int iTableIndex,TiXmlNode* pParent) { PROFILE
 	*/
 	
 	// name
-	lua_getfield(L,iTableIndex,"name");
+	lua_getfield(L,iTableIndex,"name");		// afterwards : stack has 1 value = t[k] = iTableIndex["name"]
 	//~ printf("LuaXML_FillNode:got name (pushed)\n");
 	std::string sName = lua_tostring(L,-1);
 	//~ printf("LuaXML_FillNode:name=%s\n",sName.c_str());
-	lua_pop(L,1); // pop 1 elements
+	lua_pop(L,1); // pop 1 elements		// afterwards stack is empty
 	
 	TiXmlElement* pElem = new TiXmlElement(sName.c_str());
 	
 	// attr
-	lua_getfield(L,iTableIndex,"attr");
+	lua_getfield(L,iTableIndex,"attr");		// afterwards : stack has 1 value = t[k] = iTableIndex["attr"]
 	//~ printf("LuaXML_FillNode:attr 1\n");
 	if (lua_istable(L,-1)) { // iterate over attributes
-		lua_pushnil(L);  // first key
-		while (lua_next(L,-2) != 0) { // table is at stack idx -1
+		lua_pushnil(L);  // first key		// afterwards : stack has 2 values iTableIndex["attr"],nil
+		while (lua_next(L,-2) != 0) { // table is at stack idx -1		pops key and pushes key-value-pair -> stack is 3 value : iTableIndex["attr"],newk,newv
 			       //~ printf("%s - %s\n",
               //~ lua_typename(L, lua_type(L, -2)),
               //~ lua_typename(L, lua_type(L, -1)));
@@ -108,22 +108,22 @@ void LuaXML_FillNode (lua_State *L,int iTableIndex,TiXmlNode* pParent) { PROFILE
 			std::string sAttrValue	= lua_tostring(L,-1);
 			//~ printf("attr:value=%s\n",sAttrValue.c_str());
 			pElem->SetAttribute(sAttrName.c_str(),sAttrValue.c_str());
-			lua_pop(L, 1); // removes 'value'; keeps 'key' for next iteration
-		}
+			lua_pop(L, 1); // removes 'value'; keeps 'key' for next iteration  // 
+		} // if next returns 0 : it popped the key and pushes nothing.   ->  stack has 1 value: iTableIndex["attr"]  
 	}
 	//~ printf("LuaXML_FillNode:attr 2\n");
-	lua_pop(L,1); // pop 1 elements
+	lua_pop(L,1); // pop 1 elements		-> stack is empty now
 	
 	
 	// n
-	lua_getfield(L,iTableIndex,"n");
+	lua_getfield(L,iTableIndex,"n");	// stack has 1 value : iTableIndex["n"]
 	int n = (int)lua_tonumber(L,-1);
 	//~ printf("LuaXML_FillNode:n=%d\n",n);
-	lua_pop(L,1); // pop 1 elements
+	lua_pop(L,1); // pop 1 elements		stack is empty now
 	
 	// childs
 	for (int i=1;i<=n;++i) {
-		lua_rawgeti(L,iTableIndex,i); // table is at index 1
+		lua_rawgeti(L,iTableIndex,i); // table is at index 1			stack has 1 value : iTableIndex[i]
 		//~ printf("LuaXML_FillNode:child1 %d %s\n",i,lua_typename(L, lua_type(L, -1))); 
 
 		if (lua_isstring(L,-1)) {
@@ -138,10 +138,11 @@ void LuaXML_FillNode (lua_State *L,int iTableIndex,TiXmlNode* pParent) { PROFILE
 			//~ printf(" LuaXML_FillNode:childnode2\n");
 		}
 		//~ printf("LuaXML_FillNode:child2\n");
-		lua_pop(L,1); // pop 1 elements
+		lua_pop(L,1); // pop 1 elements		stack is empty
 	}
 	
 	pParent->LinkEndChild( pElem );
+	// stack is empty
 }
 
 void LuaXML_ParseNode (lua_State *L,TiXmlNode* pNode) { PROFILE
@@ -228,7 +229,7 @@ static int	LuaXML_SaveFile (lua_State *L) { PROFILE
 	TiXmlDocument doc;
 	LuaXML_FillNode(L,2,&doc);
 	doc.SaveFile(sFileName.c_str());
-	return 1;
+	return 0;
 }
 
 void	RegisterLuaXML (lua_State *L) {

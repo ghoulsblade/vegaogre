@@ -35,12 +35,12 @@ function GetVegaHomeDataDir ()
 	if (not gVegaHomeDataDir) then gVegaHomeDataDir = (GetHomePath() or ".").."/.vegastrike/" end
 	return gVegaHomeDataDir
 end
-
-
-function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system e.g. "Crucible/Cephid_17"
-	local system = gUniv_SystemByPath[systempath] assert(system)
-	print("WARNING! VegaGenerateSystem not yet implemented")
+function GetVegaOgreHomeDataDir () 
+	if (not gVegaOgreHomeDataDir) then gVegaOgreHomeDataDir = (GetHomePath() or ".").."/.vegaogre/" CreateDirIfNoExists(gVegaOgreHomeDataDir) end
+	return gVegaOgreHomeDataDir
 end
+
+
 
 function GetOrbitMeanRadiusFromNode (node) -- ri="-468434.7" rj="-361541" rk="433559.750000" si="-412172.000000" sj="300463.5" sk="-498163.5"
 	local ri = tonumber(node.ri or "") or 0
@@ -204,12 +204,20 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 	local univ_system = gUniv_SystemByPath[systempath] assert(univ_system)
 	local filepath1 = GetVegaDataDir().."sectors/"..systempath..".system"
 	local filepath2 = GetVegaHomeDataDir().."sectors/milky_way.xml/"..systempath..".system"
+	local filepath3 = GetVegaOgreHomeDataDir().."sectors/milky_way.xml/"..systempath..".system"
+	
+	local a,b,sectorname,systemname = string.find(systempath,"([^/]+)/(.*)")
+	CreateDirIfNoExists(GetVegaOgreHomeDataDir().."sectors")
+	CreateDirIfNoExists(GetVegaOgreHomeDataDir().."sectors/milky_way.xml")
+	CreateDirIfNoExists(GetVegaOgreHomeDataDir().."sectors/milky_way.xml/"..sectorname)
+	
 	local exists1 = file_exists(filepath1)
 	local exists2 = file_exists(filepath2)
+	local exists3 = file_exists(filepath3)
 	if (exists1 and exists2) then print("WARNING! VegaLoadSystem : both filepaths exist",filepath1,filepath2) end
-	local filepath = (exists1 and filepath1) or (exists2 and filepath2)
+	local filepath = (exists1 and filepath1) or (exists2 and filepath2) or (exists3 and filepath3)
 	if (not filepath) then
-		filepath = filepath2
+		filepath = filepath3
 		VegaGenerateSystem(filepath,systempath)
 		if (not file_exists(filepath)) then print("WARNING! VegaLoadSystem : failed to generate new system") return end
 	end
@@ -223,9 +231,6 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 		SpawnSystemEntry(child,system_root_loc,0)
 	end
 	-- file="stars/white_star.texture" -> white_star__planets
-	--~ for ismoon,initial in string.gmatch(system.planets or "","(%*?)([^%s]+)") do 
-		--~ print("planet:",ismoon,initial)
-	--~ end
 end
 
 --[[
@@ -297,11 +302,16 @@ function LoadUniverse ()
 		for k,system in ipairs(sector.system) do gUniv_SystemByPath[sector.name.."/"..system.name] = Univ_ParseVars(system) end
 	end
 	
+	gUniv_PlanetTypeByInitial = {}
 	--~ for k,var in ipairs(gGalaxy.planets[1].var) do print("var:",var.name,var.value) end
-	--~ for k,planet in ipairs(gGalaxy.planets[1].planet) do 
-		--~ local o = GetUnitTypeForPlanetNode(planet)
+	for k,planet in ipairs(gGalaxy.planets[1].planet) do
+		local p = Univ_ParseVars(planet)
+		local o = GetUnitTypeForPlanetNode(planet)
+		p.name = planet.name
+		p.unittype = o
+		gUniv_PlanetTypeByInitial[p.initial] = p
 		--~ print("milky_way.planet:",pad(planet.name,30),pad(GetVar(planet,"texture"),30),GetVar(planet,"initial"),pad(o.id,20),o.Hud_image)
-	--~ end
+	end
 	--~ for k,sector in ipairs(gGalaxy.systems[1].sector) do 
 		--~ print("sector:",sector.name) 
 		--~ for k,system in ipairs(sector.system) do print(" system",system.name,"jumps:",unpack(GetJumpList(system))) end

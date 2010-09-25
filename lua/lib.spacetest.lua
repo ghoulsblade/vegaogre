@@ -34,12 +34,13 @@ function MySpaceInit ()
 	gMLocBaseGfx = CreateRootGfx3D()
 	
 	-- spawn solarsystem
-	VegaLoadSystem("Crucible/Cephid_17")
+	VegaLoadSystem("Crucible/Everett")
+	--~ VegaLoadSystem("Crucible/Cephid_17")
 	--~ VegaLoadSystem("Sol/Sol")
 	--~ VegaLoadExampleSystem()
 	local playerspawnbase
 	--~ for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
-	for k,v in ipairs(gNavTargets) do if (v.name == "jump to Oldziey") then playerspawnbase = v break end end
+	for k,v in ipairs(gNavTargets) do if (v.name == "jump to Everett") then playerspawnbase = v break end end
 	--~ for k,v in ipairs(gNavTargets) do if (v:GetClass() == "JumpPoint") then playerspawnbase = v break end end
 	playerspawnbase = playerspawnbase or gNavTargets[math.random((#gNavTargets > 0) and #gNavTargets or 1)]
 	SpawnPlayer(playerspawnbase)
@@ -58,8 +59,8 @@ end
 
 function SpawnPlayer (base)
 	if (gPlayerShip) then return end
-	local pr = base.r
-	local loc = base.loc or gSolRoot
+	local pr = base and base.r or 0
+	local loc = base and base.loc or gSolRoot
 	local d = - pr * 1.2,0,0
 	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
 	-- player ship
@@ -265,12 +266,19 @@ function RecenterPlayerMoveLoc ()
 	-- move world origin so that moveloc is at global zero/origin
 	-- gSolRootGfx > solroot > all normal locations (hopefully far away from player)
 	-- gMLocBaseGfx > mloc = player-move-loc
-	local x,y,z = moveloc:GetVectorToObject(mloc)
-	gMLocBaseGfx:SetPosition(x,y,z)
-	local x,y,z = moveloc:GetVectorToObject(gSolRoot)
-	gSolRootGfx:SetPosition(x,y,z)
+	if (mloc) then 
+		local x,y,z = moveloc:GetVectorToObject(mloc)
+		gMLocBaseGfx:SetPosition(x,y,z)
+	else
+		gMLocBaseGfx:SetPosition(0,0,0)
+	end
 	
-	UpdateWorldLight(-x,-y,-z)
+	if (gSolRoot) then
+		local x,y,z = moveloc:GetVectorToObject(gSolRoot)
+		gSolRootGfx:SetPosition(x,y,z)
+		UpdateWorldLight(-x,-y,-z)
+	end
+	
 	
 	-- problem : hyper-moving to station at absolute pos results in jitter (small movement vs big relative hyper-coords )
 	-- solution : target(or nearest major location) is 0  # , so movement gets closer to 0 and more exact the closer it gets -> no jitter
