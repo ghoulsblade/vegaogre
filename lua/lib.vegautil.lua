@@ -16,3 +16,20 @@ function GetDistText (d)
 end
 
 function CreateDirIfNoExists (path) mkdir(path) end
+
+function GetVegaDataDir () return gMainWorkingDir.."data/" end
+
+function GetVegaHomeDataDir () 
+	if (not gVegaHomeDataDir) then gVegaHomeDataDir = (GetHomePath() or ".").."/.vegastrike/" end
+	return gVegaHomeDataDir
+end
+
+function GetVegaOgreHomeDataDir () 
+	if (not gVegaOgreHomeDataDir) then gVegaOgreHomeDataDir = (GetHomePath() or ".").."/.vegaogre/" CreateDirIfNoExists(gVegaOgreHomeDataDir) end
+	return gVegaOgreHomeDataDir
+end
+
+function GetVegaXMLVar (node,key) if (not node.var) then return end for k,v in ipairs(node.var) do if (v.name == key) then return v.value end end end
+function GetJumpList (system) return explode(" ",GetVegaXMLVar(system,"jumps") or "") end
+
+function Univ_ParseVars (node) local res = {} for k,child in ipairs(node) do if (child._name == "var") then res[child.name or "?"] = child.value end end return res end

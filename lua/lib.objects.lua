@@ -126,6 +126,15 @@ function cObject:SelectObject ()
 	NotifyListener("Hook_SelectObject",self)
 end
 
+function cObject:GetFileAttrTxt () return self.xmlnode and self.xmlnode.file end -- "planets/oceanBase.texture|planets/ocean.texture"
+function cObject:GetFileAttrList () -- {"planets/oceanBase.texture","planets/ocean.texture"}
+	local txt = self:GetFileAttrTxt() if (not txt) then return end
+	local res = {} for a in string.gmatch(txt,"[^|]+") do table.insert(res,a) end return res
+end
+function cObject:GetFileAttrLast () local list = self:GetFileAttrList() return list and list[#list] end -- "planets/ocean.texture"
+function cObject:GetFileAttrLastBase () local txt = self:GetFileAttrLast() return txt and string.gsub(string.gsub(txt,"%..*$",""),".*/","") end -- "planets/ocean.texture" -> "ocean"
+
+
 -- ***** ***** ***** ***** ***** cShot
 
 cShot = CreateClass(cObject)
@@ -201,9 +210,10 @@ end
 cStation = CreateClass(cObject)
 function cStation:GetClass() return "Station" end
 
-function cStation:Init (loc,x,y,z,r,meshname)
+function cStation:Init (loc,x,y,z,r,meshname,xmlnode)
 	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "agricultural_station.mesh",r)
+	self.xmlnode = xmlnode
 	--~ self.name = "station"
 end
 
