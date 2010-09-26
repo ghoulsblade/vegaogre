@@ -34,13 +34,13 @@ function MySpaceInit ()
 	gMLocBaseGfx = CreateRootGfx3D()
 	
 	-- spawn solarsystem
-	VegaLoadSystem("Crucible/Everett")
-	--~ VegaLoadSystem("Crucible/Cephid_17")
+	--~ VegaLoadSystem("Crucible/Everett")
+	VegaLoadSystem("Crucible/Cephid_17")
 	--~ VegaLoadSystem("Sol/Sol")
 	--~ VegaLoadExampleSystem()
 	local playerspawnbase
-	--~ for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
-	for k,v in ipairs(gNavTargets) do if (v.name == "jump to Everett") then playerspawnbase = v break end end
+	for k,v in ipairs(gNavTargets) do if (v.name == "Atlantis") then playerspawnbase = v break end end
+	--~ for k,v in ipairs(gNavTargets) do if (v.name == "jump to Everett") then playerspawnbase = v break end end
 	--~ for k,v in ipairs(gNavTargets) do if (v:GetClass() == "JumpPoint") then playerspawnbase = v break end end
 	playerspawnbase = playerspawnbase or gNavTargets[math.random((#gNavTargets > 0) and #gNavTargets or 1)]
 	SpawnPlayer(playerspawnbase)

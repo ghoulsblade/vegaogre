@@ -104,6 +104,7 @@ if macosx then gLuaPlatform = "LUA_USE_MACOSX" end
 -- lugre dependencies, ie. ogre
 function AddLugreDeps(package)
 	package.defines = RemoveNilsFromArray({ 
+		"TIXML_USE_STL",
 		gbUseSoundOpenAl and "USE_OPENAL" or nil,
 		gbUseSoundFmod and "USE_FMOD" or nil,
 		"MAIN_WORKING_DIR=\\\""..gVegaOgreMainWorkingDir.."\\\"",

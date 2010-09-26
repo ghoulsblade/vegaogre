@@ -1,4 +1,10 @@
 
+-- earth: real:8light hours, vega:1:10: 48 light-minutes = 864.000.000.000 meters.  also: 
+light_second = 300*1000*1000 -- 300 mio m/s
+light_minute = 60*light_second -- 18.000.000.000 in meters
+local vega_factor = 1/10 -- ... useme ? 
+au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
+km = 1000
 
 function GetDistText (d) 
 	local thres = 0.5

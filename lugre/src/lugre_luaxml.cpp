@@ -181,21 +181,21 @@ void LuaXML_ParseNode (lua_State *L,TiXmlNode* pNode) { PROFILE
 		int iChildCount = 0;
 		for(;pChild;pChild = pChild->NextSibling()) {
 			switch (pChild->Type()) {
-				case TiXmlNode::DOCUMENT: break;
-				case TiXmlNode::ELEMENT: 
+				case TiXmlNode::TINYXML_DOCUMENT: break;
+				case TiXmlNode::TINYXML_ELEMENT: 
 					// normal element, parse recursive
 					lua_newtable(L);
 					LuaXML_ParseNode(L,pChild);
 					lua_rawseti(L,-2,++iChildCount);
 				break;
-				case TiXmlNode::COMMENT: break;
-				case TiXmlNode::TEXT: 
+				case TiXmlNode::TINYXML_COMMENT: break;
+				case TiXmlNode::TINYXML_TEXT: 
 					// plaintext, push raw
 					lua_pushstring(L,pChild->Value());
 					lua_rawseti(L,-2,++iChildCount);
 				break;
-				case TiXmlNode::DECLARATION: break;
-				case TiXmlNode::UNKNOWN: break;
+				case TiXmlNode::TINYXML_DECLARATION: break;
+				case TiXmlNode::TINYXML_UNKNOWN: break;
 			};
 		}
 		lua_pushstring(L,"n");
@@ -232,10 +232,25 @@ static int	LuaXML_SaveFile (lua_State *L) { PROFILE
 	return 0;
 }
 
+/// for lua	LuaXML_SaveString (xmltable)
+static int	LuaXML_SaveString (lua_State *L) { PROFILE
+	TiXmlDocument doc;
+	LuaXML_FillNode(L,1,&doc);
+	std::string s;
+	#ifdef TIXML_USE_STL
+	s << doc;
+	#else
+	s = "<error>set TIXML_USE_STL</error>";
+	#endif
+	lua_pushstring(L,s.c_str());
+	return 1;
+}
+
 void	RegisterLuaXML (lua_State *L) {
 	lua_register(L,"LuaXML_ParseFile",LuaXML_ParseFile);
 	lua_register(L,"LuaXML_ParseString",LuaXML_ParseString);
 	lua_register(L,"LuaXML_SaveFile",LuaXML_SaveFile);
+	lua_register(L,"LuaXML_SaveString",LuaXML_SaveString);
 }
 
 };
