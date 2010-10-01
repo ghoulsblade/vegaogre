@@ -1297,3 +1297,20 @@ function DestroyIfAlive (obj)
 		end
 	end
 end
+
+-- the order is  q1  p1  p2  q2   , interpolation between p1 and p2
+function InterpolateSmooth4 (t,q1,p1,p2,q2) 
+	if (t < 0) then return p1 end
+	if (t > 1) then return p2 end
+	--~ 	//Q(t) = P1*(2t^3-3t^2+1) + R1*(t^3-2t^2+t) + P2*(-2t^3+3t^2) + R2*(t^3-t^2)
+	--~ 	//Q(0) = P1*(1) + R1*(0) + P2*(0) + R2*(0)
+	--~ 	//Q(1) = P1*(0) + R1*(0) + P2*(1) + R2*(0)
+	--~ 	// hermit spline or something like that
+	--~ 	// R1,R2 are tangent-vectors at P1,P2
+	local t2 = t * t
+	local t3 = t2 * t
+	local t3m2 = t3 - t2
+	local r1 = (p2 - q1) * 0.5
+	local r2 = (q2 - p1) * 0.5
+	return p1*(t3m2+t3m2-t2+1.0) + r1*(t3m2-t2+t) + p2*(-t3m2-t3m2+t2) + r2*(t3m2) 
+end

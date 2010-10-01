@@ -73,6 +73,7 @@ function VegaMainStep ()
 	for o,v in pairs(gObjects) do o:Step(dt) end -- think, might modify params for physstep ( might also add new items )
 	
 	StepAutoPilot()
+	PlayerHyperFlyStep()
 	
 	for o,v in pairs(gObjects) do o:PhysStep(dt) end -- move items and gfx:SetPos()
 	

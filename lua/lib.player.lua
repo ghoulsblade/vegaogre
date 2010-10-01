@@ -20,6 +20,31 @@ SetMacro("ctrl+d",function () Player_DockToSelected() end)
 SetMacro("alt+g",function () ToggleDockedMode(gSelectedObject) end)
 SetMacro("ctrl+g",function () ToggleDockedMode(gSelectedObject) end)
 
+SetMacro("x",function () PlayerHyperFly_Faster() end)
+SetMacro("y",function () PlayerHyperFly_Slower() end)
+
+SetMacro("043",function () PlayerHyperFly_Faster() end)
+SetMacro("minus",function () PlayerHyperFly_Slower() end)
+
+SetMacro("npadd",function () PlayerHyperFly_Faster() end)
+SetMacro("npsub",function () PlayerHyperFly_Slower() end)
+
+gMacroPrintAllKeyCombos = true
+
+gHyperFlySpeed = 0
+function PlayerHyperFly_Faster () print("PlayerHyperFly_Faster") gHyperFlySpeed = gHyperFlySpeed + 1 end
+function PlayerHyperFly_Slower () print("PlayerHyperFly_Slower") gHyperFlySpeed = gHyperFlySpeed - 1 end
+function PlayerHyperFlyStep ()
+	print("PlayerHyperFlyStep",gHyperFlySpeed)
+	if (gHyperFlySpeed ~= 0) then 
+		local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
+		local s = ((gHyperFlySpeed > 0) and 1 or -1) * math.pow(2,math.abs(gHyperFlySpeed))
+		local ax,ay,az = Quaternion.ApplyToVector(0,0,s*gSecondsSinceLastFrame,w0,x0,y0,z0)
+		MyPlayerHyperMoveRel (ax,ay,az)
+		print("PlayerHyperFlyStep",GetDistText(s).."/s")
+	end
+end
+
 function Player_DockToSelected ()
 	local base = gSelectedObject
 	if (not base) then print("Player_DockToSelected:no selected obj") return end
