@@ -1925,7 +1925,7 @@ class cLugreLuaBind_Ogre_Texture : public cLuaBindDirect<Ogre::Texture>, public 
 		LUABIND_DIRECTWRAP_BASECLASS(Ogre::Resource);
 		
 		LUABIND_QUICKWRAP_STATIC(	GetOgreTexture,	{ 
-				return CreateUData(L,Ogre::TextureManager::getSingleton().load(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)).get());
+				return CreateUData(L,Ogre::TextureManager::getSingleton().load(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)).get());
 			});
 		
 		

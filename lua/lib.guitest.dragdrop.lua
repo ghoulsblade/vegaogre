@@ -68,6 +68,7 @@ function GuiTest_CursorCrossHair_Step ()
 	local w,h = 32,32
 	if (not gMouseCross) then 
 		gMouseCross = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("objmark_vorhalt.png"),w,h)})
+		gMouseCross:SetIgnoreBBoxHit(true) -- enable gui elements like docked-base-doorlinks to be clicked
 	end
 	gMouseCross:SetPos(mx-w/2,my-h/2)
 end

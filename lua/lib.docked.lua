@@ -5,6 +5,11 @@
 
 -- base_locationmarker.dds
 
+gDockedInfo = {}
+
+--~ RegisterListener("Hook_SystemLoaded",function () StartDockedMode({},"agriculture") end)
+RegisterListener("Hook_SystemLoaded",function () StartDockedMode(nil,"ocean") end)
+
 gDefaultBaseBackground = {
 	rock						= "landing.dds",
 	frigid_mud					= "AridConcourse.dds",
@@ -57,6 +62,58 @@ gBaseRooms = {
 	},
 }
 
+-- ***** ***** ***** ***** ***** rooms
+
+cDockedRoomLink	= RegisterWidgetClass("DockedRoomLink","Group")
+
+function cDockedRoomLink:Init (parentwidget, params)
+	self:SetPos(params.x,params.y)
+	local w,h = 64,64
+	self.img = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("base_locationmarker.dds"),w,h)})
+	self.img:SetPos(-w/2,-h/2)
+	print("cDockedRoomLink:Init",params.x,params.y)
+end
+function cDockedRoomLink:on_mouse_left_down		()
+	local p = self.params
+	print("cDockedRoomLink:on_mouse_left_down",p,p.roomname)
+	DockedStartRoom(p.roomname)
+end
+
+gDockedRoomLinkWidgets = {}
+
+function ClearRoomGfx ()
+	-- kill old 
+	for k,widget in ipairs(gDockedRoomLinkWidgets) do widget:Destroy() end 
+	gDockedRoomLinkWidgets = {}
+end
+
+function DockedStartRoom (roomname)
+	print("DockedStartRoom",roomname)
+	if (roomname == "LIFTOFF") then EndDockedMode() return end
+	ClearRoomGfx()
+	
+	local basetype = gDockedInfo.basetype
+	local rooms = basetype and gBaseRooms[basetype]
+	local room = rooms and rooms[roomname]
+	SetDockedBackground(room and room.bg or (basetype and gDefaultBaseBackground[basetype]) or "ocean_concourse.dds")
+	
+	local sx = gDockedInfo.bg_w / gDockedInfo.bg_w_orig
+	local sy = gDockedInfo.bg_h / gDockedInfo.bg_h_orig
+	local xoff,yoff = gDockedInfo.bg_xoff,gDockedInfo.bg_yoff
+	--~ print("rooms off=",xoff,yoff,"s=",sx,sy)
+	
+	for roomname,pos in pairs(room and room.links or {}) do 
+		local x,y = unpack(pos)
+		local b = 20
+		x = max(b,min(gViewportW-b,floor(xoff + sx*x)))
+		y = max(b,min(gViewportH-b,floor(yoff + sy*y)))
+		table.insert(gDockedRoomLinkWidgets,GetDesktopWidget():CreateContentChild("DockedRoomLink",{x=x,y=y,roomname=roomname,roomdata=rooms[roomname]}))
+	end
+end
+
+
+-- ***** ***** ***** ***** ***** rest
+
 
 function IsDockedModeActive () return gDockedMode end
 function ToggleDockedMode (o) 
@@ -69,20 +126,31 @@ function EndDockedMode ()
 	gSolRootGfx:SetRootAsParent()
 	gMLocBaseGfx:SetRootAsParent()
 	GetHUDBaseWidget():SetVisible(true)
+	ClearRoomGfx()
 	SetDockedBackground()
 end
 
-function StartDockedMode (base)
+
+function StartDockedMode (base,force_basetype)
 	gDockedMode = true
 	print("StartDockedMode",base and base:GetFileAttrTxt(),base and base:GetFileAttrLastBase())
 	gSolRootGfx:SetParent()
 	gMLocBaseGfx:SetParent()
 	GetHUDBaseWidget():SetVisible(false) -- hudgfx : target&self indicator, markers
 	
-	
 	-- todo : decide background and available services from "base" param
 	--~ <Unit name="Serenity" file="MiningBase"  radius="130.477371"  faction="klkk"  >
-	SetDockedBackground(base and gDefaultBaseBackground[base:GetFileAttrLastBase()] or "ocean_concourse.dds")
+	
+	gDockedInfo = {}
+	gDockedInfo.base		= base
+	gDockedInfo.basetype	= force_basetype or (base and base:GetFileAttrLastBase())
+	
+	DockedStartRoom("hangar")
+end
+
+function GetTextureResolution (texname)
+	local tex = GetOgreTexture(texname) assert(tex)
+	return tex:getWidth(),tex:getHeight()
 end
 
 function SetDockedBackground (texname)
@@ -95,7 +163,18 @@ function SetDockedBackground (texname)
 	local w,h = s,s
 	gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base",texname),w,h)})
 	--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat",texname),w,h)})
-	gBaseBackground:SetPos(gViewportW/2-w/2,gViewportH/2-h/2)
+	local xoff,yoff = floor(gViewportW/2-w/2),floor(gViewportH/2-h/2)
+	print("docked bg",xoff,yoff,gViewportW,gViewportH,w,h)
+	gBaseBackground:SetPos(xoff,yoff)
+	
+	local w_orig,h_orig = GetTextureResolution(texname) 
+	--~ print("docked bg orig",texname,w_orig,h_orig)
+	
+	gDockedInfo.bg_xoff = xoff
+	gDockedInfo.bg_yoff = yoff
+	gDockedInfo.bg_w = w
+	gDockedInfo.bg_h = h
+	gDockedInfo.bg_w_orig = w_orig
+	gDockedInfo.bg_h_orig = h_orig
 end
-
 
