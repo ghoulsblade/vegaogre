@@ -58,6 +58,7 @@ gBaseRooms = {
 }
 
 
+function IsDockedModeActive () return gDockedMode end
 function ToggleDockedMode (o) 
 	if (gDockedMode) then EndDockedMode() else StartDockedMode(gSelectedObject) end
 end

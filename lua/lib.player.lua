@@ -36,14 +36,18 @@ SetMacro("backspace",function () PlayerHyperFly_Zero() end)
 --~ gMacroPrintAllKeyCombos = true
 
 gHyperFlySpeed = 0
-function PlayerHyperFly_Zero	() gHyperFlySpeed = 0 print("PlayerHyperFly_Zero",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed())) HUD_UpdateDisplayNav() end
-function PlayerHyperFly_Faster	() gHyperFlySpeed = gHyperFlySpeed + 1 print("PlayerHyperFly_Faster",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed())) HUD_UpdateDisplayNav() end
-function PlayerHyperFly_Slower	() gHyperFlySpeed = gHyperFlySpeed - 1 print("PlayerHyperFly_Slower",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed())) HUD_UpdateDisplayNav() end
-function PlayerHyperFly_GetSpeed	() return ((gHyperFlySpeed > 0) and 1 or -1) * math.pow(2,math.abs(gHyperFlySpeed)) end
+function PlayerHyperFly_Zero	() gHyperFlySpeed = 0 HUD_UpdateDisplayNav() end
+function PlayerHyperFly_Faster	() gHyperFlySpeed = gHyperFlySpeed + 1 HUD_UpdateDisplayNav() end
+function PlayerHyperFly_Slower	() gHyperFlySpeed = gHyperFlySpeed - 1 HUD_UpdateDisplayNav() end
+function PlayerHyperFly_GetSpeed	() return (gHyperFlySpeed == 0) and 0 or (((gHyperFlySpeed > 0) and 1 or -1) * math.pow(2,math.abs(gHyperFlySpeed))) end
 function PlayerHyperFly_GetExponent () return math.abs(gHyperFlySpeed) end
 
 gPlayerHyperFlyStep_NextAccelDecelKeyStep = 0
+
 function PlayerHyperFlyStep ()
+	if (IsAutoPilotActive()) then return end
+
+	-- while key is pressed adjust speed up/down every x msec
 	if (gMyTicks >= gPlayerHyperFlyStep_NextAccelDecelKeyStep) then 
 		local add = 0
 		for k,v in pairs(gPlayerHyperKeyList) do if (IsHotKeyPressed(k)) then add = add + v end end
@@ -53,8 +57,8 @@ function PlayerHyperFlyStep ()
 		end
 	end
 	
+	-- if hyperspeed not null, move ship
 	if (gHyperFlySpeed ~= 0) then 
-		--~ print("PlayerHyperFlyStep",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed()).."/s")
 		local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
 		local s = PlayerHyperFly_GetSpeed() 
 		local ax,ay,az = Quaternion.ApplyToVector(0,0,s*gSecondsSinceLastFrame,w0,x0,y0,z0)
@@ -62,11 +66,18 @@ function PlayerHyperFlyStep ()
 	end
 end
 
+function Player_GetDistUntilDock (base)
+	return base and base:CanDock(gPlayerShip) and math.max(0,base:GetDistToPlayer() - (2*base.r + 1000))
+end
+
 function Player_DockToSelected ()
+	PlayerHyperFly_Zero() -- stop hyperspeed flight
+	if (IsDockedModeActive()) then EndDockedMode() return end
+	
 	local base = gSelectedObject
 	if (not base) then print("Player_DockToSelected:no selected obj") return end
 	if (not base:CanDock(gPlayerShip)) then print("Player_DockToSelected: dock not allowed") return end
-	local d = base:GetDistToPlayer() - (2*base.r + 1000)
+	local d = Player_GetDistUntilDock(base)
 	if (d > 0) then print("Player_DockToSelected:too far",GetDistText(d)) return end
 	print("Player_DockToSelected: OK",base:GetClass(),base:DockIsJump())
 	if (base:DockIsJump()) then Player_ExecuteJump(base) return end

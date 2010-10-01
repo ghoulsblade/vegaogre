@@ -31,6 +31,12 @@ to compile on win :  no guide available at the moment, please use contact email 
 == controls ==
 
 tab : guimode
+
++- or xy : hyperspeed accellerate/decellerate 
+n/shift+n : select major objects in system
+alt+a : autopilot to selected object
+alt+d : dock (stations/planets) or jumpdrive (jumppoints)
+
 w-a-s-d : ship move
 r-f : up/down
 q-e : roll

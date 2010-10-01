@@ -126,7 +126,7 @@ function KeyDown (key,char)
 	if (char == 0) then char = gKeyCodeFix[key] or char end -- workaround for broken numpad charcodes
 	
 	gKeyPressed[key] = true
-	if (key == 0) then gKeyPressed["unknown_"..char] = true end
+	if (key == 0 and char) then gKeyPressed["unknown_"..char] = true end
 	local bConsumed = GuiKeyDown(key,char)
 	NotifyListener("keydown",key,char,bConsumed)
 	
@@ -164,7 +164,7 @@ RegisterListener("mouse_left_drag_stop",	function () print("mouse_left_drag_stop
 -- called from c
 function KeyUp (key)
 	gKeyPressed[key] = false
-	if (key == 0) then gKeyPressed["unknown_"..char] = false end
+	if (key == 0 and char) then gKeyPressed["unknown_"..char] = false end
 	NotifyListener("keyup",key)
 	
 	if (key == key_mouse2) then MouseEvent("mouse_right_up") end

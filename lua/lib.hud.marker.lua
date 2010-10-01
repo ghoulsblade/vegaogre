@@ -81,9 +81,12 @@ function cHudMarker:Step (obj)
 
 	w = max(minSize, min(w, maxSize))
 	h = max(minSize, min(h, maxSize))
-
-	local x = floor(gViewportW * ( px+1)/2)
-	local y = floor(gViewportH * (-py+1)/2)
+	local vw,vh = gViewportW,gViewportH
+	local b = 20
+	
+	local x = max(b,min(vw-b,floor(vw * ( px+1)/2)))
+	local y = max(b,min(vw-b,floor(vh * (-py+1)/2)))
+	
 	
 	self:SetPos(x, y)
 	self.frame:SetPos(-w/2,-h/2)

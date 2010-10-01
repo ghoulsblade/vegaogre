@@ -7,9 +7,12 @@ function ToggleAutoPilot ()
 	gAutoPilotActive = not gAutoPilotActive
 	HUD_UpdateDisplaySelf()
 	if (not gAutoPilotActive) then AutoPilotMsg("deactivated") return end
+	PlayerHyperFly_Zero()
 	gAutoPilotTarget = gSelectedObject
 	AutoPilotMsg("activated, target="..tostring(gAutoPilotTarget:GetNameForMessageText()))
 end
+
+function IsAutoPilotActive () return gAutoPilotActive end
 
 function StepAutoPilot () 
 	if (not gAutoPilotActive) then return end
