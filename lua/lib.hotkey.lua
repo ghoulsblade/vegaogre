@@ -16,6 +16,13 @@ function GetMacroKeyComboName (keycode,char,bCtrl,bAlt,bShift)
     return text
 end
 
+function IsHotKeyPressed (keycode) -- key is pressed and not keycombo  .. keycode = key_a or similar
+	return gKeyPressed[keycode or 0] and (not (
+		gKeyPressed[key_lcontrol] or gKeyPressed[key_rcontrol]	or 
+		gKeyPressed[key_lalt]     or gKeyPressed[key_ralt]    	or
+		gKeyPressed[key_lshift]   or gKeyPressed[key_rshift]	))
+end
+
 function TriggerMacros (keycode,char) 
     local bCtrl     = gKeyPressed[key_lcontrol] or gKeyPressed[key_rcontrol]
     local bAlt      = gKeyPressed[key_lalt]     or gKeyPressed[key_ralt]    

@@ -47,7 +47,7 @@ function MySpaceInit ()
 	
 	if (playerspawnbase) then playerspawnbase:SelectObject() end
 	
-	HUD_UpdateDisplaySelf()
+	NotifyListener("Hook_SystemLoaded",true)
 end
 
 function GetRandomOrbitFlatXY (d,dzmax)

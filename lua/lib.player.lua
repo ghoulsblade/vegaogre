@@ -20,28 +20,45 @@ SetMacro("ctrl+d",function () Player_DockToSelected() end)
 SetMacro("alt+g",function () ToggleDockedMode(gSelectedObject) end)
 SetMacro("ctrl+g",function () ToggleDockedMode(gSelectedObject) end)
 
-SetMacro("x",function () PlayerHyperFly_Faster() end)
-SetMacro("y",function () PlayerHyperFly_Slower() end)
 
-SetMacro("043",function () PlayerHyperFly_Faster() end)
-SetMacro("minus",function () PlayerHyperFly_Slower() end)
 
-SetMacro("npadd",function () PlayerHyperFly_Faster() end)
-SetMacro("npsub",function () PlayerHyperFly_Slower() end)
 
-gMacroPrintAllKeyCombos = true
+gPlayerHyperKeyList = {
+	[key_npadd]	=1,
+	[key_npsub]	=-1,
+	["unknown_043"]	=1,
+	[key_minus]	=-1,
+	[key_x]		=1,
+	[key_y]		=-1
+}
+SetMacro("backspace",function () PlayerHyperFly_Zero() end)
+
+--~ gMacroPrintAllKeyCombos = true
 
 gHyperFlySpeed = 0
-function PlayerHyperFly_Faster () print("PlayerHyperFly_Faster") gHyperFlySpeed = gHyperFlySpeed + 1 end
-function PlayerHyperFly_Slower () print("PlayerHyperFly_Slower") gHyperFlySpeed = gHyperFlySpeed - 1 end
+function PlayerHyperFly_Zero	() gHyperFlySpeed = 0 print("PlayerHyperFly_Zero",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed())) HUD_UpdateDisplayNav() end
+function PlayerHyperFly_Faster	() gHyperFlySpeed = gHyperFlySpeed + 1 print("PlayerHyperFly_Faster",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed())) HUD_UpdateDisplayNav() end
+function PlayerHyperFly_Slower	() gHyperFlySpeed = gHyperFlySpeed - 1 print("PlayerHyperFly_Slower",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed())) HUD_UpdateDisplayNav() end
+function PlayerHyperFly_GetSpeed	() return ((gHyperFlySpeed > 0) and 1 or -1) * math.pow(2,math.abs(gHyperFlySpeed)) end
+function PlayerHyperFly_GetExponent () return math.abs(gHyperFlySpeed) end
+
+gPlayerHyperFlyStep_NextAccelDecelKeyStep = 0
 function PlayerHyperFlyStep ()
-	print("PlayerHyperFlyStep",gHyperFlySpeed)
+	if (gMyTicks >= gPlayerHyperFlyStep_NextAccelDecelKeyStep) then 
+		local add = 0
+		for k,v in pairs(gPlayerHyperKeyList) do if (IsHotKeyPressed(k)) then add = add + v end end
+		if (add ~= 0) then
+			gPlayerHyperFlyStep_NextAccelDecelKeyStep = gMyTicks + 200
+			if (add < 0) then PlayerHyperFly_Slower() else PlayerHyperFly_Faster() end
+		end
+	end
+	
 	if (gHyperFlySpeed ~= 0) then 
+		--~ print("PlayerHyperFlyStep",gHyperFlySpeed,GetDistText(PlayerHyperFly_GetSpeed()).."/s")
 		local w0,x0,y0,z0 = gPlayerShip.gfx:GetOrientation()
-		local s = ((gHyperFlySpeed > 0) and 1 or -1) * math.pow(2,math.abs(gHyperFlySpeed))
+		local s = PlayerHyperFly_GetSpeed() 
 		local ax,ay,az = Quaternion.ApplyToVector(0,0,s*gSecondsSinceLastFrame,w0,x0,y0,z0)
 		MyPlayerHyperMoveRel (ax,ay,az)
-		print("PlayerHyperFlyStep",GetDistText(s).."/s")
 	end
 end
 
@@ -67,9 +84,8 @@ function Player_ExecuteJump (jumppoint)
 	print("Player_ExecuteJump",jumppoint)
 	Player_ClearSelectedObject()
 	VegaUnloadSystem()
-	--~ VegaLoadSystem("Crucible/Cephid_17")
-	--~ VegaLoadSystem("Sol/Sol") 
 	VegaLoadSystem(jumppoint.dest or "Crucible/Cephid_17") 
+	NotifyListener("Hook_SystemLoaded")
 end
 
 gNavTargets = {}
