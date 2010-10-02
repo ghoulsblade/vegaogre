@@ -45,7 +45,7 @@ function MySpaceInit ()
 	playerspawnbase = playerspawnbase or gNavTargets[math.random((#gNavTargets > 0) and #gNavTargets or 1)]
 	SpawnPlayer(playerspawnbase)
 	
-	if (playerspawnbase) then playerspawnbase:SelectObject() end
+	if (playerspawnbase) then playerspawnbase:SelectObject() StartDockedMode(playerspawnbase,"ocean") end
 	
 	NotifyListener("Hook_SystemLoaded",true)
 end

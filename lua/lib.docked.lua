@@ -8,7 +8,7 @@
 gDockedInfo = {}
 
 --~ RegisterListener("Hook_SystemLoaded",function () StartDockedMode({},"agriculture") end)
-RegisterListener("Hook_SystemLoaded",function () StartDockedMode(nil,"ocean") end)
+--~ RegisterListener("Hook_SystemLoaded",function () StartDockedMode(nil,"ocean") end)
 
 gDefaultBaseBackground = {
 	rock						= "landing.dds",
