@@ -30,17 +30,20 @@ to compile on win :  no guide available at the moment, please use contact email 
 	
 == controls ==
 
-tab : guimode
+tab : toggle guimode/flightmode (while in gui mode, clicking objects selects them)
 
 +- or xy : hyperspeed accellerate/decellerate 
 n/shift+n : select major objects in system
-alt+a : autopilot to selected object
+alt+a : toggle autopilot/fasttravel to selected object
 alt+d : dock (stations/planets) or jumpdrive (jumppoints)
 
 w-a-s-d : ship move
 r-f : up/down
 q-e : roll
 shift : slow
-ctrl : afterburner
+x/y or keypad +/- : increase/decrease velocity mulitplier
+backspace to reset velocity multiplier
 
 left-mouse : fire
+
+
