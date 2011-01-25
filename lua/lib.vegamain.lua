@@ -17,6 +17,7 @@ dofile(libpath .. "lib.data.generate.lua")
 dofile(libpath .. "lib.docked.lua")
 dofile(libpath .. "lib.gfx.hyper.lua")
 dofile(libpath .. "lib.gfx.jumppoint.lua")
+dofile(libpath .. "lib.import.xmesh.lua")
 
 sin		= math.sin
 cos		= math.cos
