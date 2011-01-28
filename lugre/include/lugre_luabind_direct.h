@@ -41,6 +41,7 @@ struct 	luaL_reg make_luaL_reg		(const char *name,lua_CFunction func);
 // experiment to make lua binding using light user data and assigning metatables
 // does not do much typechecking -> might be faster, no smartpointable needed
 
+#define LUABIND_QUICKWRAP_STATIC_TRYCATCH(methodname,code) LUABIND_QUICKWRAP_STATIC(methodname,try{ code } catch (...) { return 0; })
 #define LUABIND_QUICKWRAP_STATIC(methodname,code) \
 	{ 	class cTempClass : public cLuaBindDirectQuickWrapHelper { public: \
 			static int methodname (lua_State *L) { PROFILE code return 0; }\

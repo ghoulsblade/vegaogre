@@ -2,12 +2,21 @@
 --~ BFXM spec (old) : http://vegastrike.svn.sourceforge.net/viewvc/vegastrike/trunk/vegastrike/objconv/mesher/BFXM%20specification.txt?revision=7726&view=markup
 --~ XMESH spec (old) : http://vegastrike.svn.sourceforge.net/viewvc/vegastrike/trunk/vegastrike/objconv/xmlspec?revision=594&view=markup
 
+local function MyXMeshConvertInitOgre ()
+	print("MyXMeshConvertInitOgre...")
+	local bAutoCreateWindow = false
+	local bAutoCreateWindow = true -- window needed due to texture-loading
+	if (not InitOgre("VegaOgre",gOgrePluginPathOverride or lugre_detect_ogre_plugin_path(),gBinPath,bAutoCreateWindow)) then os.exit(0) end
+	CollectOgreResLocs()
+	print("MyXMeshConvertInitOgre done.")
+end
+
 RegisterListener("Hook_CommandLine",function ()
 	local bSuccess,sError = lugrepcall(function () -- protected call, print error
 		local path = gCommandLineSwitchArgs["-xmesh"]
-		if path then ConvertXMesh(path,gCommandLineSwitchArgs["-out"]) os.exit(0) end
+		if path then MyXMeshConvertInitOgre() ConvertXMesh(path,gCommandLineSwitchArgs["-out"]) os.exit(0) end
 		
-		if gCommandLineSwitches["-xmeshtest"] then ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/plowshare_prime.xmesh") os.exit(0) end
+		if gCommandLineSwitches["-xmeshtest"] then MyXMeshConvertInitOgre() ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/plowshare_prime.xmesh") os.exit(0) end
 	end)
 	if (not bSuccess) then print("import.xmesh error : ",sError) os.exit(0) end
 end)
@@ -24,6 +33,7 @@ function ConvertXMesh (inpath,outpath)
 	local xml_mat
 	local xml_points
 	local xml_polys
+	local bDebug = true
 	
 	-- check entries on first hierarchy level
 	for k,sub in ipairs(xml) do
@@ -41,48 +51,181 @@ function ConvertXMesh (inpath,outpath)
 	assert(xml_points,	"no Points entry found")
 	assert(xml_polys,	"no Polygons entry found")
 	
+	-- expected attributes
+	local function MyAttrCheck (attr,eattr,txt) for k,v in pairs(attr) do if (not eattr[k]) then eattr[k] = true print("Unexpected Attribute",k,txt) end end end
+	
 	-- points
+	if (bDebug) then print("scanning points...") end
 	local points = {}
-	for k1,point in ipairs(xml_points) do 
-		assert(point._name == "Point")
+	local eattr_point_location = {x=true,y=true,z=true,s=true,t=true}
+	local eattr_point_normal = {i=true,j=true,k=true}
+	for k1,xml_point in ipairs(xml_points) do 
+		assert(xml_point._name == "Point")
 		local p = {}
-		--~ <Location x="-12.366974" y="-5.367156" z="-2.585358" s="0.000000" t="0.000000"/>
-		--~ <Normal i="0.476627" j="0.857523" k="-0.193598"/>
-		for k2,sub in ipairs(point) do 
-				if (sub._name == "Location") then 	for k,v in pairs(sub._attr) do p[k] = v end	
+		table.insert(points,p)
+		for k2,sub in ipairs(xml_point) do 
+				if (sub._name == "Location") then 	for k,v in pairs(sub._attr) do p[k] = v end	MyAttrCheck(sub._attr,eattr_point_location,"Point.Location")
 				assert((not sub.s) or (tonumber(sub.s) == 0),"debug-assert : non-zero value for unknown Point.Location attribute s")
 				assert((not sub.t) or (tonumber(sub.t) == 0),"debug-assert : non-zero value for unknown Point.Location attribute t")
-			elseif (sub._name == "Normal") then 	for k,v in pairs(sub._attr) do p[k] = v end	
+			elseif (sub._name == "Normal") then 	for k,v in pairs(sub._attr) do p[k] = v end MyAttrCheck(sub._attr,eattr_point_normal,"Point.Normal")
 			else
 				print("unexpected point-attribute:",sub._name)
 				assert(false,"unexpected point-attribute: fatal for debug")
 			end
 		end
-		
-		table.insert(points,p)
 		--~ local txt = {} for k,v in pairs(p) do table.insert(txt,tostring(k).."="..tostring(v)) end txt = table.concat(txt,",") print(k1,txt)
 	end
 	
+	-- prepare ogre geometry buffers
+	local vb = cVertexBuffer:New()
+	local ib = cIndexBuffer:New()
+	local vc = 0
 	
-	-- polys
+	-- search if a vertex already exists or create a new one if not
+	local known_vertex = {}
+	local minx,miny,minz
+	local maxx,maxy,maxz
+	local function GetCreateVertexIdx (x,y,z, nx,ny,nz, u,v)
+		minx = min(minx or x,x)
+		miny = min(miny or y,y)
+		minz = min(minz or z,z)
+		maxx = max(maxx or x,x)
+		maxy = max(maxy or y,y)
+		maxz = max(maxz or z,z)
+		local name = table.concat({x,y,z, nx,ny,nz, u,v},",")
+		local cache = known_vertex[name]
+		if (cache) then return cache end
+		vb:Vertex(x,y,z, nx,ny,nz, u,v)
+		local idx = vc
+		vc = vc + 1
+		known_vertex[name] = idx
+		return idx
+	end
+	
+	-- polys (vertexbuffer gets filled here)
+	if (bDebug) then print("scanning polygons...") end
 	local polys = {}
-	for k1,poly in ipairs(xml_polys) do 
-		assert(poly._name == "Tri")
-		assert(#poly == 3,"expected 3 vertices! "..#poly)
-		if (poly.flatshade ~= "0") then print("warning: Tri.flatshade not supported") end
-		if (poly.flatshade ~= "0") then assert(false,"debug-assert: Tri.flatshade not supported") end
-		local p = {}
-		for k2,vertex in ipairs(poly) do
-			assert(vertex._name == "Vertex")
-			local pointidx = tonumber(vertex.point)
-			local where = "["..k1..","..k2..","..pointidx.."]"
+	local eattr_poly_tri = {flatshade=true}
+	local eattr_poly_vertex = {point=true,s=true,t=true}
+	local s = tonumber(xml_mesh.scale) or 1 -- scale
+	for k1,xml_poly in ipairs(xml_polys) do 
+		if (bDebug and (k1 % 500) == 1) then print("scanning polygons "..k1.."/"..#xml_polys) end
+		assert(xml_poly._name == "Tri")
+		assert(#xml_poly == 3,"expected 3 vertices! "..#xml_poly)
+		if (xml_poly.flatshade ~= "0") then print("warning: Tri.flatshade not supported") end
+		if (xml_poly.flatshade ~= "0") then assert(false,"debug-assert: Tri.flatshade not supported") end
+		MyAttrCheck(xml_poly._attr,eattr_poly_tri,"Polygons.Tri")
+		for k2,xml_vertex in ipairs(xml_poly) do
+			assert(xml_vertex._name == "Vertex")
+			MyAttrCheck(xml_vertex._attr,eattr_poly_vertex,"Polygons.Tri.Vertex")
+			local pointidx = tonumber(xml_vertex.point)
 			local point = points[pointidx+1] assert(point)
-			-- todo : s/t in poly overrides s/t in point creating a new vertex ? not sure on the meaning of them, suspected texcoords.  Point.Location.t/s seem to always be zero
-			--~ assert(point.s == vertex.s,where.." s!=s:"..point.s.."~"..vertex.s)
-			--~ assert(point.t == vertex.t,where.." t!=t:"..point.t.."~"..vertex.t)
-			--~ <Polygons>
-			--~ <Tri flatshade="0">
-				--~ <Vertex point="0" s="0.724862" t="0.822618"/>
+			-- add vertex to buffer
+			ib:Index(GetCreateVertexIdx((point.x or 0)*s,(point.y or 0)*s,(point.z or 0)*s, 
+										point.i or 0,point.j or 0,point.k or 1, 
+										xml_vertex.s or 0,xml_vertex.t or 0))
 		end
 	end
+	
+	-- names
+	local szMeshName = "myXMeshConvertMesh"
+	local msMatName = "myXMeshConvertMat"
+	
+	
+	-- create material
+	if (bDebug) then print("creating material...") end
+	local tex_prefix = "plowshare_"
+	local function TransformTexName (s) return tex_prefix..s end
+	assert(MaterialManager_create,"recompile executable file, code was added 28.01.2011 and only compiled on linux at the time")
+	local pMat	= MaterialManager_create(msMatName) assert(pMat)
+	--~ local pTec	= pMat:createTechnique() assert(pTec)
+	--~ local pPas	= pTec:createPass() assert(pPas)
+	--~ local pTex	= pPas:createTextureUnitState() assert(pTex)
+	local pTec	= pMat:getTechnique(0) assert(pTec)
+	local pPas	= pTec:getPass(0) assert(pPas)
+	local pTex	= pPas:createTextureUnitState() assert(pTex)
+	
+	-- apply global properties
+	pTex:setTextureName(TransformTexName(xml_mesh.texture or ""),TEX_TYPE_2D)
+	local s = tonumber(xml_mat.power) if (s) then pMat:setShininess(s) end
+	-- TODO : <Mesh ... reverse="0" forcetexture="0" sharevert="0" polygonoffset="0.0" blend="ONE ZERO" alphatest="0.0" texture="wayfarer.png"  texture1="wayfarerPPL.jpg" >
+	-- TODO : <Material power="60.000000" cullface="1" reflect="1" lighting="1" usenormals="1">
+	local eattr_mesh = {reverse=true,forcetexture=true,sharevert=true,polygonoffset=true,blend=true,alphatest=true,texture=true,texture1=true}
+	local eattr_mat = {power=true,cullface=true,reflect=true,lighting=true,usenormals=true}
+	MyAttrCheck(xml_mesh._attr,eattr_mesh,"Mesh")
+	MyAttrCheck(xml_mat._attr,eattr_mat,"Material")
+	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest, texture1")
+	print("TODO : Material : cullface,reflect,lighting,usenormals")
+	
+	-- apply material-sub-properties (colors)
+	local eattr_mat_prop = {Red=true,Green=true,Blue=true,Alpha=true}
+	for k1,xml_matprop in ipairs(xml_mat) do
+		MyAttrCheck(xml_matprop._attr,eattr_mat_prop,"Material."..tostring(xml_matprop._name))
+		local r = tonumber(xml_matprop.Red	)
+		local g = tonumber(xml_matprop.Green)
+		local b = tonumber(xml_matprop.Blue	)
+		local a = tonumber(xml_matprop.Alpha)
+		print(xml_matprop._name,r,g,b,a)
+		
+			if (xml_matprop._name == "Ambient"	) then pMat:setAmbient(			r or 0,g or 0,b or 0)
+		elseif (xml_matprop._name == "Diffuse"	) then pMat:setDiffuse(			r or 1,g or 1,b or 1,a or 1)
+		elseif (xml_matprop._name == "Specular"	) then pMat:setSpecular(		r or 0,g or 0,b or 0,a or 0)
+		elseif (xml_matprop._name == "Emissive"	) then pMat:setSelfIllumination(r or 0,g or 0,b or 0)
+		else 
+			print("unexpected material-attribute:",xml_matprop._name)
+			assert(false,"unexpected material-attribute: fatal for debug")
+		end
+	end
+	
+	-- export material
+	local bExportDefaults = false
+	pMat:MaterialSerializer_Export("/home/ghoul/Desktop/vegaTestExport.material",bExportDefaults)
+	
+	-- create mesh
+	if (bDebug) then print("creating mesh...") end
+	vb:CheckSize()
+	local pMesh = MeshManager_createManual(szMeshName) -- Ogre::MeshPtr
+	
+	-- create submesh
+	local sub = pMesh:createSubMesh() -- Ogre::SubMesh*
+	sub:setMaterialName(msMatName)
+	sub:setUseSharedVertices(false)
+	sub:setOperationType(OT_TRIANGLE_LIST)
+	
+	local vertexData = CreateVertexData()
+	local indexData = CreateIndexData()
+	sub:setVertexData(vertexData)
+	sub:setIndexData(indexData)
+	
+	local vdecl = cVertexDecl:New()
+	vdecl:addElement(0,VET_FLOAT3,VES_POSITION)
+	vdecl:addElement(0,VET_FLOAT3,VES_NORMAL)
+	vdecl:addElement(0,VET_FLOAT2,VES_TEXTURE_COORDINATES)
+	--~  TODO : if (bUseColors)		offset += decl.addElement(0, offset, VET_COLOUR, VES_DIFFUSE).getSize()      autoorganize position!!!
+	
+	vertexData:setVertexDecl(vdecl:GetOgreVertexDecl())
+	vertexData:createAndBindVertexBuffer(vb:GetVertexSize(),vb:GetVertexNum(),HBU_STATIC_WRITE_ONLY,false,0) -- (iVertexSize,iNumVerts,iUsage,bUseShadowBuffer=false,iBindIndex=0)
+	indexData:createAndBindIndexBuffer(IT_32BIT,ib:GetIndexNum(),HBU_STATIC_WRITE_ONLY) -- (iIndexType,iNumIndexes,iUsage,bUseShadowBuffer=false)
+	
+	vertexData:setVertexStart(0)
+	indexData:setIndexStart(0)
+	vertexData:setVertexCount(vb:GetVertexNum())
+	indexData:setIndexCount(ib:GetIndexNum())
+	
+	vertexData:writeToVertexBuffer(vb:GetFIFO(),0)
+	indexData:writeToIndexBuffer(ib:GetFIFO()) 
+	
+	-- bounds : todo : calc for whole mesh, not only for this submesh
+	pMesh:_setBounds({minx,miny,minz,maxx,maxy,maxz},false)
+	pMesh:_setBoundingSphereRadius(max(abs(minx),abs(miny),abs(minz),abs(maxx),abs(maxy),abs(maxz)))
+	
+	vb:Destroy()
+	ib:Destroy()
+	
+	local sFileName = "/home/ghoul/Desktop/vegaTestExport.mesh"
+	ExportMesh(szMeshName,sFileName)
+	
+	if (bDebug) then print("xmesh convert finished.") end
+	
+	return szMeshName
 end

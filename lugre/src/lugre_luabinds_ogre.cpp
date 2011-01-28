@@ -1130,7 +1130,7 @@ class cLugreLuaBind_Ogre_Skeleton : public cLuaBindDirect<Ogre::Skeleton>, publi
 		/// skeleton 	SkeletonManager_load	(sName)
 		LUABIND_QUICKWRAP_STATIC(SkeletonManager_load, { 
 				try {
-					Ogre::SkeletonPtr pSkeleton = Ogre::SkeletonManager::getSingleton().load(ParamString(L,1),Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+					Ogre::SkeletonPtr pSkeleton = Ogre::SkeletonManager::getSingleton().load(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME));
 					return CreateUData(L,pSkeleton.getPointer()); 
 				} catch (Ogre::Exception& e) { return 0; }
 			});
@@ -1138,7 +1138,7 @@ class cLugreLuaBind_Ogre_Skeleton : public cLuaBindDirect<Ogre::Skeleton>, publi
 		/// skeleton 	SkeletonManager_create	(sName)
 		LUABIND_QUICKWRAP_STATIC(SkeletonManager_create, { 
 				try {
-					Ogre::SkeletonPtr pSkeleton = Ogre::SkeletonManager::getSingleton().create(ParamString(L,1),Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,true);
+					Ogre::SkeletonPtr pSkeleton = Ogre::SkeletonManager::getSingleton().create(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME),true);
 					return CreateUData(L,pSkeleton.getPointer()); 
 				} catch (Ogre::Exception& e) { return 0; }
 			});
@@ -1305,7 +1305,7 @@ class cLugreLuaBind_Ogre_Mesh : public cLuaBindDirect<Ogre::Mesh>, public cLuaBi
 		/// mesh 		MeshManager_load		(sName)
 		LUABIND_QUICKWRAP_STATIC(MeshManager_load,			{ return CreateUData(L,Ogre::MeshManager::getSingleton().load(ParamString(L,1),Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME).getPointer() ); });
 		/// mesh 		MeshManager_createManual	(sName)
-		LUABIND_QUICKWRAP_STATIC(MeshManager_createManual,	{ return CreateUData(L,Ogre::MeshManager::getSingleton().createManual(ParamString(L,1),Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME).getPointer() ); });
+		LUABIND_QUICKWRAP_STATIC(MeshManager_createManual,	{ return CreateUData(L,Ogre::MeshManager::getSingleton().createManual(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME)).getPointer() ); });
 		
 		// see Mesh::addBoneAssignment for shared, and SubMesh::addBoneAssignment() for specific
 		LUABIND_QUICKWRAP(	addBoneAssignment,	{ 
@@ -1990,6 +1990,28 @@ class cLugreLuaBind_Ogre_Texture : public cLuaBindDirect<Ogre::Texture>, public 
 
 class cLugreLuaBind_Ogre_Material : public cLuaBindDirect<Ogre::Material>, public cLuaBindDirectOgreHelper { public:
 	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		
+		// note : before generalizing this further here, make a binding for "resource-manager" with getSingleton bindings for mat,tex,mesh,skeleton,gpuprogram,font,compositor
+		LUABIND_QUICKWRAP_STATIC_TRYCATCH(MaterialManager_load,		{ return CreateUData(L,((Ogre::MaterialPtr)Ogre::MaterialManager::getSingleton().load(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))).getPointer() ); });
+		LUABIND_QUICKWRAP_STATIC_TRYCATCH(MaterialManager_create,	{ return CreateUData(L,((Ogre::MaterialPtr)Ogre::MaterialManager::getSingleton().create(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))).getPointer() ); });
+		LUABIND_QUICKWRAP_STATIC_TRYCATCH(MaterialManager_unload,	{ Ogre::MaterialManager::getSingleton().unload(ParamString(L,1)); });
+		LUABIND_QUICKWRAP_STATIC_TRYCATCH(MaterialManager_remove,	{ Ogre::MaterialManager::getSingleton().remove(ParamString(L,1)); });
+
+		LUABIND_QUICKWRAP(Destroy,						{ delete checkudata_alive(L); }); // probably should use resource manager unload instead
+		
+		// void mat:MaterialSerializer_Export (filepath,bExportDefaults=false,bIncludeProgDef=false,sProgramFilename="",sMaterialName="");
+		LUABIND_QUICKWRAP(MaterialSerializer_Export,	{ 
+				Ogre::MaterialSerializer myExporter;
+				myExporter.exportMaterial(
+					 Ogre::MaterialPtr(checkudata_alive(L))
+					,ParamString(L,2)
+					,ParamBoolDefault(L,3,false)
+					,ParamBoolDefault(L,4,false)
+					,ParamStringDefault(L,5,"")
+					,ParamStringDefault(L,6,"")
+				); 
+			});
+		
 		// unknown syntax:typedef vector<Real>::type LodValueList;
 		// unknown syntax:typedef ConstVectorIterator<LodValueList> LodValueIterator;
 		// unknown syntax:Material(ResourceManager* creator,String name,ResourceHandle handle,String group,bool isManual,ManualResourceLoader* loader);
