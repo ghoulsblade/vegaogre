@@ -39,6 +39,7 @@ function VegaMainAddResLocs (mydatapath)
 	end
 	OgreAddResLoc(mydatapath.."units/vessels/llama"							,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."units/vessels/Ruizong"						,"FileSystem","General")
+	OgreAddResLoc(mydatapath.."units/vessels/Plowshare"						,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."units/installations/Agricultural_Station"	,"FileSystem","General")    
 	OgreAddResLoc(mydatapath.."textures/backgrounds"						,"FileSystem","General")
 

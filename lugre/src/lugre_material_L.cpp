@@ -175,11 +175,15 @@ class cMaterial_L { public:
 	static int		CloneMaterial	(lua_State *L) { PROFILE
 		std::string sOldMatName 		= luaL_checkstring(L,1);
 		std::string sNewMatName 		= (lua_gettop(L) >= 2 && !lua_isnil(L,2)) ? luaL_checkstring(L,2) : cOgreWrapper::GetSingleton().GetUniqueName();
-		Ogre::MaterialPtr oldmat = Ogre::MaterialManager::getSingleton().getByName(sOldMatName);
-		if (oldmat.isNull()) { printf("warning, CloneMaterial : failed to load old mat %s\n",sOldMatName.c_str()); return 0; }
-		Ogre::MaterialPtr newmat = oldmat->clone(sNewMatName);
-		lua_pushstring(L,sNewMatName.c_str());
-		return 1;
+		try {
+			Ogre::MaterialPtr oldmat = Ogre::MaterialManager::getSingleton().getByName(sOldMatName);
+			if (oldmat.isNull()) { printf("warning, CloneMaterial : failed to load old mat %s\n",sOldMatName.c_str()); return 0; }
+			Ogre::MaterialPtr newmat = oldmat->clone(sNewMatName);
+			lua_pushstring(L,sNewMatName.c_str());
+			return 1;
+		}
+		catch (std::exception& e) { lua_pushboolean(L,false); lua_pushstring(L,e.what()); return 2; }
+		catch (...) { lua_pushboolean(L,false); lua_pushstring(L,"CloneMaterial: unknown error"); return 2; }
 	}
 	
 	/// string		CreateMaterial	(sMatName=uniquename())

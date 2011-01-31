@@ -207,12 +207,26 @@ class cLugreLuaBind_Ogre_Renderable : public cLuaBindDirect<Ogre::Renderable>, p
 
 class cLugreLuaBind_Ogre_Resource : public cLuaBindDirect<Ogre::Resource>, public cLuaBindDirectOgreHelper { public:
 	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		// adding try/catch to load to avoid segfault in case texture not found etc
+		LUABIND_QUICKWRAP(load,	{ 
+				try {
+					Ogre::Resource* o = checkudata_alive(L);
+					o->load(ParamBoolDefault(L,2,false));
+					PushBool(L,true);
+					return 1;
+				}
+				catch (std::exception& e) { PushBool(L,false); PushString(L,e.what()); return 2; }
+				catch (...) { PushBool(L,false); PushString(L,"Ogre_Resource:Load: unknown error"); return 2; }
+			});
+			
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																load,												,(ParamBool(L,2))	);
+		
 		// unknown syntax:OGRE_AUTO_MUTEX class Listener;
 		// unknown syntax:enum LoadingState;
 		// unknown syntax:Resource(ResourceManager* creator,String name,ResourceHandle handle,String group,bool isManual,ManualResourceLoader* loader);
 		// unknown syntax:~Resource();
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																prepare,											,(ParamBool(L,2))	);
-		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																load,												,(ParamBool(L,2))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																load,												,(ParamBool(L,2))	);
 		LUABIND_DIRECTWRAP_RETURN_VOID_NAMEADD(																reload,												,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isReloadable,										,()	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushBool,										isManuallyLoaded,									,()	);
@@ -1824,6 +1838,19 @@ bool			MySubImage						(Ogre::Image& pImageSrc,Ogre::Image& pImageDst,int iOffse
 
 class cLugreLuaBind_Ogre_Image : public cLuaBindDirect<Ogre::Image>, public cLuaBindDirectOgreHelper { public:
 	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		
+		// adding try/catch to load to avoid segfault in case texture not found etc (.dds error)
+		LUABIND_QUICKWRAP(load,	{ 
+				try {
+					Ogre::Image* o = checkudata_alive(L);
+					Ogre::Image& res = o->load(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME));
+					PushCopyImage(L,res);
+					return 1;
+				}
+				catch (std::exception& e) { PushBool(L,false); PushString(L,e.what()); return 2; }
+				catch (...) { PushBool(L,false); PushString(L,"Ogre_Image:Load: unknown error"); return 2; }
+			});
+		
 		LUABIND_QUICKWRAP_STATIC(	CreateOgreImage,	{ return CreateUData(L,new Ogre::Image()); });
 		LUABIND_QUICKWRAP(			Destroy,			{ delete checkudata_alive(L); });
 		LUABIND_QUICKWRAP(			ColorReplace,		{ cOgreWrapper::ImageColorReplace(*checkudata_alive(L),ParamColourValue(L,2),ParamColourValue(L,3)); });
@@ -1880,7 +1907,7 @@ class cLugreLuaBind_Ogre_Image : public cLuaBindDirect<Ogre::Image>, public cLua
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									loadDynamicImage,2									,((uchar*)ParamFIFOData(L,2),ParamInt(L,3),ParamInt(L,4),ParamPixelFormat(L,5))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									loadRawData,										,(ParamDataStreamPtr(L,2),ParamInt(L,3),ParamInt(L,4),ParamInt(L,5),ParamPixelFormat(L,6),ParamInt(L,7),ParamInt(L,8))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									loadRawData,2										,(ParamDataStreamPtr(L,2),ParamInt(L,3),ParamInt(L,4),ParamPixelFormat(L,5))	);
-		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									load,												,(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))	);
+		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									load,												,(ParamString(L,2),ParamStringDefault(L,3,Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									load,2												,(ParamDataStreamPtr(L,2),ParamString(L,3))	);
 		LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(				PushCopyImage,									loadTwoImagesAsRGBA,								,(ParamString(L,2),ParamString(L,3),ParamString(L,4),ParamPixelFormat(L,5))	);
 		//~ LUABIND_DIRECTWRAP_RETURN_ONE_NAMEADD(			PushCopyImage,									loadTwoImagesAsRGBA,2								,(ParamDataStreamPtr(L,2),ParamDataStreamPtr(L,3),ParamPixelFormat(L,4),ParamString(L,5),ParamString(L,6))	);
@@ -1990,6 +2017,7 @@ class cLugreLuaBind_Ogre_Texture : public cLuaBindDirect<Ogre::Texture>, public 
 
 class cLugreLuaBind_Ogre_Material : public cLuaBindDirect<Ogre::Material>, public cLuaBindDirectOgreHelper { public:
 	virtual void RegisterMethods	(lua_State *L) { PROFILE
+		LUABIND_DIRECTWRAP_BASECLASS(Ogre::Resource);
 		
 		// note : before generalizing this further here, make a binding for "resource-manager" with getSingleton bindings for mat,tex,mesh,skeleton,gpuprogram,font,compositor
 		LUABIND_QUICKWRAP_STATIC_TRYCATCH(MaterialManager_load,		{ return CreateUData(L,((Ogre::MaterialPtr)Ogre::MaterialManager::getSingleton().load(ParamString(L,1),ParamStringDefault(L,2,Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))).getPointer() ); });
@@ -2001,15 +2029,21 @@ class cLugreLuaBind_Ogre_Material : public cLuaBindDirect<Ogre::Material>, publi
 		
 		// void mat:MaterialSerializer_Export (filepath,bExportDefaults=false,bIncludeProgDef=false,sProgramFilename="",sMaterialName="");
 		LUABIND_QUICKWRAP(MaterialSerializer_Export,	{ 
-				Ogre::MaterialSerializer myExporter;
-				myExporter.exportMaterial(
-					 Ogre::MaterialPtr(checkudata_alive(L))
-					,ParamString(L,2)
-					,ParamBoolDefault(L,3,false)
-					,ParamBoolDefault(L,4,false)
-					,ParamStringDefault(L,5,"")
-					,ParamStringDefault(L,6,"")
-				); 
+				try {
+					Ogre::MaterialSerializer myExporter;
+					myExporter.exportMaterial(
+						 Ogre::MaterialPtr(checkudata_alive(L))
+						,ParamString(L,2)
+						,ParamBoolDefault(L,3,false)
+						,ParamBoolDefault(L,4,false)
+						,ParamStringDefault(L,5,"")
+						,ParamStringDefault(L,6,"")
+					); 
+					PushBool(L,true);
+					return 1;
+				}
+				catch (std::exception& e) { PushBool(L,false); PushString(L,e.what()); return 2; }
+				catch (...) { PushBool(L,false); PushString(L,"MaterialSerializer_Export: unknown error"); return 2; }
 			});
 		
 		// unknown syntax:typedef vector<Real>::type LodValueList;
