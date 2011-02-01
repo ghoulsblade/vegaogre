@@ -1,0 +1,18 @@
+
+material ishmael3
+{
+	technique
+	{
+		pass
+		{
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture whitelight.ani
+			}
+		}
+
+	}
+
+}

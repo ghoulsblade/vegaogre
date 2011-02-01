@@ -1,0 +1,17 @@
+
+material archimedes1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+			}
+		}
+
+	}
+
+}

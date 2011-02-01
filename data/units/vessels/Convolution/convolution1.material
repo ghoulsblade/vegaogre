@@ -1,0 +1,18 @@
+
+material convolution1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Convolution_lekra.jpg.dds
+			}
+		}
+
+	}
+
+}

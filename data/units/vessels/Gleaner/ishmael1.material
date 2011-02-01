@@ -1,0 +1,18 @@
+
+material ishmael1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Gleaner_ishmael-mast-alpha.png.dds
+			}
+		}
+
+	}
+
+}

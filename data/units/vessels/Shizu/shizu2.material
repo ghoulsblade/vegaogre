@@ -1,0 +1,18 @@
+
+material shizu2
+{
+	technique
+	{
+		pass
+		{
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture Shizu_shizu.png.dds
+			}
+		}
+
+	}
+
+}

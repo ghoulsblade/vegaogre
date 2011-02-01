@@ -1,0 +1,18 @@
+
+material kafka1
+{
+	technique
+	{
+		pass
+		{
+			specular 0.7 0.7 0.7 1 30
+
+			texture_unit
+			{
+				texture Kafka_kafka.jpg.dds
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,18 @@
+
+material franklin2
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Franklin_franklin.jpg.dds
+			}
+		}
+
+	}
+
+}

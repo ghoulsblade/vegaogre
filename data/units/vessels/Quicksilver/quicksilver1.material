@@ -1,0 +1,18 @@
+
+material quicksilver1
+{
+	technique
+	{
+		pass
+		{
+			specular 0.7 0.7 0.7 1 40
+
+			texture_unit
+			{
+				texture Quicksilver_quicksilver.jpg.dds
+			}
+		}
+
+	}
+
+}

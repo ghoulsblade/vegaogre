@@ -1,0 +1,19 @@
+
+material pacifier1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.65 0.65 0.65 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Pacifier_osprey.png.dds
+			}
+		}
+
+	}
+
+}

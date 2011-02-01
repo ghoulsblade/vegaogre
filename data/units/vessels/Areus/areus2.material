@@ -1,0 +1,19 @@
+
+material areus2
+{
+	technique
+	{
+		pass
+		{
+			diffuse 0 0 0 0
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture Areus_areus.png.dds
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,19 @@
+
+material shizu1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.65 0.65 0.65 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Shizu_shizu.png.dds
+			}
+		}
+
+	}
+
+}

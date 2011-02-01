@@ -1,0 +1,18 @@
+
+material Xuanzong2
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture texture1_0_0.texture
+			}
+		}
+
+	}
+
+}

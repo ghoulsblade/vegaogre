@@ -1,0 +1,19 @@
+
+material clydesdale4
+{
+	technique
+	{
+		pass
+		{
+			diffuse 0 0 0 0
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture Clydesdale_clydesdale3.png.dds
+			}
+		}
+
+	}
+
+}

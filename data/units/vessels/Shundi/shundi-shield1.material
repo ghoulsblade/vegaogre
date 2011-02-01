@@ -1,0 +1,18 @@
+
+material shundi-shield1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 99
+
+			texture_unit
+			{
+				texture shield.bmp
+			}
+		}
+
+	}
+
+}

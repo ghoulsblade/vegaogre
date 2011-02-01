@@ -1,0 +1,18 @@
+
+material hawking1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Hawking_hawking.jpg.dds
+			}
+		}
+
+	}
+
+}

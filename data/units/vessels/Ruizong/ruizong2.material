@@ -1,0 +1,18 @@
+
+material ruizong2
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Ruizong_Rlaancap2.png.dds
+			}
+		}
+
+	}
+
+}

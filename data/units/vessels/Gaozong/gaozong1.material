@@ -1,0 +1,20 @@
+
+material gaozong1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.9 0.9 0.9 1
+			diffuse 0.588235 0.588235 0.588235 1
+			specular 1 1 1 1 3.4
+
+			texture_unit
+			{
+				texture Gaozong_GaozongDIFF.jpg.dds
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,18 @@
+
+material bell-shield1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture tex_100.texture
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,19 @@
+
+material redeemer1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.3 0.3 0.3 1
+			specular 0 0 0 1 100
+
+			texture_unit
+			{
+				texture Redeemer_redeemer.jpg.dds
+			}
+		}
+
+	}
+
+}

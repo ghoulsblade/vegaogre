@@ -1,0 +1,20 @@
+
+material ox_new6
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0.470588 0.470588 0.470588 1
+			specular 0.449019 0.449019 0.449019 1 86.2745
+
+			texture_unit
+			{
+				texture combine4.bmp
+			}
+		}
+
+	}
+
+}

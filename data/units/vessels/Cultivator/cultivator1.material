@@ -1,0 +1,21 @@
+
+material cultivator1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.52048 0.52048 0.52048 1
+			diffuse 0.5338 0.5338 0.5338 1
+			specular 0.51382 0.51382 0.51382 1 100
+			emissive 0.001 0.001 0.001 1
+
+			texture_unit
+			{
+				texture Cultivator_cultivator.png.dds
+			}
+		}
+
+	}
+
+}

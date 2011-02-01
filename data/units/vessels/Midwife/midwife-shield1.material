@@ -1,0 +1,18 @@
+
+material midwife-shield1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 62.6667
+
+			texture_unit
+			{
+				texture shield_flicker.ani
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,18 @@
+
+material zhuangzong2
+{
+	technique
+	{
+		pass
+		{
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture Zhuangzong_zhuangzong.png.dds
+			}
+		}
+
+	}
+
+}
