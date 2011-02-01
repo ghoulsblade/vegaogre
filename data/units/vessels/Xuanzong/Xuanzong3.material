@@ -9,7 +9,7 @@ material Xuanzong3
 
 			texture_unit
 			{
-				texture texture2_0_0.texture
+				texture Xuanzong_texture2_0_0.texture.dds
 			}
 		}
 

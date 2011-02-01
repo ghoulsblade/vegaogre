@@ -9,7 +9,7 @@ material vigilance1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Vigilance_tex_000.texture.dds
 			}
 		}
 

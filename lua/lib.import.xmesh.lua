@@ -17,7 +17,7 @@ RegisterListener("Hook_CommandLine",function ()
 			--~ local meshname = "Plowshare.mesh"
 			--~ TableCamViewMeshLoop(meshname,boundrad)
 			
-			MyMassConvert("/cavern/code/VegaStrike/data/units/vessels/","/cavern/code/vegaogre/data/units/vessels/convtest/")
+			MyMassConvert("/cavern/code/VegaStrike/data/units/vessels/","/cavern/code/vegaogre/data/units/vessels/")
 			os.exit(0) 
 		end
 		
@@ -46,7 +46,7 @@ function MyMassConvert (in_folder_path,out_folder_path)
 		if (dir ~= ".." and dir  ~= "." and dir ~= ".svn") then 
 			--~ print("model_folder",dir)
 			local bOk = true
-			bOk = dir >= "Mk32"
+			--~ bOk = dir >= "Mk32"
 			-- Logo : "Agasicles","Agesipolis","Anaxidamus","Charillus","Convolution"
 			-- TODO : flatshade : Charillus,Cultivator
 			-- lib.import.xmesh.lua:312: no Material entry found  "H496","Mk32"
@@ -83,7 +83,7 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 		elseif (ext == "spr") then
 			print("copy unchanged",file)
 			CopyFile(in_folder_path..file,out_folder_path..file) -- copy unchanged
-		elseif (ext == "png" or ext == "jpg") then
+		elseif (ext == "png" or ext == "jpg" or ext == "texture" or ext == "image") then
 			local newfilename = sFilePrefix..file..".dds"
 			file_translate[file] = newfilename
 			print("translate filename",file,newfilename)

@@ -9,7 +9,7 @@ material determinant1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Determinant_tex_000.texture.dds
 			}
 		}
 

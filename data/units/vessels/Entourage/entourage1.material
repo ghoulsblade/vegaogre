@@ -9,7 +9,7 @@ material entourage1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Entourage_tex_000.texture.dds
 			}
 		}
 

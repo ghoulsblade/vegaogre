@@ -9,7 +9,7 @@ material knight1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Knight_tex_000.texture.dds
 			}
 		}
 

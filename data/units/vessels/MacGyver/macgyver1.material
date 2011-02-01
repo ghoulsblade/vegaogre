@@ -9,7 +9,7 @@ material macgyver1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture MacGyver_tex_000.texture.dds
 			}
 		}
 

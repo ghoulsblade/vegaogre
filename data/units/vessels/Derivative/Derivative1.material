@@ -9,7 +9,7 @@ material Derivative1
 
 			texture_unit
 			{
-				texture derivative_diffuse.texture
+				texture Derivative_derivative_diffuse.texture.dds
 			}
 		}
 

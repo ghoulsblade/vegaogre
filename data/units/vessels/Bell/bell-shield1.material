@@ -9,7 +9,7 @@ material bell-shield1
 
 			texture_unit
 			{
-				texture tex_100.texture
+				texture Bell_tex_100.texture.dds
 			}
 		}
 

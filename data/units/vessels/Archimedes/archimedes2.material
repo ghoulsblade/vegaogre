@@ -9,7 +9,7 @@ material archimedes2
 
 			texture_unit
 			{
-				texture tex_100.texture
+				texture Archimedes_tex_100.texture.dds
 			}
 		}
 

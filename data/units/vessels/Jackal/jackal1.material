@@ -9,7 +9,7 @@ material jackal1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Jackal_tex_000.texture.dds
 			}
 		}
 

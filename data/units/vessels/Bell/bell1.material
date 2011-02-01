@@ -9,7 +9,7 @@ material bell1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Bell_tex_000.texture.dds
 			}
 		}
 

@@ -9,7 +9,7 @@ material tridacna1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Tridacna_tex_000.texture.dds
 			}
 		}
 

@@ -9,7 +9,7 @@ material kahan1
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Kahan_tex_000.texture.dds
 			}
 		}
 

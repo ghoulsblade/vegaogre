@@ -9,7 +9,7 @@ material ct20001
 
 			texture_unit
 			{
-				texture tex_000.texture
+				texture Ct2000_tex_000.texture.dds
 			}
 		}
 
