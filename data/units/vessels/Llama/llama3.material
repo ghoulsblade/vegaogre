@@ -1,0 +1,19 @@
+
+material llama3
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.7 0.7 0.7 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Llama_llama_body.jpg.dds
+			}
+		}
+
+	}
+
+}

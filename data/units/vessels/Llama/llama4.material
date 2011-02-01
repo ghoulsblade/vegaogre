@@ -1,16 +1,16 @@
 
-material plowshare_shield1
+material llama4
 {
 	technique
 	{
 		pass
 		{
-			diffuse 1 1 1 0
 			specular 0 0 0 0 60
+			emissive 1 1 1 1
 
 			texture_unit
 			{
-				texture shield_flicker.ani
+				texture blink.ani
 			}
 		}
 

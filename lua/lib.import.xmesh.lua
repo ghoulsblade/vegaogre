@@ -49,6 +49,7 @@ function MyMassConvert (in_folder_path,out_folder_path)
 		end
 	end
 	MyMassConvert_OneModelFolder(in_folder_path,out_folder_path,"Plowshare")
+	--~ MyMassConvert_OneModelFolder(in_folder_path,out_folder_path,"Llama")
 end
 
 function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_folder_name)
@@ -317,8 +318,8 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 		table.insert(points,p)
 		for k2,sub in ipairs(xml_point) do 
 				if (sub._name == "Location") then 	for k,v in pairs(sub._attr) do p[k] = v end	MyAttrCheck(sub._attr,eattr_point_location,"Point.Location")
-				assert((not sub.s) or (tonumber(sub.s) == 0),"debug-assert : non-zero value for unknown Point.Location attribute s")
-				assert((not sub.t) or (tonumber(sub.t) == 0),"debug-assert : non-zero value for unknown Point.Location attribute t")
+				--~ assert((not sub.s) or (tonumber(sub.s) == 0),"debug-assert : non-zero value for unknown Point.Location attribute s")
+				--~ assert((not sub.t) or (tonumber(sub.t) == 0),"debug-assert : non-zero value for unknown Point.Location attribute t")
 			elseif (sub._name == "Normal") then 	for k,v in pairs(sub._attr) do p[k] = v end MyAttrCheck(sub._attr,eattr_point_normal,"Point.Normal")
 			else
 				print("unexpected point-attribute:",sub._name)
@@ -362,20 +363,66 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 	local s = tonumber(xml_mesh.scale) or 1 -- scale
 	for k1,xml_poly in ipairs(xml_polys) do 
 		if (bDebug and (k1 % 500) == 1) then print("scanning polygons "..k1.."/"..#xml_polys) end
-		assert(xml_poly._name == "Tri")
-		assert(#xml_poly == 3,"expected 3 vertices! "..#xml_poly)
-		if (xml_poly.flatshade ~= "0") then print("warning: Tri.flatshade not supported") end
-		if (xml_poly.flatshade ~= "0") then assert(false,"debug-assert: Tri.flatshade not supported") end
-		MyAttrCheck(xml_poly._attr,eattr_poly_tri,"Polygons.Tri")
-		for k2,xml_vertex in ipairs(xml_poly) do
-			assert(xml_vertex._name == "Vertex")
-			MyAttrCheck(xml_vertex._attr,eattr_poly_vertex,"Polygons.Tri.Vertex")
-			local pointidx = tonumber(xml_vertex.point)
-			local point = points[pointidx+1] assert(point)
-			-- add vertex to buffer
-			ib:Index(GetCreateVertexIdx((point.x or 0)*s,(point.y or 0)*s,(point.z or 0)*s, 
-										point.i or 0,point.j or 0,point.k or 1, 
-										xml_vertex.s or 0,xml_vertex.t or 0))
+		if (xml_poly._name == "Tri") then
+			assert(#xml_poly == 3,"expected 3 vertices! "..#xml_poly)
+			if (xml_poly.flatshade ~= "0") then print("warning: Tri.flatshade not supported") end
+			if (xml_poly.flatshade ~= "0") then assert(false,"debug-assert: Tri.flatshade not supported") end
+			MyAttrCheck(xml_poly._attr,eattr_poly_tri,"Polygons.Tri")
+			for k2,xml_vertex in ipairs(xml_poly) do
+				assert(xml_vertex._name == "Vertex")
+				MyAttrCheck(xml_vertex._attr,eattr_poly_vertex,"Polygons.Tri.Vertex")
+				local pointidx = tonumber(xml_vertex.point)
+				local point = points[pointidx+1] assert(point)
+				-- add vertex to buffer
+				ib:Index(GetCreateVertexIdx((point.x or 0)*s,(point.y or 0)*s,(point.z or 0)*s, 
+											point.i or 0,point.j or 0,point.k or 1, 
+											xml_vertex.s or 0,xml_vertex.t or 0))
+			end
+		elseif (xml_poly._name == "Quad") then
+			assert(#xml_poly == 4,"expected 4 vertices! "..#xml_poly)
+			if (xml_poly.flatshade ~= "0") then print("warning: Quad.flatshade not supported") end
+			if (xml_poly.flatshade ~= "0") then assert(false,"debug-assert: Quad.flatshade not supported") end
+			MyAttrCheck(xml_poly._attr,eattr_poly_tri,"Polygons.Quad")
+			local vertex_idx_list = {}
+			for k2,xml_vertex in ipairs(xml_poly) do
+				assert(xml_vertex._name == "Vertex")
+				MyAttrCheck(xml_vertex._attr,eattr_poly_vertex,"Polygons.Quad.Vertex")
+				local pointidx = tonumber(xml_vertex.point)
+				local point = points[pointidx+1] assert(point)
+				-- add vertex to buffer
+				vertex_idx_list[k2] = GetCreateVertexIdx((point.x or 0)*s,(point.y or 0)*s,(point.z or 0)*s, 
+											point.i or 0,point.j or 0,point.k or 1, 
+											xml_vertex.s or 0,xml_vertex.t or 0)
+			end
+			ib:Index(vertex_idx_list[1])
+			ib:Index(vertex_idx_list[2])
+			ib:Index(vertex_idx_list[3])
+			ib:Index(vertex_idx_list[1])
+			ib:Index(vertex_idx_list[3])
+			ib:Index(vertex_idx_list[4])
+		elseif (xml_poly._name == "Trifan") then
+			assert(#xml_poly >= 4,"expected >= 3 vertices! "..#xml_poly)
+			if (xml_poly.flatshade ~= "0") then print("warning: Trifan.flatshade not supported") end
+			if (xml_poly.flatshade ~= "0") then assert(false,"debug-assert: Trifan.flatshade not supported") end
+			MyAttrCheck(xml_poly._attr,eattr_poly_tri,"Polygons.Trifan")
+			local vertex_idx_list = {}
+			for k2,xml_vertex in ipairs(xml_poly) do
+				assert(xml_vertex._name == "Vertex")
+				MyAttrCheck(xml_vertex._attr,eattr_poly_vertex,"Polygons.Trifan.Vertex")
+				local pointidx = tonumber(xml_vertex.point)
+				local point = points[pointidx+1] assert(point)
+				-- add vertex to buffer
+				vertex_idx_list[k2] = GetCreateVertexIdx((point.x or 0)*s,(point.y or 0)*s,(point.z or 0)*s, 
+											point.i or 0,point.j or 0,point.k or 1, 
+											xml_vertex.s or 0,xml_vertex.t or 0)
+			end
+			for i = 2,#vertex_idx_list do 
+				ib:Index(vertex_idx_list[1])
+				ib:Index(vertex_idx_list[i-1])
+				ib:Index(vertex_idx_list[i])
+			end
+		else
+			assert(false,"unexpected polygon entry : "..tostring(xml_poly._name))
 		end
 	end
 	
@@ -394,7 +441,7 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 	assert(pMat:getName() == sMatName)
 	
 	-- apply global properties
-	pTex:setTextureName(fun_TransformTexName(xml_mesh.texture or ""),TEX_TYPE_2D)
+	pTex:setTextureName(fun_TransformTexName(xml_mesh.texture or xml_mesh.animation or ""),TEX_TYPE_2D)
 	local s = tonumber(xml_mat.power) if (s) then pMat:setShininess(s) end
 	-- TODO : <Mesh  scale="1.0" reverse="0" forcetexture="0" sharevert="0" polygonoffset="0.0" blend="ONE ZERO" alphatest="0.0" texture="wayfarer.png"  texture1="wayfarerPPL.jpg" >
 	-- TODO : <Material power="60.000000" cullface="1" reflect="1" lighting="1" usenormals="1">
@@ -403,7 +450,7 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 	MyAttrCheck(xml_mesh._attr,eattr_mesh,"Mesh")
 	MyAttrCheck(xml_mat._attr,eattr_mat,"Material")
 	print("TODO : Mesh : texture1 (createTextureUnitState())")
-	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest")
+	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest,animation")
 	print("TODO : Material : cullface,reflect,lighting,usenormals")
 	
 	-- apply material-sub-properties (colors)

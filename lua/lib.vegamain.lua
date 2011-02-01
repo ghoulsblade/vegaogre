@@ -37,10 +37,11 @@ function VegaMainAddResLocs (mydatapath)
 	for k,subpath in ipairs({"units/vessels/llama"}) do 
 	--~ OgreAddResLoc(mydatapath..subpath	                     ,"FileSystem",subpath)
 	end
-	OgreAddResLoc(mydatapath.."units/vessels/llama"							,"FileSystem","General")
+	OgreAddResLoc(mydatapath.."units/vessels/Llama"							,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."units/vessels/Ruizong"						,"FileSystem","General")
-	--~ OgreAddResLoc(mydatapath.."units/vessels/Plowshare"						,"FileSystem","General")
-	OgreAddResLoc(mydatapath.."units/vessels/convtest/Plowshare"			,"FileSystem","General")
+	OgreAddResLoc(mydatapath.."units/vessels/Plowshare"						,"FileSystem","General")
+	--~ OgreAddResLoc(mydatapath.."units/vessels/convtest/Plowshare"			,"FileSystem","General")
+	--~ OgreAddResLoc(mydatapath.."units/vessels/convtest/Llama"			,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."units/installations/Agricultural_Station"	,"FileSystem","General")    
 	OgreAddResLoc(mydatapath.."textures/backgrounds"						,"FileSystem","General")
 
