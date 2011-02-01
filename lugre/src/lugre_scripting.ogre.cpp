@@ -731,8 +731,13 @@ static int l_Client_SetFog (lua_State *L) { PROFILE
 }
 
 static int l_Client_RenderOneFrame (lua_State *L) { PROFILE
-	cGame::GetSingleton().RenderOneFrame();
-	return 0;
+	try {
+		cGame::GetSingleton().RenderOneFrame();
+		lua_pushboolean(L,true);
+		return 1;
+	} 
+	catch (std::exception& e) { printf("exception during Client_RenderOneFrame : %s\n",e.what()); lua_pushboolean(L,false); lua_pushstring(L,e.what()); return 2; }
+	catch (...) { lua_pushboolean(L,false); lua_pushstring(L,"Ogre_Resource:Load: unknown error"); return 2; }
 }
 
 

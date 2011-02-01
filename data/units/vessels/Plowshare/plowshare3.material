@@ -1,0 +1,18 @@
+
+material plowshare3
+{
+	technique
+	{
+		pass
+		{
+			diffuse 0 0 0 0
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+			}
+		}
+
+	}
+
+}

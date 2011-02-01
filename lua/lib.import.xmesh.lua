@@ -2,24 +2,169 @@
 --~ BFXM spec (old) : http://vegastrike.svn.sourceforge.net/viewvc/vegastrike/trunk/vegastrike/objconv/mesher/BFXM%20specification.txt?revision=7726&view=markup
 --~ XMESH spec (old) : http://vegastrike.svn.sourceforge.net/viewvc/vegastrike/trunk/vegastrike/objconv/xmlspec?revision=594&view=markup
 
+kXMeshConvertBFXMConvertScriptPath = "../script/convert_bfxm.sh" -- script to call vegastrike:mesher for export from bfxm to xmesh
+local iMkDirPerm = 7+7*8+7*8*8 -- drwxr-xr-x
 
 RegisterListener("Hook_CommandLine",function ()
 	local bSuccess,sError = lugrepcall(function () -- protected call, print error
 		local path = gCommandLineSwitchArgs["-xmesh"]
 		if path then MyXMeshConvertInitOgre() ConvertXMesh(path,gCommandLineSwitchArgs["-out"]) os.exit(0) end
-	end)
 	
-	if gCommandLineSwitches["-xmeshtest"] then 
-		MyXMeshConvertInitOgre() 
-		local meshname,boundrad = ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/plowshare_prime.xmesh") 
-		--~ local meshname = "Plowshare.mesh"
-		TableCamViewMeshLoop(meshname,boundrad)
-		os.exit(0) 
-	end
+		if gCommandLineSwitches["-xmeshtest"] then 
+			MyXMeshConvertInitOgre() 
+			--~ local meshname,boundrad = ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/plowshare_prime.xmesh") 
+			--~ local meshname,boundrad = ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/2_0.xmesh") 
+			--~ local meshname = "Plowshare.mesh"
+			--~ TableCamViewMeshLoop(meshname,boundrad)
+			
+			MyMassConvert("/cavern/code/VegaStrike/data/units/vessels/","/cavern/code/vegaogre/data/units/vessels/convtest/")
+			os.exit(0) 
+		end
+		
+		if gCommandLineSwitches["-viewmesh"] then 
+			MyXMeshConvertInitOgre() 
+			local meshname = gCommandLineSwitchArgs["-viewmesh"] or "plowshare.mesh"
+			TableCamViewMeshLoop(meshname)
+			os.exit(0) 
+		end
+	end)
 	if (not bSuccess) then print("import.xmesh error : ",sError) os.exit(0) end
 end)
 
+local function ListFiles	(path) local res = dirlist(path,false,true) table.sort(res) return res end
+local function ListDirs		(path)
+	local arr = dirlist(path,true,false) table.sort(arr)
+	local res = {} for k,dir in ipairs(arr) do if (dir ~= "." and dir ~= ".." and dir ~= ".svn") then table.insert(res,dir) end end 
+	return res
+end
 
+-- warning : mass convert expects empty destination. will delete existsing .xmesh and .bfxm files in destination
+function MyMassConvert (in_folder_path,out_folder_path) 
+	print("MyMassConvert",in_folder_path)
+	mkdir(out_folder_path,iMkDirPerm)
+	for k,dir in ipairs(ListDirs(in_folder_path)) do 
+		if (dir ~= ".." and dir  ~= "." and dir ~= ".svn") then 
+			--~ print("model_folder",dir)
+			--~ MyMassConvert_OneModelFolder(in_folder_path,out_folder_path,dir)
+		end
+	end
+	MyMassConvert_OneModelFolder(in_folder_path,out_folder_path,"Plowshare")
+end
+
+function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_folder_name)
+	in_folder_path = in_folder_path..model_folder_name.."/"
+	out_folder_path = out_folder_path..model_folder_name.."/"
+	print("MyMassConvert_OneModelFolder",in_folder_path,out_folder_path,model_folder_name)
+	mkdir(out_folder_path,iMkDirPerm)
+	
+	
+	-- check subdirs
+	for k,dir in ipairs(ListDirs(in_folder_path)) do if (dir ~= "." and dir ~= ".." and dir ~= ".svn") then print("WARNING MyMassConvert_OneModelFolder: subdir",dir,out_folder_path) end end
+	
+	-- check files
+	local file_translate = {} -- .png to .dds, prepend foldername etc
+	local meshfiles = {}
+	local sFilePrefix = model_folder_name.."_"
+	for k,file in ipairs(ListFiles(in_folder_path)) do
+		local ext = string.gsub(file,"^.*%.","")
+		--~ print("MyMassConvert_OneModelFolder file",ext,file)
+		if (ext == "bfxm") then
+			table.insert(meshfiles,file)
+		elseif (ext == "spr") then
+			print("copy unchanged",file)
+			CopyFile(in_folder_path..file,out_folder_path..file) -- copy unchanged
+		elseif (ext == "png" or ext == "jpg") then
+			local newfilename = sFilePrefix..file..".dds"
+			file_translate[file] = newfilename
+			print("translate filename",file,newfilename)
+			CopyFile(in_folder_path..file,out_folder_path..newfilename) -- copy, but change filename
+		else
+			print("WARNING MyMassConvert_OneModelFolder: unknown file ext",ext,file,out_folder_path)
+		end
+	end
+	
+	-- utils
+	local function DeleteXMeshFiles (folderpath) 
+		for k,file in ipairs(ListFiles(folderpath)) do 
+			local ext = string.gsub(file,"^.*%.","")
+			if (ext == "xmesh") then
+				print("delete xmesh:",file)
+				os.remove(folderpath..file)
+			end
+		end
+	end
+	
+	-- handle meshes
+	local function EscapeShellArg (s) return "'"..string.gsub(string.gsub(string.gsub(s,"%$","\\$"),"\"","\\\""),"'","\\'").."'"  end -- todo : not well tested
+	for k1,meshfile in ipairs(meshfiles) do -- meshfile = bfxm, can contain multiple submeshes
+		print("=====================")
+		print("converting mesh file",meshfile)
+		
+		-- prepare files
+		CopyFile(in_folder_path..meshfile,out_folder_path..meshfile) -- copy unchanged
+		DeleteXMeshFiles(out_folder_path) -- clear folder before calling mesher. deletes xmesh
+		
+		-- call bfxm to xmesh conversion script
+		ExecGetLines(kXMeshConvertBFXMConvertScriptPath.." "..EscapeShellArg(out_folder_path).." "..EscapeShellArg(meshfile))
+		
+		-- list submesh xmesh files (excluding LOD files)
+		local submesh_xmesh_list = {}
+		local firstfile = out_folder_path..meshfile..".xmesh"
+		if (file_exists(firstfile)) then table.insert(submesh_xmesh_list,firstfile) end
+		for i=1,99 do
+			local path_submesh = out_folder_path..i.."_0.xmesh"
+			if (not file_exists(path_submesh)) then break end
+			table.insert(submesh_xmesh_list,path_submesh)
+		end
+		
+		-- names
+		local sMeshNameBase = string.gsub(meshfile,"%.bfxm$","")
+		local szMeshName = string.gsub(sMeshNameBase,"[^a-zA-Z0-9_]","")
+		local sOutPath_Mesh = out_folder_path..sMeshNameBase..".mesh"
+		
+		-- start mesh
+		local pMesh = MeshManager_createManual(szMeshName) -- Ogre::MeshPtr
+		local minx_t,miny_t,minz_t,maxx_t,maxy_t,maxz_t = 0,0,0,0,0,0
+		
+		-- tranform texture filenames
+		local function fun_TransformTexName (s)
+			local sNew = file_translate[s]
+			if (sNew) then return sNew end
+			print("WARNING : fun_TransformTexName : unknown file",">"..tostring(s).."<")
+			return s
+		end
+		
+		for iSubMeshIdx,path_submesh in ipairs(submesh_xmesh_list) do 
+			print("path_submesh",path_submesh)
+			-- import submeshes
+			local sInPath_XMesh = path_submesh
+			local sMatName = sMeshNameBase..iSubMeshIdx
+			local sOutPath_Material = out_folder_path..sMeshNameBase..iSubMeshIdx..".material"
+			
+			-- convert
+			local bSuccess,bounds = ConvertXMesh_SubMesh(pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName)
+			if (bSuccess) then
+				local minx,miny,minz,maxx,maxy,maxz = unpack(bounds)
+				minx_t = min(minx_t,minx) maxx_t = max(maxx_t,maxx)
+				miny_t = min(miny_t,miny) maxy_t = max(maxy_t,maxy)
+				minz_t = min(minz_t,minz) maxz_t = max(maxz_t,maxz)
+			else
+				print("warning, failed to load xmesh (blink.ani?) : ",path_submesh)
+			end
+		end
+		
+		-- export mesh
+		local boundrad = max(Vector.len(minx_t,miny_t,minz_t),Vector.len(maxx_t,maxy_t,maxz_t))
+		pMesh:_setBounds({minx_t,miny_t,minz_t,maxx_t,maxy_t,maxz_t},false)
+		pMesh:_setBoundingSphereRadius(boundrad)
+		ExportMesh(szMeshName,sOutPath_Mesh)
+		
+		-- delete temporary file
+		DeleteXMeshFiles(out_folder_path) -- xmesh
+		os.remove(out_folder_path..meshfile) -- bfxm
+		--~ return
+	end
+end
 
 function MyXMeshConvertInitOgre ()
 	print("MyXMeshConvertInitOgre...")
@@ -70,16 +215,64 @@ end
 
 
 
-function ConvertXMesh (inpath,outpath)
+
+function ConvertXMesh (sInPath_XMesh,sOutPath)
+	-- names
 	local sModelName = "Plowshare"
-	--~ local sOutPath = "../data/units/vessels/"..sModelName.."/subtest/"
-	local sOutPath = "../data/units/vessels/"..sModelName.."/"
 	local sOgreNameSuffix = sModelName.."01"
-	local bAssumeTextureDDS = true
+	local tex_prefix = sModelName.."_"
+	local sMatName = "myXMeshConvertMat"..sOgreNameSuffix
+	local szMeshName = "myXMeshConvertMesh"..sOgreNameSuffix
+	local sOutPath_Material = sOutPath..sModelName..".material"
+	sOutPath = sOutPath or "../data/units/vessels/"..sModelName.."/"
+	--~ sOutPath = "../data/units/vessels/"..sModelName.."/subtest/"
 	
-	print("ConvertXMesh",inpath,outpath)
-	local xmlmainnodes = LuaXML_ParseFile(inpath)
-	assert(xmlmainnodes,"failed to load '"..tostring(inpath).."'")
+	-- fun_TransformTexName
+	local bAssumeTextureDDS = true
+	local function fun_TransformTexName (s)
+		local sOld = s
+		if (bAssumeTextureDDS) then  -- vegastrike texture filenames/extensions are wrong, assume dds format for .png files, as ogre cannot handle the error
+			s = string.gsub(s,"%..*$",".dds") -- replace file ending by .dds
+		end
+		local res = tex_prefix..s 
+		print("TransformTexName",sOld,res)
+		if (1 == 1) then
+			--~ local imgpath = string.gsub(sInPath_XMesh,"[^/]+$","")..sOld
+			local imgpath = res
+			--~ local folder = sInPath_XMesh
+			print("attempting to load image",imgpath)
+			local img = CreateOgreImage() 
+			local bSuccess,sErrMsg = img:load(imgpath)
+			if (not bSuccess) then print("Warning! error loading image:",imgpath,sErrMsg) else print("load image ok") end
+			if (not bSuccess) then assert(false,"Warning! error loading image:",imgpath,sErrMsg) end -- debug exit
+		end
+		return res 
+	end
+	
+	-- start mesh
+	local pMesh = MeshManager_createManual(szMeshName) -- Ogre::MeshPtr
+	
+	-- convert
+	local bSuccess,bounds = ConvertXMesh_SubMesh(pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName)
+	if (not bSuccess) then return end -- blink.ani , shield_flicker.ani
+	
+	-- calc bounds
+	-- TODO : calc bounds for whole mesh, not only for this submesh
+	local minx,miny,minz,maxx,maxy,maxz = unpack(bounds)
+	local boundrad = max(Vector.len(minx,miny,minz),Vector.len(maxx,maxy,maxz))
+	pMesh:_setBounds({minx,miny,minz,maxx,maxy,maxz},false)
+	pMesh:_setBoundingSphereRadius(boundrad)
+	
+	local sFileName = sOutPath..sModelName..".mesh"
+	ExportMesh(szMeshName,sFileName)
+	return szMeshName,boundrad
+end
+
+
+function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName)
+	print("ConvertXMesh",sInPath_XMesh)
+	local xmlmainnodes = LuaXML_ParseFile(sInPath_XMesh)
+	assert(xmlmainnodes,"failed to load '"..tostring(sInPath_XMesh).."'")
 	local xml = xmlmainnodes[1]
 	assert(xml,"xml main node missing")
 	assert(not xmlmainnodes[2],"more than one xml main node")
@@ -90,11 +283,15 @@ function ConvertXMesh (inpath,outpath)
 	local xml_polys
 	local bDebug = true
 	
+	-- TODO : lights. but not loadable in ogre
+	if (xml_mesh.texture == "blink.ani") then print("mesh is metadata only "..xml_mesh.texture) return end
+	-- TODO if (xml_mesh.animation == "shield_flicker.ani") then sMatName = "ship_shield" end
+	
 	-- check entries on first hierarchy level
 	for k,sub in ipairs(xml) do
 		print("subnode:",sub._name)
 			if (sub._name == "Material"		) then 	assert(not xml_mat,	"more than one Material entry")			xml_mat = sub
-		elseif (sub._name == "LOD"			) then	print(" todo: LOD")
+		elseif (sub._name == "LOD"			) then	-- print(" todo: LOD")  ignored, can be generated by ogre if needed
 		elseif (sub._name == "Points"		) then	assert(not xml_points,	"more than one Points entry")		xml_points = sub
 		elseif (sub._name == "Polygons"		) then	assert(not xml_polys,	"more than one Polygons entry")		xml_polys = sub
 		else 
@@ -182,47 +379,22 @@ function ConvertXMesh (inpath,outpath)
 		end
 	end
 	
-	-- names
-	local szMeshName = "myXMeshConvertMesh"..sOgreNameSuffix
-	local msMatName = "myXMeshConvertMat"..sOgreNameSuffix
 	
 	
 	-- create material
 	if (bDebug) then print("creating material...") end
-	local tex_prefix = sModelName.."_"
-	local function TransformTexName (s)
-		local sOld = s
-		if (bAssumeTextureDDS) then  -- vegastrike texture filenames/extensions are wrong, assume dds format for .png files, as ogre cannot handle the error
-			s = string.gsub(s,"%..*$",".dds") -- replace file ending by .dds
-		end
-		local res = tex_prefix..s 
-		print("TransformTexName",sOld,res)
-		if (1 == 1) then
-			--~ local imgpath = string.gsub(inpath,"[^/]+$","")..sOld
-			local imgpath = res
-			--~ local folder = inpath
-			print("attempting to load image",imgpath)
-			local img = CreateOgreImage() 
-			local bSuccess,sErrMsg = img:load(imgpath)
-			if (not bSuccess) then print("Warning! error loading image:",imgpath,sErrMsg) else print("load image ok") end
-			if (not bSuccess) then assert(false,"Warning! error loading image:",imgpath,sErrMsg) end -- debug exit
-		end
-		return res 
-	end
 	assert(MaterialManager_create,"recompile executable file, code was added 28.01.2011 and only compiled on linux at the time")
-	local pMat	= MaterialManager_create(msMatName) assert(pMat)
+	local pMat	= MaterialManager_create(sMatName) assert(pMat)
 	--~ local pTec	= pMat:createTechnique() assert(pTec)
 	--~ local pPas	= pTec:createPass() assert(pPas)
 	--~ local pTex	= pPas:createTextureUnitState() assert(pTex)
 	local pTec	= pMat:getTechnique(0) assert(pTec)
 	local pPas	= pTec:getPass(0) assert(pPas)
 	local pTex	= pPas:createTextureUnitState() assert(pTex)
-	assert(pMat:getName() == msMatName)
-	--~ assert(pMat:load())
-	--~ MaterialManager_load(msMatName)
+	assert(pMat:getName() == sMatName)
 	
 	-- apply global properties
-	pTex:setTextureName(TransformTexName(xml_mesh.texture or ""),TEX_TYPE_2D)
+	pTex:setTextureName(fun_TransformTexName(xml_mesh.texture or ""),TEX_TYPE_2D)
 	local s = tonumber(xml_mat.power) if (s) then pMat:setShininess(s) end
 	-- TODO : <Mesh  scale="1.0" reverse="0" forcetexture="0" sharevert="0" polygonoffset="0.0" blend="ONE ZERO" alphatest="0.0" texture="wayfarer.png"  texture1="wayfarerPPL.jpg" >
 	-- TODO : <Material power="60.000000" cullface="1" reflect="1" lighting="1" usenormals="1">
@@ -230,7 +402,8 @@ function ConvertXMesh (inpath,outpath)
 	local eattr_mat = {power=true,cullface=true,reflect=true,lighting=true,usenormals=true}
 	MyAttrCheck(xml_mesh._attr,eattr_mesh,"Mesh")
 	MyAttrCheck(xml_mat._attr,eattr_mat,"Material")
-	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest, texture1")
+	print("TODO : Mesh : texture1 (createTextureUnitState())")
+	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest")
 	print("TODO : Material : cullface,reflect,lighting,usenormals")
 	
 	-- apply material-sub-properties (colors)
@@ -255,19 +428,14 @@ function ConvertXMesh (inpath,outpath)
 	
 	-- export material
 	local bExportDefaults = false
-	local sMaterialOutPath = sOutPath..sModelName..".material"
-	assert(pMat:MaterialSerializer_Export(sMaterialOutPath,bExportDefaults))
+	assert(pMat:MaterialSerializer_Export(sOutPath_Material,bExportDefaults))
 	print("MaterialSerializer_Export ok")
 	
-	
-	-- create mesh
-	if (bDebug) then print("creating mesh...") end
-	vb:CheckSize()
-	local pMesh = MeshManager_createManual(szMeshName) -- Ogre::MeshPtr
-	
 	-- create submesh
+	vb:CheckSize()
+	if (bDebug) then print("creating submesh...") end
 	local sub = pMesh:createSubMesh() -- Ogre::SubMesh*
-	sub:setMaterialName(msMatName)
+	sub:setMaterialName(sMatName)
 	sub:setUseSharedVertices(false)
 	sub:setOperationType(OT_TRIANGLE_LIST)
 	
@@ -294,25 +462,22 @@ function ConvertXMesh (inpath,outpath)
 	vertexData:writeToVertexBuffer(vb:GetFIFO(),0)
 	indexData:writeToIndexBuffer(ib:GetFIFO()) 
 	
-	-- bounds : todo : calc for whole mesh, not only for this submesh
-	pMesh:_setBounds({minx,miny,minz,maxx,maxy,maxz},false)
-	local boundrad = max(abs(minx),abs(miny),abs(minz),abs(maxx),abs(maxy),abs(maxz))
-	pMesh:_setBoundingSphereRadius(boundrad)
-	
 	vb:Destroy()
 	ib:Destroy()
 	
-	local sFileName = sOutPath..sModelName..".mesh"
-	ExportMesh(szMeshName,sFileName)
+	-- test material
+	if (1 == 2) then 
+		print("Material Test load ...",sOutPath_Material)
+		assert(pMat:load())
+		--~ print("Material Test load test 2",sMatName) -- had segfault later when trying to load dds with .png as filename
+		--~ local clone_name,errmsg = CloneMaterial(sMatName)
+		--~ assert(clone_name,errmsg)
+		print("Material Test load ok")
+		--~ assert(pMat:load())
+		--~ MaterialManager_load(sMatName)
+	end
 	
-	print("Material Test load ...",sMaterialOutPath)
-	assert(pMat:load())
-	--~ print("Material Test load test 2",msMatName) -- had segfault later when trying to load dds with .png as filename
-	--~ local clone_name,errmsg = CloneMaterial(msMatName)
-	--~ assert(clone_name,errmsg)
-	print("Material Test load ok")
+	if (bDebug) then print("xmesh submesh convert finished.") end
 	
-	if (bDebug) then print("xmesh convert finished.") end
-	
-	return szMeshName,boundrad
+	return true,{minx,miny,minz,maxx,maxy,maxz}
 end

@@ -1,5 +1,5 @@
 
-material myXMeshConvertMatPlowshare01
+material plowshare1
 {
 	technique
 	{
@@ -10,7 +10,7 @@ material myXMeshConvertMatPlowshare01
 
 			texture_unit
 			{
-				texture Plowshare_wayfarer.dds
+				texture Plowshare_wayfarer.png.dds
 			}
 		}
 
