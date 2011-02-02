@@ -192,18 +192,111 @@ end
 function TableCamViewMeshLoop (meshname,boundrad)
 	local x,y,z = Vector.random3(1000)
 	UpdateWorldLight(x,y,z)
-	local e = .3	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+	local e = .5	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 
+	local mesh_files = {
+	"Sickle/sickle.mesh",
+	"Leonidas/yavok.mesh",
+	"Sartre/sartre.mesh",
+	"Shizu/shizu.mesh",
+	"Thales/thales.mesh",
+	"Dirge/dirge.mesh",
+	"Goddard/goddard.mesh",
+	"Vigilance/vigilance.mesh",
+	"Kahan/kahan.mesh",
+	"Lancelot/lancelot.mesh",
+	"Ox/ox.mesh",
+	"Ox/ox_new.mesh",
+	"Hyena/hyena.mesh",
+	"Xuanzong/Xuanzong.mesh",
+	"Franklin/franklin.mesh",
+	"Gaozong/gaozong.mesh",
+	"GTIO/gtio.mesh",
+	"Emu/emu.mesh",
+	"Ancestor/ancestor.mesh",
+	"Plowshare/plowshare.mesh",
+	"Anaxidamus/anaxidamus.mesh",
+	"Cultivator/cultivator.mesh",
+	"Quicksilver/quicksilver.mesh",
+	"Agasicles/agasicles.mesh",
+	"Charillus/Charillus.mesh",
+	"Bell/bell.mesh",
+	"Clydesdale/clydesdale.mesh",
+	"Ct2000/ct2000.mesh",
+	"Hidalgo/hidalgo.mesh",
+	"Mule/mule.mesh",
+	"Hawking/hawking.mesh",
+	"Seaxbane/seaxbane.mesh",
+	"Progeny/progeny.mesh",
+	"Koala/koala.mesh",
+	"Shizong/Shizong-Hi.mesh",
+	"Derivative/Derivative.mesh",
+	"Diligence/diligence.mesh",
+	"Robin/robin.mesh",
+	"Gawain/gawain.mesh",
+	"Dostoevsky/dostoevsky.mesh",
+	"MacGyver/macgyver.mesh",
+	"Dodo/dodo.mesh",
+	"Dodo/skatecargo.mesh",
+	"Pacifier/pacifier.mesh",
+	"Nicander/nicander.mesh",
+	"Schroedinger/schroedinger.mesh",
+	"Agesipolis/agesipolis.mesh",
+	"Kafka/kafka.mesh",
+	"Regret/regret.mesh",
+	"Redeemer/redeemer.mesh",
+	"Convolution/convolution.mesh",
+	"Hammer/hammer.mesh",
+	"Gleaner/ishmael.mesh",
+	"Areus/areus.mesh",
+	"Ruizong/ruizong.mesh",
+	"Entourage/entourage.mesh",
+	"Admonisher/admonisher.mesh",
+	"Determinant/determinant.mesh",
+	"Ariston/ariston.mesh",
+	"Beholder/beholder.mesh",
+	"Zhuangzong/zhuangzong.mesh",
+	"Vendetta/vendetta.mesh",
+	"Midwife/midwife.mesh",
+	"Archimedes/archimedes.mesh",
+	"Tridacna/tridacna.mesh",
+	"Kierkegaard/kierkegaard.mesh",
+	"Tesla/tesla.mesh",
+	"Watson/Watson_f.mesh",
+	"Watson/watson.mesh",
+	"Yeoman/stoic.mesh",
+	"Jackal/jackal.mesh",
+	"Taizong/taizong.mesh",
+	"Llama/llama.mesh",
+	"Shundi/shundi.mesh",
+	"Shenzong/shenzong.mesh",
+	"Knight/knight.mesh",
+	}
+	table.sort(mesh_files)
+	
 	local gfx = CreateRootGfx3D() 
 	--~ EnsureMeshMaterialNamePrefix("llama.mesh","llama")
 	gfx:SetMesh(meshname)
 	--~ gfx:SetMesh("axes.mesh")
 	--~ gfx:SetMesh("llama.mesh")
 	
+	gNextMeshIndex = 1
+	
 	local camdist = boundrad and (boundrad*2) or 10
 	BindDown("escape", 		function () os.exit(0) end)
     BindDown("wheeldown",   function () camdist = camdist / 0.5 print("camdist",camdist) end)
     BindDown("wheelup",     function () camdist = camdist * 0.5 print("camdist",camdist) end)
+    BindDown("space",     function ()
+		local meshname = mesh_files[gNextMeshIndex] 
+		gNextMeshIndex = gNextMeshIndex + 1
+		if (gNextMeshIndex > #mesh_files) then gNextMeshIndex = 1 end
+		if (meshname) then
+			print("==============================")
+			print("viewing",meshname)
+			meshname = string.gsub(meshname,".*/","")
+			gfx:SetMesh(meshname)
+		end
+	end)
 
     while (Client_IsAlive()) do 
 		gViewportW,gViewportH = GetViewportSize()
