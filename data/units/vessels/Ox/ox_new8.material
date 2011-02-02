@@ -11,7 +11,7 @@ material ox_new8
 
 			texture_unit
 			{
-				texture combine4.bmp
+				texture combine4.bmp.dds
 			}
 		}
 

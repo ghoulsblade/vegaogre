@@ -9,7 +9,7 @@ material emu1
 
 			texture_unit
 			{
-				texture EMU.png
+				texture Emu_emu.png.dds
 			}
 		}
 

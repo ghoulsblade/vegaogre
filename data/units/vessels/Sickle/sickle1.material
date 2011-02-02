@@ -10,7 +10,7 @@ material sickle1
 
 			texture_unit
 			{
-				texture combine.bmp
+				texture combine.bmp.dds
 			}
 		}
 

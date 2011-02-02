@@ -9,7 +9,7 @@ material ishmael4
 
 			texture_unit
 			{
-				texture white.bmp
+				texture white.bmp.dds
 			}
 		}
 

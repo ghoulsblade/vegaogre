@@ -9,7 +9,7 @@ material ruizong-shield1
 
 			texture_unit
 			{
-				texture shield.bmp
+				texture shield.bmp.dds
 			}
 		}
 

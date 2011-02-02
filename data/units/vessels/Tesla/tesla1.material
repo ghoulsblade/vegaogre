@@ -9,7 +9,7 @@ material tesla1
 
 			texture_unit
 			{
-				texture combine.jpg
+				texture combine.jpg.dds
 			}
 		}
 

@@ -10,7 +10,7 @@ material yavok1
 
 			texture_unit
 			{
-				texture AeraHull.png
+				texture AeraHull2.bmp.dds
 			}
 		}
 

@@ -10,7 +10,28 @@ RegisterListener("Hook_CommandLine",function ()
 		local path = gCommandLineSwitchArgs["-xmesh"]
 		if path then MyXMeshConvertInitOgre() ConvertXMesh(path,gCommandLineSwitchArgs["-out"]) os.exit(0) end
 	
-		if gCommandLineSwitches["-xmeshtest"] then 
+		if gCommandLineSwitches["-xmeshmassconvert"] then 
+			gXMeshMissingTexName = {}
+			gXMeshTexNameTranslate = {
+				["glass.png"				]="glass.png.dds",
+				["shield.bmp"				]="shield.bmp.dds",
+				["EMU.png"					]="Emu_emu.png.dds",
+				["combine2.bmp"				]="combine2.bmp.dds",
+				["combine.bmp"				]="combine.bmp.dds",
+				["combine.jpg"				]="combine.jpg.dds",
+				["combine4.bmp"				]="combine4.bmp.dds",
+				["shield_generic.texture"	]="shield_generic.texture.dds",
+				["white.bmp"				]="white.bmp.dds",
+				["AeraHull.png"				]="AeraHull2.bmp.dds",
+				
+				--~ ["blink.ani"				]=".dds",
+				--~ ["whitelight.ani"			]=".dds",
+				--~ ["shield_flicker.ani"		]=".dds",
+				--~ ["shield_ripple.ani"		]=".dds",
+				--~ ["streak.ani"				]=".dds",
+				--~ ["greenlight.ani"			]=".dds",
+
+			}
 			MyXMeshConvertInitOgre() 
 			--~ local meshname,boundrad = ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/plowshare_prime.xmesh") 
 			--~ local meshname,boundrad = ConvertXMesh("/cavern/code/VegaStrike/meshertest/xmesh_plowshare/2_0.xmesh") 
@@ -18,6 +39,8 @@ RegisterListener("Hook_CommandLine",function ()
 			--~ TableCamViewMeshLoop(meshname,boundrad)
 			
 			MyMassConvert("/cavern/code/VegaStrike/data/units/vessels/","/cavern/code/vegaogre/data/units/vessels/")
+			
+			print("=======================\ngXMeshMissingTexName ") for k,v in pairs(gXMeshMissingTexName) do print(k,v) end
 			os.exit(0) 
 		end
 		
@@ -138,8 +161,9 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 		
 		-- tranform texture filenames
 		local function fun_TransformTexName (s)
-			local sNew = file_translate[s]
+			local sNew = file_translate[s] or gXMeshTexNameTranslate[s]
 			if (sNew) then return sNew end
+			gXMeshMissingTexName[tostring(s)] = sInPath_XMesh
 			print("WARNING : fun_TransformTexName : unknown file",">"..tostring(s).."<")
 			return s
 		end
@@ -192,7 +216,11 @@ end
 function TableCamViewMeshLoop (meshname,boundrad)
 	local x,y,z = Vector.random3(1000)
 	UpdateWorldLight(x,y,z)
-	local e = .5	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+	for i=1,2 do 
+		local x,y,z = Vector.random3(1000)
+		Client_AddPointLight(x,y,z)
+	end
+	local e = .2	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 
 	local mesh_files = {
 	"Sickle/sickle.mesh",
@@ -274,30 +302,38 @@ function TableCamViewMeshLoop (meshname,boundrad)
 	}
 	table.sort(mesh_files)
 	
+	
 	local gfx = CreateRootGfx3D() 
-	--~ EnsureMeshMaterialNamePrefix("llama.mesh","llama")
-	gfx:SetMesh(meshname)
-	--~ gfx:SetMesh("axes.mesh")
-	--~ gfx:SetMesh("llama.mesh")
+	local camdist = 10
 	
-	gNextMeshIndex = 1
-	
-	local camdist = boundrad and (boundrad*2) or 10
-	BindDown("escape", 		function () os.exit(0) end)
-    BindDown("wheeldown",   function () camdist = camdist / 0.5 print("camdist",camdist) end)
-    BindDown("wheelup",     function () camdist = camdist * 0.5 print("camdist",camdist) end)
-    BindDown("space",     function ()
-		local meshname = mesh_files[gNextMeshIndex] 
-		gNextMeshIndex = gNextMeshIndex + 1
-		if (gNextMeshIndex > #mesh_files) then gNextMeshIndex = 1 end
+	local function MyShowMesh (meshname) 
+		--~ EnsureMeshMaterialNamePrefix("llama.mesh","llama")
+		gfx:SetMesh(meshname)
+		--~ gfx:SetMesh("axes.mesh")
+		--~ gfx:SetMesh("llama.mesh")
+		camdist = gfx:GetEntity():getBoundingRadius() * 2.5
+	end
+	local function MyShowMeshIdx (idx) 
+		gCurMeshIdx = idx
+		if (gCurMeshIdx < 0) then gCurMeshIdx = #mesh_files end
+		if (gCurMeshIdx > #mesh_files) then gCurMeshIdx = 1 end
+		local meshname = mesh_files[gCurMeshIdx] 
 		if (meshname) then
 			print("==============================")
 			print("viewing",meshname)
 			meshname = string.gsub(meshname,".*/","")
-			gfx:SetMesh(meshname)
+			MyShowMesh(meshname)
 		end
-	end)
-
+	end
+	
+	MyShowMeshIdx(1)
+	
+	BindDown("escape", 		function () os.exit(0) end)
+    BindDown("wheeldown",   function () camdist = camdist / 0.5 end)
+    BindDown("wheelup",     function () camdist = camdist * 0.5 end)
+    BindDown("space",    	 function () MyShowMeshIdx(gCurMeshIdx+1) end)
+    BindDown("backspace",     function () MyShowMeshIdx(gCurMeshIdx-1) end)
+		
     while (Client_IsAlive()) do 
 		gViewportW,gViewportH = GetViewportSize()
 		LugreStep()

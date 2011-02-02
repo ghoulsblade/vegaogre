@@ -9,7 +9,7 @@ material Derivative_shield1
 
 			texture_unit
 			{
-				texture shield_generic.texture
+				texture shield_generic.texture.dds
 			}
 		}
 

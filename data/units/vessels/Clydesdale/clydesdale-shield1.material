@@ -9,7 +9,7 @@ material clydesdale-shield1
 
 			texture_unit
 			{
-				texture shield.bmp
+				texture shield.bmp.dds
 			}
 		}
 

@@ -10,7 +10,7 @@ material ox1
 
 			texture_unit
 			{
-				texture combine2.bmp
+				texture combine2.bmp.dds
 			}
 		}
 

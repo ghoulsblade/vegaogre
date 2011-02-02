@@ -9,7 +9,7 @@ material mule_shields1
 
 			texture_unit
 			{
-				texture shield.bmp
+				texture shield.bmp.dds
 			}
 		}
 

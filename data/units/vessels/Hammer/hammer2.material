@@ -10,7 +10,7 @@ material hammer2
 
 			texture_unit
 			{
-				texture glass.png
+				texture glass.png.dds
 			}
 		}
 
