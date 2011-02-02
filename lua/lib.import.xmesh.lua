@@ -214,13 +214,19 @@ function MyXMeshConvertInitOgre ()
 end
 
 function TableCamViewMeshLoop (meshname,boundrad)
-	local x,y,z = Vector.random3(1000)
-	UpdateWorldLight(x,y,z)
-	for i=1,2 do 
+	InitGuiThemes()
+	
+	local function MyNewLight ()
 		local x,y,z = Vector.random3(1000)
-		Client_AddPointLight(x,y,z)
+		UpdateWorldLight(x,y,z)
+		for i=1,2 do 
+			local x,y,z = Vector.random3(1000)
+			Client_AddPointLight(x,y,z)
+		end
+		local e = .2	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
 	end
-	local e = .2	local r,g,b = e,e,e		Client_SetAmbientLight(r,g,b, 1)
+	
+	MyNewLight()
 
 	local mesh_files = {
 	"Sickle/sickle.mesh",
@@ -302,6 +308,8 @@ function TableCamViewMeshLoop (meshname,boundrad)
 	}
 	table.sort(mesh_files)
 	
+	gMeshViewerMeshName = GetHUDBaseWidget():CreateChild("Text",{text="MeshViewer",textparam={r=1,g=1,b=1}})
+	gMeshViewerMeshName:SetPos(10,5)
 	
 	local gfx = CreateRootGfx3D() 
 	local camdist = 10
@@ -312,6 +320,7 @@ function TableCamViewMeshLoop (meshname,boundrad)
 		--~ gfx:SetMesh("axes.mesh")
 		--~ gfx:SetMesh("llama.mesh")
 		camdist = gfx:GetEntity():getBoundingRadius() * 2.5
+		gMeshViewerMeshName:SetText(string.gsub(meshname,"%.mesh$",""))
 	end
 	local function MyShowMeshIdx (idx) 
 		gCurMeshIdx = idx
@@ -331,8 +340,10 @@ function TableCamViewMeshLoop (meshname,boundrad)
 	BindDown("escape", 		function () os.exit(0) end)
     BindDown("wheeldown",   function () camdist = camdist / 0.5 end)
     BindDown("wheelup",     function () camdist = camdist * 0.5 end)
+    BindDown("l",    		 function () MyNewLight() end)
     BindDown("space",    	 function () MyShowMeshIdx(gCurMeshIdx+1) end)
     BindDown("backspace",     function () MyShowMeshIdx(gCurMeshIdx-1) end)
+    BindDown("i",     function () RegisterIntervalStepper(500,function () MyShowMeshIdx(gCurMeshIdx+1) end) end)
 		
     while (Client_IsAlive()) do 
 		gViewportW,gViewportH = GetViewportSize()
