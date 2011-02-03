@@ -10,6 +10,11 @@ RegisterListener("Hook_CommandLine",function ()
 		local path = gCommandLineSwitchArgs["-xmesh"]
 		if path then MyXMeshConvertInitOgre() ConvertXMesh(path,gCommandLineSwitchArgs["-out"]) os.exit(0) end
 	
+		if gCommandLineSwitches["-xmeshtest1"] then 
+			local pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName
+			sInPath_XMesh = gCommandLineSwitchArgs["-xmeshtest1"]
+			ConvertXMesh_SubMesh(pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName)
+		end
 		if gCommandLineSwitches["-xmeshmassconvert"] then 
 			gXMeshMissingTexName = {}
 			gXMeshTexNameTranslate = {
@@ -38,7 +43,7 @@ RegisterListener("Hook_CommandLine",function ()
 			--~ local meshname = "Plowshare.mesh"
 			--~ TableCamViewMeshLoop(meshname,boundrad)
 			
-			MyMassConvert("/cavern/code/VegaStrike/data/units/vessels/","/cavern/code/vegaogre/data/units/vessels/")
+			MyMassConvert("/cavern/code/VegaStrike/data/units/installations/","/cavern/code/vegaogre/data/units/installations/")
 			
 			print("=======================\ngXMeshMissingTexName ") for k,v in pairs(gXMeshMissingTexName) do print(k,v) end
 			os.exit(0) 
@@ -112,7 +117,7 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 			print("translate filename",file,newfilename)
 			CopyFile(in_folder_path..file,out_folder_path..newfilename) -- copy, but change filename
 		else
-			print("WARNING MyMassConvert_OneModelFolder: unknown file ext",ext,file,out_folder_path)
+			print("WARNING MyMassConvert_OneModelFolder: unknown file ext",ext,in_folder_path..file)
 		end
 	end
 	
@@ -132,6 +137,7 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 	for k1,meshfile in ipairs(meshfiles) do -- meshfile = bfxm, can contain multiple submeshes
 		print("=====================")
 		print("converting mesh file",meshfile)
+		
 		
 		-- prepare files
 		CopyFile(in_folder_path..meshfile,out_folder_path..meshfile) -- copy unchanged
@@ -168,6 +174,7 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 			return s
 		end
 		
+		local bEmptyMesh = true
 		for iSubMeshIdx,path_submesh in ipairs(submesh_xmesh_list) do 
 			print("path_submesh",path_submesh)
 			-- import submeshes
@@ -178,6 +185,7 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 			-- convert
 			local bSuccess,bounds = ConvertXMesh_SubMesh(pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName)
 			if (bSuccess) then
+				bEmptyMesh = false
 				local minx,miny,minz,maxx,maxy,maxz = unpack(bounds)
 				minx_t = min(minx_t,minx) maxx_t = max(maxx_t,maxx)
 				miny_t = min(miny_t,miny) maxy_t = max(maxy_t,maxy)
@@ -188,10 +196,14 @@ function MyMassConvert_OneModelFolder (in_folder_path,out_folder_path,model_fold
 		end
 		
 		-- export mesh
-		local boundrad = max(Vector.len(minx_t,miny_t,minz_t),Vector.len(maxx_t,maxy_t,maxz_t))
-		pMesh:_setBounds({minx_t,miny_t,minz_t,maxx_t,maxy_t,maxz_t},false)
-		pMesh:_setBoundingSphereRadius(boundrad)
-		ExportMesh(szMeshName,sOutPath_Mesh)
+		if (bEmptyMesh) then
+			print("warning, empty mesh",meshfile)
+		else
+			local boundrad = max(Vector.len(minx_t,miny_t,minz_t),Vector.len(maxx_t,maxy_t,maxz_t))
+			pMesh:_setBounds({minx_t,miny_t,minz_t,maxx_t,maxy_t,maxz_t},false)
+			pMesh:_setBoundingSphereRadius(boundrad)
+			ExportMesh(szMeshName,sOutPath_Mesh)
+		end
 		
 		-- delete temporary file
 		DeleteXMeshFiles(out_folder_path) -- xmesh
@@ -229,6 +241,34 @@ function TableCamViewMeshLoop (meshname,boundrad)
 	MyNewLight()
 
 	local mesh_files = {
+		"Starfortress/starfortress.mesh",
+		"Factory/factory.mesh",
+		"AsteroidFighterBase/asteroidfighterbase.mesh",
+		"Uln_Asteroid_Refinery/uln_asteroid_refinery.mesh",
+		"Diplomatic_Center/diplomatic_center.mesh",
+		"Uln_Commerce_Center/uln_commerce_center.mesh",
+		"Relay/relay.mesh",
+		"Rlaan_Star_Fortress/rlaan_star_fortress.mesh",
+		"Rlaan_Medical/rlaan_medical.mesh",
+		"Medical/medical.mesh",
+		"Outpost/outpost.mesh",
+		"Agricultural_Station/agricultural_station.mesh",
+		"Shaper_Bio_Adaptation/shaper_bio_adaptation.mesh",
+		"Gasmine/gasmine.mesh",
+		"MiningBase/MiningBase.mesh",
+		"Shipyard/Shipyard.mesh",
+		"Rlaan_Mining_Base/rlaan_mining_base.mesh",
+		"Commerce_Center/commerce_center.mesh",
+		"Civilan_Asteroid_Shipyard/civilan_asteroid_shipyard.mesh",
+		"Research/research.mesh",
+		"Rlaan_Fighter_Barracks/rlaan_fighter_barracks.mesh",
+		"Uln_Refinery/uln_refinery.mesh",
+		"Rlaan_Commerce_Center/rlaan_commerce_center.mesh",
+		"Relaysat/relaysat.mesh",
+		"Fighter_Barracks/fighter_barracks.mesh",
+		"Refinery/refinery.mesh",
+	}
+	local mesh_files2 = {
 	"Sickle/sickle.mesh",
 	"Leonidas/yavok.mesh",
 	"Sartre/sartre.mesh",
@@ -421,11 +461,13 @@ end
 
 function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fun_TransformTexName)
 	print("ConvertXMesh",sInPath_XMesh)
-	local xmlmainnodes = LuaXML_ParseFile(sInPath_XMesh)
+	--~ local xmlmainnodes = LuaXML_ParseFile(sInPath_XMesh)
+	local xmlmainnodes = LuaLoadXML(FileGetContents(sInPath_XMesh))
 	assert(xmlmainnodes,"failed to load '"..tostring(sInPath_XMesh).."'")
 	local xml = xmlmainnodes[1]
 	assert(xml,"xml main node missing")
 	assert(not xmlmainnodes[2],"more than one xml main node")
+	
 	xml = EasyXMLWrap(xml)
 	local xml_mesh = xml	assert(xml_mesh._name == "Mesh")
 	local xml_mat
@@ -450,7 +492,9 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 			assert(false,"unknown subnode: fatal for debug")
 		end
 	end
-	assert(xml_mat,		"no Material entry found")
+	--~ assert(xml_mat,		"no Material entry found")
+	--~ assert(xml_mat,		"no Material entry found")
+	if (not xml_mat) then print("WARNING: no Material entry found",sInPath_XMesh) os.exit(0) return end
 	assert(xml_points,	"no Points entry found")
 	assert(xml_polys,	"no Polygons entry found")
 	
@@ -678,3 +722,65 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 	
 	return true,{minx,miny,minz,maxx,maxy,maxz}
 end
+
+
+-- ***** xml parser to avoid bug 
+
+--[[
+WARNING! tinyxml fails to load this xml (no childs generated)
+<Mesh aaa="" aaa="xxx">
+<Material>
+</Material>
+</Mesh>
+]]--
+
+-- LoadXML from http://lua-users.org/wiki/LuaXml
+function LuaLoadXML(s)
+  local function LoadXML_parseargs(s)
+    local arg = {}
+    string.gsub(s, "(%w+)=([\"'])(.-)%2", function (w, _, a)
+  	arg[w] = a
+    end)
+    return arg
+  end
+  local stack = {}
+  local top = {}
+  table.insert(stack, top)
+  local ni,c,name,attr, empty
+  local i, j = 1, 1
+  while true do
+    ni,j,c,name,attr, empty = string.find(s, "<(%/?)([%w:]+)(.-)(%/?)>", i)
+    if not ni then break end
+    local text = string.sub(s, i, ni-1)
+    if not string.find(text, "^%s*$") then
+      table.insert(top, text)
+    end
+    if empty == "/" then  -- empty element tag
+      table.insert(top, {name=name, attr=LoadXML_parseargs(attr), empty=1})
+    elseif c == "" then   -- start tag
+      top = {name=name, attr=LoadXML_parseargs(attr)}
+      table.insert(stack, top)   -- new level
+    else  -- end tag
+      local toclose = table.remove(stack)  -- remove top
+      top = stack[#stack]
+      if #stack < 1 then
+        error("nothing to close with "..name)
+      end
+      if toclose.name ~= name then
+        error("trying to close "..toclose.name.." with "..name)
+      end
+      table.insert(top, toclose)
+    end
+    i = j+1
+  end
+  local text = string.sub(s, i)
+  if not string.find(text, "^%s*$") then
+    table.insert(stack[#stack], text)
+  end
+  if #stack > 1 then
+    error("unclosed "..stack[stack.n].name)
+  end
+  return stack[1]
+end
+
+

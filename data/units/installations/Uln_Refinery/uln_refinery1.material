@@ -1,0 +1,18 @@
+
+material uln_refinery1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Uln_Refinery_tex_000.texture.dds
+			}
+		}
+
+	}
+
+}

@@ -3,6 +3,13 @@
 #include "tinyxml.h"
 #include <string>
 
+/*
+WARNING! tinyxml fails to load this xml (no childs generated)
+<Mesh aaa="" aaa="xxx">
+<Material>
+</Material>
+</Mesh>
+*/
 
 namespace Lugre {
 

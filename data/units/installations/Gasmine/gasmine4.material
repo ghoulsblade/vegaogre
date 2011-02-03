@@ -1,0 +1,18 @@
+
+material gasmine4
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture bluelight.ani
+			}
+		}
+
+	}
+
+}

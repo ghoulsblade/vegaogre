@@ -1,0 +1,18 @@
+
+material shaper_bio_adaptation1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Shaper_Bio_Adaptation_tex_000.texture.dds
+			}
+		}
+
+	}
+
+}

@@ -1,0 +1,18 @@
+
+material civilan_asteroid_shipyard2
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Civilan_Asteroid_Shipyard_tex_000.texture.dds
+			}
+		}
+
+	}
+
+}

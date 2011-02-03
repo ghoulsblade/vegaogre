@@ -1,0 +1,19 @@
+
+material MiningBase2
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.3 0.3 0.3 1
+			specular 0 0 0 1 100
+
+			texture_unit
+			{
+				texture MiningBase_mining.jpg.dds
+			}
+		}
+
+	}
+
+}

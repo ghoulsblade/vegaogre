@@ -1,0 +1,19 @@
+
+material asteroidfighterbase4
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture AsteroidFighterBase_fx3_Panels_5.png.dds
+			}
+		}
+
+	}
+
+}

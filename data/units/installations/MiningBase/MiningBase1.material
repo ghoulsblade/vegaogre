@@ -1,0 +1,19 @@
+
+material MiningBase1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 0.1
+			specular 1 1 1 0.1 1e+06
+
+			texture_unit
+			{
+			}
+		}
+
+	}
+
+}

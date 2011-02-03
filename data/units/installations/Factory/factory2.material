@@ -1,0 +1,19 @@
+
+material factory2
+{
+	technique
+	{
+		pass
+		{
+			specular 0 0 0 1 100
+			emissive 1 1 1 1
+
+			texture_unit
+			{
+				texture bluelight.ani
+			}
+		}
+
+	}
+
+}

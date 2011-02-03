@@ -1,0 +1,19 @@
+
+material Shipyard3
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.3 0.3 0.3 1
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Shipyard_shipyard.jpg.dds
+			}
+		}
+
+	}
+
+}

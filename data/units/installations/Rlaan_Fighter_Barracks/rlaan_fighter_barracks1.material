@@ -1,0 +1,18 @@
+
+material rlaan_fighter_barracks1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture Rlaan_Fighter_Barracks_tex_000.texture.dds
+			}
+		}
+
+	}
+
+}

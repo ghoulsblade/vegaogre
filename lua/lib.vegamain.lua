@@ -42,15 +42,16 @@ function VegaMainAddResLocs (mydatapath)
 	--~ OgreAddResLoc(mydatapath.."units/vessels/Plowshare"						,"FileSystem","General")
 	--~ OgreAddResLoc(mydatapath.."units/vessels/convtest/Plowshare"			,"FileSystem","General")
 	--~ OgreAddResLoc(mydatapath.."units/vessels/convtest/Llama"			,"FileSystem","General")
-	OgreAddResLoc(mydatapath.."units/installations/Agricultural_Station"	,"FileSystem","General")    
-	OgreAddResLoc(mydatapath.."textures/backgrounds"						,"FileSystem","General")
+	--~ OgreAddResLoc(mydatapath.."units/installations/Agricultural_Station"	,"FileSystem","General")    
 
 	local function MyAddSubDirs (base) for k,v in ipairs(dirlist(base,true,false)) do if (v ~= "." and v ~= "..") then OgreAddResLoc(base..v,"FileSystem","General") end end end
 	MyAddSubDirs(mydatapath.."sprites/bases/")
 	MyAddSubDirs(mydatapath.."units/vessels/")
+	MyAddSubDirs(mydatapath.."units/installations/")
 	OgreAddResLoc(mydatapath.."sprites"										,"FileSystem","General")
 	
 	OgreAddResLoc(mydatapath.."textures"								,"FileSystem","General")
+	OgreAddResLoc(mydatapath.."textures/backgrounds"						,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."textures/weapons"							,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."textures/planets"							,"FileSystem","General")
 	OgreAddResLoc(mydatapath.."textures/sol"								,"FileSystem","General")

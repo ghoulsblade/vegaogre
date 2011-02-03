@@ -1,0 +1,24 @@
+
+material agricultural_station1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.500000 0.500000 0.500000 1.000000
+			diffuse 0.640000 0.640000 0.640000 1.000000
+			specular 0.500000 0.500000 0.500000 1.000000 12.500000
+			emissive 0.000000 0.000000 0.000000 1.000000
+			
+			scene_blend alpha_blend
+			alpha_rejection greater_equal 128
+
+			texture_unit
+			{
+				texture Agricultural_Station_dome.texture.dds
+			}
+		}
+
+	}
+
+}

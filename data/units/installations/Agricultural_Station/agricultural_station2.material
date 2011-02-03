@@ -1,0 +1,20 @@
+
+material agricultural_station2
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0.2 0.2 0.2 1
+			specular 0.5 0.5 0.5 1 98.0392
+
+			texture_unit
+			{
+				texture Agricultural_Station_agri_hull.texture.dds
+			}
+		}
+
+	}
+
+}

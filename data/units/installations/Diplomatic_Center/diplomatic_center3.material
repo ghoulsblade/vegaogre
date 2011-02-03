@@ -1,0 +1,19 @@
+
+material diplomatic_center3
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			diffuse 0 0 0 1
+			specular 0 0 0 1 98.0392
+
+			texture_unit
+			{
+			}
+		}
+
+	}
+
+}
