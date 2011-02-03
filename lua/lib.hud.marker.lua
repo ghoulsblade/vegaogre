@@ -58,6 +58,7 @@ function cHudMarker:UpdateGfx ()
 	if (o.name and self.text) then self.text:SetCol(p.r,p.g,p.b,p.a) self.text:SetText(o.name) end
 end
 function cHudMarker:IntervalStep ()
+	if (not self:IsAlive()) then return end
 	self:ShowMouseOverText(true)
 end
 function cHudMarker:ShowMouseOverText (bVisible)
