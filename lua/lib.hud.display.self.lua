@@ -22,6 +22,7 @@ function cHudDisplaySelf:Init (parentwidget, params)
 	
 	
 	local iw = w * 0.5
+	print("cHudDisplaySelf:Init imgname",imgname)
 	self.img = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat(imgname or "dummy.png"),iw,iw)})
 	self.img:SetPos(w/2-iw/2,h/2-iw/2)
 

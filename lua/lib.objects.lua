@@ -166,7 +166,7 @@ function cShip:Init (loc,x,y,z,r,meshname)
 	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "llama.mesh",r)
 end
-function cShip:GetHUDImageName () return "llama-hud.png" end
+function cShip:GetHUDImageName () return "Llama_llama-hud.png.dds" end
 
 
 -- ***** ***** ***** ***** ***** cNPCShip
@@ -182,7 +182,7 @@ function cNPCShip:HUDStep ()
 	stepHudMarker(self)
 end
 
-function cNPCShip:GetHUDImageName () return "ruizong-hud.dds" end
+function cNPCShip:GetHUDImageName () return "Ruizong_ruizong-hud.image.dds" end
 
 -- ***** ***** ***** ***** ***** cPlayerShip
 
@@ -223,7 +223,7 @@ function cStation:HUDStep ()
 	stepHudMarker(self)
 end
 
-function cStation:GetHUDImageName () return "Agricultural_Station-hud.dds" end
+function cStation:GetHUDImageName () return "Agricultural_Station_Agricultural_Station-hud.png.dds" end
 
 -- ***** ***** ***** ***** ***** cLocation
 
