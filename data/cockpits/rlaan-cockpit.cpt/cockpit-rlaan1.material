@@ -1,0 +1,19 @@
+
+material cockpit-rlaan1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 1 1 1 1 96.0784
+
+			texture_unit
+			{
+				texture rlaan-cockpit.cpt_Rlaan_cockpit_DIF.png.dds
+			}
+		}
+
+	}
+
+}

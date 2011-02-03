@@ -1,0 +1,20 @@
+
+material MiningBase1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.5 0.5 0.5 1
+			diffuse 0.8 0.8 0.8 1
+			specular 1 1 1 1 98.0392
+
+			texture_unit
+			{
+				texture MiningBase_asteroidbase.png.dds
+			}
+		}
+
+	}
+
+}

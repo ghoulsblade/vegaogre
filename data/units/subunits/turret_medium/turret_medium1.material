@@ -1,0 +1,19 @@
+
+material turret_medium1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture Capskn3.bmp
+			}
+		}
+
+	}
+
+}

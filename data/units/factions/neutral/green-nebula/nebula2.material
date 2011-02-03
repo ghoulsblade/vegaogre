@@ -1,0 +1,18 @@
+
+material nebula2
+{
+	technique
+	{
+		pass
+		{
+			specular 0.5 0.5 0.5 1 60
+
+			texture_unit
+			{
+				texture green-nebula_neb128a.png.dds
+			}
+		}
+
+	}
+
+}

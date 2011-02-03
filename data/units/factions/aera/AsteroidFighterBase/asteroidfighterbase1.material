@@ -1,0 +1,18 @@
+
+material asteroidfighterbase1
+{
+	technique
+	{
+		pass
+		{
+			specular 1 1 1 1 100
+
+			texture_unit
+			{
+				texture AsteroidFighterBase_asteroidfighterbase.jpg.dds
+			}
+		}
+
+	}
+
+}

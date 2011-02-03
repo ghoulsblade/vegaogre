@@ -1,0 +1,19 @@
+
+material purplenebula1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture purple-nebula_purpleneb128a.png.dds
+			}
+		}
+
+	}
+
+}

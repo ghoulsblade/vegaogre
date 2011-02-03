@@ -1,0 +1,19 @@
+
+material roid2
+{
+	technique
+	{
+		pass
+		{
+			diffuse 0.752941 0.752941 0.752941 1
+			specular 0 0 0 1 1
+
+			texture_unit
+			{
+				texture asteroids_asteroid01.png.dds
+			}
+		}
+
+	}
+
+}

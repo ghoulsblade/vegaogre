@@ -1,0 +1,19 @@
+
+material nebula_veryhuge1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture nebula_veryhuge_purpleneb128.png.dds
+			}
+		}
+
+	}
+
+}

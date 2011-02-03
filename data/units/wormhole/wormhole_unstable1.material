@@ -1,0 +1,18 @@
+
+material wormhole_unstable1
+{
+	technique
+	{
+		pass
+		{
+			specular 0 0 0 1 60
+
+			texture_unit
+			{
+				texture wormhole_wh_rgb_unstable.png.dds
+			}
+		}
+
+	}
+
+}

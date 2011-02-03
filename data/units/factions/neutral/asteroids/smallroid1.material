@@ -1,0 +1,19 @@
+
+material smallroid1
+{
+	technique
+	{
+		pass
+		{
+			diffuse 0.752941 0.752941 0.752941 1
+			specular 1 1 1 1 1
+
+			texture_unit
+			{
+				texture asteroids_Asteroid.png.dds
+			}
+		}
+
+	}
+
+}

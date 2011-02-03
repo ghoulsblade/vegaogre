@@ -1,0 +1,19 @@
+
+material MiningBase2
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture Asteroid.bmp.dds
+			}
+		}
+
+	}
+
+}

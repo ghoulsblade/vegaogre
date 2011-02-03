@@ -1,0 +1,19 @@
+
+material nebula_BSP1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 1 1 1 1 60
+
+			texture_unit
+			{
+				texture nebula_neb128a.png.dds
+			}
+		}
+
+	}
+
+}

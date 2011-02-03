@@ -1,0 +1,18 @@
+
+material miningbase2
+{
+	technique
+	{
+		pass
+		{
+			specular 0 0 0 0 60
+
+			texture_unit
+			{
+				texture MiningBase_roid.png.dds
+			}
+		}
+
+	}
+
+}
