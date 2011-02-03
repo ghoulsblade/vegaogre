@@ -5,6 +5,7 @@ material agricultural_station1
 	{
 		pass
 		{
+			// edited manually
 			ambient 0.500000 0.500000 0.500000 1.000000
 			diffuse 0.640000 0.640000 0.640000 1.000000
 			specular 0.500000 0.500000 0.500000 1.000000 12.500000
@@ -12,6 +13,10 @@ material agricultural_station1
 			
 			scene_blend alpha_blend
 			alpha_rejection greater_equal 128
+			
+			// ambient 0 0 0 1
+			// diffuse 0 0 0 0.1
+			// specular 1 1 1 1 777.777
 
 			texture_unit
 			{

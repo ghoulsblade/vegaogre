@@ -2,6 +2,15 @@
 --~ BFXM spec (old) : http://vegastrike.svn.sourceforge.net/viewvc/vegastrike/trunk/vegastrike/objconv/mesher/BFXM%20specification.txt?revision=7726&view=markup
 --~ XMESH spec (old) : http://vegastrike.svn.sourceforge.net/viewvc/vegastrike/trunk/vegastrike/objconv/xmlspec?revision=594&view=markup
 
+
+--[[
+note : shaders : units/installation/Agricult../technique="fireglass" : 
+./programs/fireglass.vp
+./programs/fireglass.fp
+./techniques/fireglass.technique
+]]--
+
+
 kXMeshConvertBFXMConvertScriptPath = "../script/convert_bfxm.sh" -- script to call vegastrike:mesher for export from bfxm to xmesh
 local iMkDirPerm = 7+7*8+7*8*8 -- drwxr-xr-x
 
@@ -644,7 +653,7 @@ function ConvertXMesh_SubMesh (pMesh,sInPath_XMesh,sMatName,sOutPath_Material,fu
 	MyAttrCheck(xml_mesh._attr,eattr_mesh,"Mesh")
 	MyAttrCheck(xml_mat._attr,eattr_mat,"Material")
 	print("TODO : Mesh : texture1 (createTextureUnitState())")
-	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest,animation")
+	print("TODO : Mesh : reverse,forcetexture,sharevert,polygonoffset,blend,alphatest,animation,technique") -- units/installation/Agricult../technique="fireglass"
 	print("TODO : Material : cullface,reflect,lighting,usenormals")
 	
 	-- apply material-sub-properties (colors)
