@@ -19,6 +19,21 @@ RegisterListener("Hook_CommandLine",function ()
 	end
 end)
 
+-- plaintext listfiles in universe dir
+gUniverseTextListCache = {}
+function GetUniverseTextList (name_sys,name_default,sep) return GetUniverseTextList_One(name_sys,sep) or GetUniverseTextList_One(name_default,sep) end
+function GetUniverseTextList_One (name,sep)
+	if ((not name) or name == "") then return false end
+	local cache = gUniverseTextListCache[name] if (cache ~= nil) then return cache end
+	local plaintext = FileGetContents(GetVegaDataDir().."universe/"..name)
+	if (plaintext) then 
+		cache = strsplit(sep or "[ \t\n\r]+",plaintext)
+	else
+		cache = false
+	end
+	gUniverseTextListCache[name] = cache
+	return cache
+end
 
 
 function GetOrbitMeanRadiusFromNode (node) -- ri="-468434.7" rj="-361541" rk="433559.750000" si="-412172.000000" sj="300463.5" sk="-498163.5"
@@ -179,6 +194,12 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 		if (not file_exists(filepath)) then print("WARNING! VegaLoadSystem : failed to generate new system") return end
 	end
 	local system = EasyXMLWrap(LuaXML_ParseFile(filepath)[1]) assert(system)
+	if (filepath == filepath3 and tonumber(system.vegaogre_xml_version or 0) ~= kVegaOgreStarSystemRandomGenVersion) then
+		print("VegaLoadSystem : old random-system-gen version detected, regenerating",system.vegaogre_xml_version,filepath3)
+		VegaGenerateSystem(filepath,systempath)
+		if (not file_exists(filepath)) then print("WARNING! VegaLoadSystem : failed to generate new system2") return end
+		system = EasyXMLWrap(LuaXML_ParseFile(filepath)[1]) assert(system)
+	end
 	
 	gCurSystemScale = tonumber(system.scalesystem or "") or 1
 	print("system:",filepath,system.name,system.background,gCurSystemScale) --~ "Cephid_17","backgrounds/green","1000"

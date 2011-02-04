@@ -6,6 +6,9 @@ local vega_factor = 1/10 -- ... useme ?
 au = 150*1000*1000* 1000 * vega_factor    -- (roughly 1 earth-sun distance)
 km = 1000
 
+function rand2i (vmin,vmax) return vmin+math.random(floor(1+vmax-vmin))-1 end
+function rand2f (vmin,vmax) return vmin+(vmax-vmin)*math.random() end
+
 function GetDistText (d) 
 	local thres = 0.5
 	local u=au				if (d >= thres*u) then return sprintf("%0.2fau",d/u) end
