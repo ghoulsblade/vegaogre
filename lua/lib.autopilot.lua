@@ -1,4 +1,5 @@
-
+kAutoPilotMouseSlowDuration = 1000
+gAutoPilotLastStep = 0
 
 function AutoPilotMsg (...) print("AutoPilot:",...) end
 
@@ -14,8 +15,16 @@ end
 
 function IsAutoPilotActive () return gAutoPilotActive end
 
+-- returns 1 if autopilot inactive for at least 1 second
+function GetAutoPilotAfterMouseSlow ()
+	local time_since_autopilot = (gMyTicks - gAutoPilotLastStep)/kAutoPilotMouseSlowDuration
+	if (time_since_autopilot > 1) then return 1 end
+	return time_since_autopilot
+end
+
 function StepAutoPilot () 
 	if (not gAutoPilotActive) then return end
+	gAutoPilotLastStep = gMyTicks
 	local my = gPlayerShip
 	local to = gAutoPilotTarget
 	local x,y,z = my:GetVectorToObject(to) 

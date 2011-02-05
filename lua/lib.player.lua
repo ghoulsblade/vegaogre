@@ -135,8 +135,9 @@ function PlayerCam_Rot_Step ()
 	local cx,cy = gViewportW/2,gViewportH/2
 	local dx,dy = (mx-cx)/cx,(my-cy)/cy
 	
-	local roth = -math.pi * .5 * dx * gSecondsSinceLastFrame
-	local rotv = -math.pi * .5 * dy * gSecondsSinceLastFrame
+	local s = gSecondsSinceLastFrame * GetAutoPilotAfterMouseSlow() -- GetAutoPilotAfterMouseSlow in [0,1]
+	local roth = -math.pi * .5 * dx * s
+	local rotv = -math.pi * .5 * dy * s
 	
 	local cam = GetMainCam()
 	local w0,x0,y0,z0 = cam:GetRot()	
