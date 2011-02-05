@@ -7,6 +7,22 @@ function Player_ExecuteJump (jumppoint)
 	VegaUnloadSystem()
 	VegaLoadSystem(jumppoint.dest or "Crucible/Cephid_17") 
 	NotifyListener("Hook_SystemLoaded") -- hud
+	
+	local backjump = GetJumpByPath(oldsystempath)
+	if (backjump) then
+		
+		local pr = backjump.r or 0
+		local loc = backjump.loc or gSolRoot
+		local d = - pr * 1.2,0,0
+		local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+		
+		local moveloc = GetPlayerMoveLoc()
+		moveloc:MoveToNewLoc(loc)
+		moveloc:SetPos(x,y,z)
+		
+		backjump:SelectObject()
+	end
+	
 	-- TODO : move player to return-jump if available
 	RecenterPlayerMoveLoc()
 end

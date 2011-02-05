@@ -1,10 +1,10 @@
 -- generate xml file
 -- filepath=~/.vegastrike/sectors/milky_way.xml/Crucible/Cardell.system   systempath=Crucible/Cardell
 
-kVegaOgreStarSystemRandomGenVersion = 2
+kVegaOgreStarSystemRandomGenVersion = 3
 
 function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system e.g. "Crucible/Cephid_17"
-	assert(not file_exists(filepath)) -- don't overwrite
+	--~ assert(not file_exists(filepath)) -- don't overwrite (now allowed due to kVegaOgreStarSystemRandomGenVersion)
 	local system = gUniv_SystemByPath[systempath] assert(system) -- entry from milky_way.xml or similar
 	print("WARNING! VegaGenerateSystem not yet fully implemented",filepath,systempath,system)
 	--~ for k,v in pairs(system) do print("system:",k,v) end
@@ -69,6 +69,7 @@ function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system 
 	-- make objects
 	
 	local function MyMakePlanet		(tex,r,orbitpos,parent_planet) -- parent_planet = parent for moon, nil otherwise
+		r = r or rand2f(3,20)*earthradius
 		print("MyMakePlanet",tex)
 		local ri,rj,rk,si,sj,sk
 		local bIsMoon = parent_planet
@@ -83,9 +84,9 @@ function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system 
 		XMLNodeAddChild(parent_planet or xmlmain,new_planet)
 		table.insert(myplanets,new_planet)
 	end
-	local function MyMakeMoon		(tex)
+	local function MyMakeMoon		(tex,parent)
 		print("MyMakeMoon",tex)
-		local parent = GetRandomArrayElement(myplanets)
+		parent = parent or GetRandomArrayElement(myplanets)
 		MyMakePlanet(tex,parent and (rand2f(0.05,0.3)*parent.attr.radius) or (earthradius * rand2f(0.2,4)),nil,parent)
 	end
 	local function MyMakeNebulae	(tex) print("TODO: MyMakeNebulae",tex) end 
@@ -114,9 +115,15 @@ function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system 
 			local bIsMoon = ismoon ~= ""
 			print("planet-typed:",ismoon,bIsMoon,initial,pt and pt.name,pt and pt.texture,pt and pt.lights)
 			if (pt) then 
-				MyMakePlanet(pt.texture..".texture",earthradius * rand2f(0.2,4),nil,bIsMoon and myplanets[#myplanets])
+				local tex = pt.texture..".texture"
 				--~ <Planet name="Macarthur" file="planets/Lava.texture"  radius="7344485.500000" x="-6392795648.000000" y="54927466496.000000" z="-47471091712.000000" year= "36770537845.938515" day="248.644551" >
-				if (bIsMoon) then objcounter.moons = objcounter.moons + 1 else objcounter.planets = objcounter.planets + 1 end
+				if (bIsMoon) then
+					MyMakeMoon(tex,myplanets[#myplanets])
+					objcounter.moons = objcounter.moons + 1
+				else
+					MyMakePlanet(tex)
+					objcounter.planets = objcounter.planets + 1
+				end
 			end
 		end
 	end
@@ -132,7 +139,7 @@ function VegaGenerateSystem (filepath,systempath) -- systempath = sector/system 
 	end
 	
 	-- NOTE : planets.txt , moons.txt contain object types (textures referencing units.csv?) for random planet generation
-	MyRandomGen_ByNumber("gas"		,system.num_gas_giants					,objcounter.gas_giants			,GetUniverseTextList(system.gasgiantlist,"gas_giants.txt")	,function (tex) MyMakePlanet(tex,rand2f(3,20)*earthradius) end)
+	MyRandomGen_ByNumber("gas"		,system.num_gas_giants					,objcounter.gas_giants			,GetUniverseTextList(system.gasgiantlist,"gas_giants.txt")	,function (tex) MyMakePlanet(tex,nil) end)
 	MyRandomGen_ByNumber("planet"	,system.num_planets						,objcounter.planets				,GetUniverseTextList(system.planetlist,"planets.txt")		,function (tex) MyMakePlanet(tex,rand2f(0.2,4)*earthradius) end)
 	MyRandomGen_ByNumber("nebu"		,system.num_natural_phenomena			,objcounter.natural_phenomena	,GetUniverseTextList(system.nebulalist,"nebulae.txt","\n")	,function (tex) MyMakeNebulae(tex) end)
 	MyRandomGen_ByNumber("moon"		,system.num_moons						,objcounter.moons				,GetUniverseTextList(system.moonlist,"moons.txt")			,function (tex) MyMakeMoon(tex) end)

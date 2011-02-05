@@ -67,8 +67,9 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 end
 
 
-gSpawnSystemEntryID = 0
+function GetJumpByPath (systempath) for k,v in ipairs(gNavTargets) do if (v.dest == systempath) then return v end end end
 
+gSpawnSystemEntryID = 0
 
 function SpawnSystemEntry (child,parentloc,depth)
 	gSpawnSystemEntryID = gSpawnSystemEntryID + 1
