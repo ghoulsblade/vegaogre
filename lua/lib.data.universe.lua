@@ -35,25 +35,6 @@ function GetUniverseTextList_One (name,sep)
 	return cache
 end
 
-
-function GetOrbitMeanRadiusFromNode (node) -- ri="-468434.7" rj="-361541" rk="433559.750000" si="-412172.000000" sj="300463.5" sk="-498163.5"
-	local ri = tonumber(node.ri or "") or 0
-	local rj = tonumber(node.rj or "") or 0
-	local rk = tonumber(node.rk or "") or 0
-	local si = tonumber(node.si or "") or 0
-	local sj = tonumber(node.sj or "") or 0
-	local sk = tonumber(node.sk or "") or 0
-	return 0.5*(Vector.len(ri,rj,rk) + Vector.len(si,sj,sk))
-end
-
-function ImproveObjectName (name)
-	if (not name) then return end
-	name = string.gsub(name,"JumpTo","jump to ")
-	name = string.gsub(name,"_"," ")
-	return name
-end
-
-
 gPlanetMatCache = {}
 
 function VegaGetTexNameFromFileParam (fileparam)
@@ -104,76 +85,11 @@ function GetPlanetMaterialNameFromNode (node)
 	return mat
 end
 
-gSpawnSystemEntryID = 0
-
-
-function SpawnSystemEntry (child,parentloc,depth)
-	gSpawnSystemEntryID = gSpawnSystemEntryID + 1
-	if (child._name == "Light") then return end
-	if (child._name == "Fog") then return end     
-	if (child._name == "Atmosphere") then return end  
-	assert(parentloc)
-	local s = gCurSystemScale
-	local d = (GetOrbitMeanRadiusFromNode(child) or 0)*s
-	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
-	local loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnMajorLoc(parentloc,x,y,z,child.name)
-	local r = child.radius and tonumber(child.radius)
-	if (r) then r = r * s end
-	local file = child.file
-	local unittype = GetUnitTypeFromSectorXMLNode(child)
-	local dbg_unitname = unittype and unittype.id or (file and ("NOTFOUND:"..GetPlanetUnitTypeIDFromTexture(file)))
-	print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),pad(dbg_unitname,20),child.file)
-	local unitid = child.file
-	
-	if (not gVegaUniverseDebugNoGfx) then
-		--~ destination="Crucible/Stirling" faction="klkk"
-		local obj
-		if (child._name == "Unit") then
-			obj = cStation:New(loc,0,0,0	,r or 400,"agricultural_station.mesh",child)
-		elseif (child._name == "Asteroid") then
-			obj = cAsteroidField:New(loc,0,0,0,10,GetPlanetMaterialNameFromNode(child),child)  -- TODO!
-		elseif (child.file == kJumpTextureName or child._name == "Jump") then
-			obj = cJumpPoint:New(loc,0,0,0,10,GetJumpDestinationFromNode(child),child)  -- TODO!
-		elseif (child._name == "Planet" and child.light) then
-			obj = cSun:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child),child)
-		elseif (child._name == "Planet") then
-			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child),child)
-		end
-		if (obj) then 
-			obj:SetRandomRot()
-			obj.name = ImproveObjectName(child.name)
-			--~ obj.name = "["..gSpawnSystemEntryID.."]"..obj.name
-			loc.primary_object = obj
-			obj.orbit_master = parentloc and parentloc.primary_object
-			RegisterNavTarget(obj)
-		end
-	end
-	
-	for k,subchild in ipairs(child) do SpawnSystemEntry(subchild,loc,depth+1) end
-end
-
---[[
-SpawnSystemEntry        Asteroid                        0               AFieldJumpThin
-SpawnSystemEntry        Planet          JumpTo17-ar     0               jump.texture
-SpawnSystemEntry        Planet          Cephid_17 A     0               stars/white_star.texture
-SpawnSystemEntry        Planet          Atlantis        162788240       planets/oceanBase.texture|planets/ocean.texture
-SpawnSystemEntry        Planet          Phillies        723268          planets/rock.texture
-SpawnSystemEntry        Planet          JumpToEnyo      829181          jump.texture
-SpawnSystemEntry        Planet          JumpToCardell   660457          jump.texture
-SpawnSystemEntry        Unit            Ataraxia        61717           Fighter_Barracks
-SpawnSystemEntry        Planet          JumpToOldziey   145266170       jump.texture
-SpawnSystemEntry        Unit            Plainfield      35369           Relay
-SpawnSystemEntry        Planet          JumpToEverett   149724056       jump.texture
-SpawnSystemEntry        Planet          JumpToStirling  142012802       jump.texture
-SpawnSystemEntry        Planet          Cephid_17 B     4574264635      stars/red_star.texture
-SpawnSystemEntry        Planet          Wiley           177492695       planets/molten.texture
-SpawnSystemEntry        Unit            Serenity        44024           MiningBase
-SpawnSystemEntry        Planet          Broadway        120320579       sol/ganymede.texture|planets/rock.texture
-]]--
-
-function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucible/Cephid_17"
-	print("VegaLoadSystem start",systempath)
+-- used by lib.system.lua
+function VegaLoadSystemToXML (systempath)
 	local univ_system = gUniv_SystemByPath[systempath] assert(univ_system)
+	
+	-- find system file or random-generate a new one from universe params
 	local filepath1 = GetVegaDataDir().."sectors/"..systempath..".system"
 	local filepath2 = GetVegaHomeDataDir().."sectors/milky_way.xml/"..systempath..".system"
 	local filepath3 = GetVegaOgreHomeDataDir().."sectors/milky_way.xml/"..systempath..".system"
@@ -200,15 +116,7 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 		if (not file_exists(filepath)) then print("WARNING! VegaLoadSystem : failed to generate new system2") return end
 		system = EasyXMLWrap(LuaXML_ParseFile(filepath)[1]) assert(system)
 	end
-	
-	gCurSystemScale = tonumber(system.scalesystem or "") or 1
-	print("system:",filepath,system.name,system.background,gCurSystemScale) --~ "Cephid_17","backgrounds/green","1000"
-	
-	local system_root_loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnSystemRootLoc()
-	for k,child in ipairs(system) do 
-		SpawnSystemEntry(child,system_root_loc,0)
-	end
-	-- file="stars/white_star.texture" -> white_star__planets
+	return system
 end
 
 --[[

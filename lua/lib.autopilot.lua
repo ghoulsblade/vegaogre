@@ -43,7 +43,7 @@ function StepAutoPilot ()
 	my.gfx:SetOrientation(Quaternion.Slerp	(w1,x1,y1,z1, w0,x0,y0,z0, t, bShortestPath))
 	]]--
 	
-	-- autopilot rorates cam
+	-- autopilot rotates cam
 	if (1 == 1) then 
 		local cam = GetMainCam()
 		local w1,x1,y1,z1 = cam:GetRot()

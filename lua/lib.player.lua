@@ -1,8 +1,6 @@
 
-RegisterIntervalStepper(100,function ()
-	if (gGuiMouseModeActive) then return end
-	if (gKeyPressed[key_mouse_left]) then FireShot() end
-end)
+
+-- ***** ***** ***** ***** ***** hotkeys
 
 BindDown("left",function () MyPlayerHyperMoveRel(-1,0,0) end)
 BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
@@ -20,9 +18,6 @@ SetMacro("ctrl+d",function () Player_DockToSelected() end)
 SetMacro("alt+g",function () ToggleDockedMode(gSelectedObject) end)
 SetMacro("ctrl+g",function () ToggleDockedMode(gSelectedObject) end)
 
-
-
-
 gPlayerHyperKeyList = {
 	[key_npadd]	=1,
 	[key_npsub]	=-1,
@@ -34,6 +29,56 @@ gPlayerHyperKeyList = {
 SetMacro("backspace",function () PlayerHyperFly_Zero() end)
 
 --~ gMacroPrintAllKeyCombos = true
+
+
+-- ***** ***** ***** ***** ***** external api
+
+
+function PlayerStep ()
+	PlayerCam_Rot_Step() -- depends on mouse
+	PlayerCam_Roll_Step() -- depends on keys (e,q)
+	
+	if (not gPlayerShip) then return end
+	if (gKeyPressed[key_rshift]) then return end
+	
+	Player_RotateShip_Step() -- depends on camera orientation
+	Player_MoveShip_Step() -- depends on keys (wasd rf) and player-ship orientation
+	PlayerCam_Pos_Step() -- depends on player ship position, moves cam position
+end
+
+
+function SpawnPlayer (base)
+	if (gPlayerShip) then return end
+	local pr = base and base.r or 0
+	local loc = base and base.loc or gSolRoot
+	local d = - pr * 1.2,0,0
+	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+	-- player ship
+	gPlayerShip = cPlayerShip:New(loc,x,y,z	,5,"llama.mesh")
+	MyMoveWorldOriginAgainstPlayerShip()
+	
+	-- npc ship
+	--~ local x,y,z = 0,0,0
+	--~ local loc = gPlayerShip.loc
+	--~ for i=1,10 do 
+		--~ local ax,ay,az = Vector.random3(400)
+		--~ local o = cNPCShip:New(loc,x+ax,y+ay,z+az,10,"ruizong.mesh") 
+		--~ o:SetRandomRot()
+	--~ end
+end
+
+
+-- ***** ***** ***** ***** ***** shot
+
+RegisterIntervalStepper(100,function ()
+	if (gGuiMouseModeActive) then return end
+	if (gKeyPressed[key_mouse_left]) then FireShot() end
+end)
+
+function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
+
+-- ***** ***** ***** ***** ***** hyperspeed control
+
 
 gHyperFlySpeed = 0
 function PlayerHyperFly_Zero	() gHyperFlySpeed = 0 HUD_UpdateDisplayNav() end
@@ -66,6 +111,11 @@ function PlayerHyperFlyStep ()
 	end
 end
 
+
+-- ***** ***** ***** ***** ***** docking
+
+
+
 function Player_GetDistUntilDock (base)
 	return base and base:CanDock(gPlayerShip) and math.max(0,base:GetDistToPlayer() - (2*base.r + 1000))
 end
@@ -84,6 +134,8 @@ function Player_DockToSelected ()
 	StartDockedMode(base)
 end
 
+-- ***** ***** ***** ***** ***** object selection
+
 function Player_ClearSelectedObject ()
 	if (not gSelectedObject) then return end
 	local old = gSelectedObject
@@ -91,13 +143,8 @@ function Player_ClearSelectedObject ()
 	if (old.guiMarker) then old.guiMarker:UpdateGfx() end
 	NotifyListener("Hook_SelectObject")
 end
-function Player_ExecuteJump (jumppoint)
-	print("Player_ExecuteJump",jumppoint)
-	Player_ClearSelectedObject()
-	VegaUnloadSystem()
-	VegaLoadSystem(jumppoint.dest or "Crucible/Cephid_17") 
-	NotifyListener("Hook_SystemLoaded")
-end
+
+-- ***** ***** ***** ***** ***** nav targets
 
 gNavTargets = {}
 function ClearNavTargets () gNavTargets = {} end
@@ -113,20 +160,7 @@ function Player_SelectNavTarget_ByIdx (idx)
 end
 
 
-function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
-
-
-function PlayerStep ()
-	PlayerCam_Rot_Step() -- depends on mouse
-	PlayerCam_Roll_Step() -- depends on keys (e,q)
-	
-	if (not gPlayerShip) then return end
-	if (gKeyPressed[key_rshift]) then return end
-	
-	Player_RotateShip_Step() -- depends on camera orientation
-	Player_MoveShip_Step() -- depends on keys (wasd rf) and player-ship orientation
-	PlayerCam_Pos_Step() -- depends on player ship position, moves cam position
-end
+-- ***** ***** ***** ***** ***** cam+ship : rotate and move
 
 function PlayerCam_Rot_Step ()
 	if (gGuiMouseModeActive) then return end

@@ -1,6 +1,6 @@
 dofile(libpath .. "lib.vegautil.lua")
-dofile(libpath .. "lib.hotkey.lua") -- early so key settings can use it 
-dofile(libpath .. "lib.spacetest.lua")
+dofile(libpath .. "lib.hotkey.lua") -- early so key settings can use it
+dofile(libpath .. "lib.location.lua")
 dofile(libpath .. "lib.guitest.dragdrop.lua")
 dofile(libpath .. "lib.boltmesh.lua")
 dofile(libpath .. "lib.objects.lua")
@@ -14,6 +14,9 @@ dofile(libpath .. "lib.autopilot.lua")
 dofile(libpath .. "lib.data.unittype.lua")
 dofile(libpath .. "lib.data.universe.lua")
 dofile(libpath .. "lib.data.generate.lua")
+dofile(libpath .. "lib.light.lua")
+dofile(libpath .. "lib.background.lua")
+dofile(libpath .. "lib.system.lua")
 dofile(libpath .. "lib.docked.lua")
 dofile(libpath .. "lib.gfx.hyper.lua")
 dofile(libpath .. "lib.gfx.jumppoint.lua")
@@ -66,7 +69,7 @@ function VegaMainInit()
 	LoadUniverse()
 	
 	InitGuiThemes()
-	MySpaceInit()
+	LoadFirstSystem()
 	GuiTest_InitCrossHair()
 	NotifyListener("Hook_VegaInit")
 end

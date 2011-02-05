@@ -36,3 +36,29 @@ function GetVegaXMLVar (node,key) if (not node.var) then return end for k,v in i
 function GetJumpList (system) return explode(" ",GetVegaXMLVar(system,"jumps") or "") end
 
 function Univ_ParseVars (node) local res = {} for k,child in ipairs(node) do if (child._name == "var") then res[child.name or "?"] = child.value end end return res end
+
+
+function GetRandomOrbitFlatXY (d,dzmax)
+	local ang = math.random()*math.pi*2
+	local x,y = d*sin(ang),d*cos(ang)
+	local z = (math.random()*2-1)*dzmax
+	return x,y,z
+end
+
+function GetOrbitMeanRadiusFromNode (node) -- ri="-468434.7" rj="-361541" rk="433559.750000" si="-412172.000000" sj="300463.5" sk="-498163.5"
+	local ri = tonumber(node.ri or "") or 0
+	local rj = tonumber(node.rj or "") or 0
+	local rk = tonumber(node.rk or "") or 0
+	local si = tonumber(node.si or "") or 0
+	local sj = tonumber(node.sj or "") or 0
+	local sk = tonumber(node.sk or "") or 0
+	return 0.5*(Vector.len(ri,rj,rk) + Vector.len(si,sj,sk))
+end
+
+function ImproveObjectName (name)
+	if (not name) then return end
+	name = string.gsub(name,"JumpTo","jump to ")
+	name = string.gsub(name,"_"," ")
+	return name
+end
+
