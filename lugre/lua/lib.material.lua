@@ -16,6 +16,25 @@ function GetTexturedMat (base,texpath)
 	return cache
 end
 
+-- cubic material for skyboxes
+gCubicTexturedMatCache = {}
+function GetCubicTexturedMat (base,texpath,bForUVW) 
+	local cachename = base.."#"..texpath..(bForUVW and "#uvw" or "#uv")
+	local cache = gCubicTexturedMatCache[cachename]
+	if (cache) then return cache end
+	cache = CloneMaterial(base)
+	if (not bForUVW) then bForUVW = false end
+	
+	local pMat	= MaterialManager_load(cache) assert(pMat)
+	local pTec	= pMat:getTechnique(0) assert(pTec)
+	local pPas	= pTec:getPass(0) assert(pPas)
+	local pTex	= pPas:getTextureUnitState(0) assert(pTex)
+	pTex:setCubicTextureName(texpath,bForUVW)
+	
+	gCubicTexturedMatCache[cachename] = cache
+	return cache
+end
+
 
 gPlainTextureMatCache = {}
 function GetPlainTextureMat (texpath,bHasAlpha) 

@@ -156,7 +156,7 @@ material starbase
 	}
 }
 
-material skyboxbase
+material skyboxbase_multifile
 {
 	// FIXED FUNCTION
 	technique
@@ -176,10 +176,31 @@ material skyboxbase
 		}
 	}
 }
+material skyboxbase_singlefile
+{
+	// FIXED FUNCTION
+	technique
+	{
+		pass
+		{
+			fog_override true
+			lighting off
+			depth_write off
+
+			texture_unit
+			{
+				//filtering none
+				cubic_texture red_galaxy1_light.cube.dds combinedUVW
+				tex_address_mode clamp
+			}
+		}
+	}
+}
 
 // cubic_texture xxxfront.png xxxback.png xxxleft.png xxxright.png xxxup.png xxxdown.png separateUV
 
-material bluesky : skyboxbase
+// fiery_galaxy_light.cube.dds = Crucile/Cephid-17
+material skybox_standard : skyboxbase_singlefile
 {
 	technique
 	{
@@ -187,12 +208,15 @@ material bluesky : skyboxbase
 		{
 			texture_unit
 			{
-				cubic_texture fiery_galaxy_light_front.png fiery_galaxy_light_back.png fiery_galaxy_light_left.png fiery_galaxy_light_right.png fiery_galaxy_light_up.png fiery_galaxy_light_down.png separateUV
+				// cubic_texture fiery_galaxy_light_front.png fiery_galaxy_light_back.png fiery_galaxy_light_left.png fiery_galaxy_light_right.png fiery_galaxy_light_up.png fiery_galaxy_light_down.png separateUV
+				// cubic_texture fiery_galaxy_light.cube.dds combinedUVW
+				cubic_texture green_light.cube.dds combinedUVW
 				tex_address_mode clamp
 			}
 		}
 	}
 }
+
 
 material bolttest
 {
