@@ -42,6 +42,7 @@ function VegaGetTexNameFromFileParam (fileparam)
 	local lastparam = params[#params]
 	if (not lastparam) then print("VegaGetTexNameFromFileParam ERROR: no last param") return "carribean1.dds" end -- "oceanBase.dds"
 	-- lastparam=planets/ocean.texture
+	lastparam = string.gsub(lastparam,"~$","")
 	lastparam = string.gsub(lastparam,"%.texture$",".dds")
 	lastparam = string.gsub(lastparam,"^.*/","")
 	--~ print("VegaGetTexNameFromFileParam",lastparam," from ",fileparam)
