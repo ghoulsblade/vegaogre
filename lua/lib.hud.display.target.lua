@@ -5,15 +5,14 @@ RegisterListener("Hook_SelectObject",function (o)
 	gHudTargetInfo = o and GetHUDBaseWidget():CreateChild("HudTargetInfo",{obj=o})
 end)
 RegisterIntervalStepper(500,function () if (gHudTargetInfo) then gHudTargetInfo:IntervalStep() end end)
-
+RegisterListener("Hook_MainWindowResized",function () if (gHudTargetInfo) then gHudTargetInfo:UpdatePosOnScreen() end end)
 
 
 cHudTargetInfo		= RegisterWidgetClass("HudTargetInfo","Group")
 
 function cHudTargetInfo:Init (parentwidget, params)
 	local w,h = 256,256
-	local x,y = gViewportW-w,gViewportH-h
-	self:SetPos(x,y)
+	self:UpdatePosOnScreen()
 	
 	local o = params.obj  assert(o)
 	self.obj = o
@@ -31,6 +30,12 @@ function cHudTargetInfo:Init (parentwidget, params)
 	self.txt_bottomleft:SetPos(b,h-b-boff)
 	
 	self:UpdateTexts()
+end
+
+function cHudTargetInfo:UpdatePosOnScreen ()
+	local w,h = 256,256
+	local x,y = gViewportW-w,gViewportH-h
+	self:SetPos(x,y)
 end
 
 function cHudTargetInfo:UpdateTexts ()

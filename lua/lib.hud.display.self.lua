@@ -6,6 +6,7 @@ function HUD_UpdateDisplaySelf ()
 end
 RegisterListener("Hook_SystemLoaded",function (bGameInit) HUD_UpdateDisplaySelf() end)
 --~ RegisterIntervalStepper(500,function () if (gHudDisplaySelf) then gHudDisplaySelf:IntervalStep() end end)
+RegisterListener("Hook_MainWindowResized",function () HUD_UpdateDisplaySelf() end)
 
 
 
