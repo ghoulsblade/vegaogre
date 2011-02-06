@@ -86,6 +86,9 @@ function GetPlanetMaterialNameFromNode (node)
 	return mat
 end
 
+
+
+
 -- used by lib.system.lua
 function VegaLoadSystemToXML (systempath)
 	local univ_system = gUniv_SystemByPath[systempath] assert(univ_system)

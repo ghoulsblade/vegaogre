@@ -8,6 +8,9 @@ note : shaders : units/installation/Agricult../technique="fireglass" :
 ./programs/fireglass.vp
 ./programs/fireglass.fp
 ./techniques/fireglass.technique
+
+The auto_params are somewhat documented on the dtd (in technique dir), there's a lot more detail about them in gfx/techniques.h/cpp in the source code, and they're bound in gfx/mesh_gfx.cpp
+Ogre has a similar concept, so you should be able to translate auto_params to the Ogre equivalent without much trouble.
 ]]--
 
 

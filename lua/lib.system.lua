@@ -93,7 +93,7 @@ function SpawnSystemEntry (child,parentloc,depth)
 		--~ destination="Crucible/Stirling" faction="klkk"
 		local obj
 		if (child._name == "Unit") then
-			obj = cStation:New(loc,0,0,0	,r or 400,"agricultural_station.mesh",child)
+			obj = cStation:New(loc,0,0,0	,r or 400,GetUnitMeshNameFromNode(child),child)
 		elseif (child._name == "Asteroid") then
 			obj = cAsteroidField:New(loc,0,0,0,10,GetPlanetMaterialNameFromNode(child),child)  -- TODO!
 		elseif (child.file == kJumpTextureName or child._name == "Jump") then

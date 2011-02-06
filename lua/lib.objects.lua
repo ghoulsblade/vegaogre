@@ -214,6 +214,7 @@ function cStation:Init (loc,x,y,z,r,meshname,xmlnode)
 	self:InitObj(loc,x,y,z,r)
 	self:SetScaledMesh(meshname or "agricultural_station.mesh",r)
 	self.xmlnode = xmlnode
+	self.hudimage = GetHUDImageFromNode_Unit(self.xmlnode)
 	--~ self.name = "station"
 end
 
@@ -223,7 +224,7 @@ function cStation:HUDStep ()
 	stepHudMarker(self)
 end
 
-function cStation:GetHUDImageName () return "Agricultural_Station_Agricultural_Station-hud.png.dds" end
+function cStation:GetHUDImageName () return self.hudimage end
 
 -- ***** ***** ***** ***** ***** cLocation
 
@@ -252,7 +253,7 @@ function cPlanet:Init (loc,x,y,z,r,matname,xmlnode)
 	local res = 51 -- 31
 	local steps_h,steps_v,cx,cy,cz = res,res,r,r,r
 	self.xmlnode = xmlnode
-	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
+	self.hudimage = xmlnode and GetHUDImageFromNode_Planet(xmlnode) or "planet-carribean-hud.dds"
 	self.gfx:SetMesh(MakeSphereMesh(steps_h,steps_v,cx,cy,cz))
 	self.gfx:GetEntity():setMaterialName(matname or "planetbase_ground")
 end
@@ -277,7 +278,7 @@ function cJumpPoint:Init (loc,x,y,z,r,destination,xmlnode)
 	self:InitObj(loc,x,y,z,r)
 	self.dest = destination
 	self.xmlnode = xmlnode
-	self.hudimage = xmlnode and GetHUDImageTexFromNode(xmlnode) or "planet-carribean-hud.dds"
+	self.hudimage = xmlnode and GetHUDImageFromNode_Planet(xmlnode) or "planet-carribean-hud.dds"
 	JumpPointGfx_Init(self.gfx,r)
 end
 function cJumpPoint:GetHUDImageName () return "jump-hud.dds" end 
