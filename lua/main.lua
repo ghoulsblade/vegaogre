@@ -84,10 +84,8 @@ function LoadingProfile (sCurAction,bIsPreOgre) end
 
 -- called from c
 --- warning ! this gets called a lot while user resizes window
-function NotifyMainWindowResized (w,h) 
-	NotifyListener("Hook_MainWindowResized",w,h) -- warning, only use this to mark as changed, might be called more than once per frame
-end
-RegisterListener("Hook_MainWindowResized",function () gbNeedCorrectAspectRatio = true end)
+function NotifyMainWindowResized (w,h) gbMainWindowResized = true end -- warning, only mark as changed, might be called more than once per frame
+RegisterStepper(function () if (gbMainWindowResized) then gbMainWindowResized = false NotifyListener("Hook_MainWindowResized") end end)
 
 
 --###############################

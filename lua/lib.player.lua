@@ -2,15 +2,11 @@
 
 -- ***** ***** ***** ***** ***** hotkeys
 
-BindDown("left",function () MyPlayerHyperMoveRel(-1,0,0) end)
-BindDown("right",function () MyPlayerHyperMoveRel(1,0,0) end)
-
 SetMacro("tab", function () ToggleGuiMouseMode() end)
 SetMacro("alt+a",function () ToggleAutoPilot() end)
 SetMacro("ctrl+a",function () ToggleAutoPilot() end)
 SetMacro("shift+n",function ()	Player_SelectPrevNavTarget() end)
 SetMacro("n",function () 		Player_SelectNextNavTarget() end)
-SetMacro("k",function () MyMoveWorldOriginAgainstPlayerShip() print("position from sun:",gPlayerShip:GetPosFromSun()) end)
 
 SetMacro("alt+d",function () Player_DockToSelected() end)
 SetMacro("ctrl+d",function () Player_DockToSelected() end)
@@ -79,11 +75,10 @@ function FireShot () if (gPlayerShip) then cShot:New(gPlayerShip) end end
 
 -- ***** ***** ***** ***** ***** hyperspeed control
 
-
 gHyperFlySpeed = 0
 function PlayerHyperFly_Zero	() gHyperFlySpeed = 0 HUD_UpdateDisplayNav() end
 function PlayerHyperFly_Faster	() gHyperFlySpeed = gHyperFlySpeed + 1 HUD_UpdateDisplayNav() end
-function PlayerHyperFly_Slower	() gHyperFlySpeed = gHyperFlySpeed - 1 HUD_UpdateDisplayNav() end
+function PlayerHyperFly_Slower	() gHyperFlySpeed = max(0,gHyperFlySpeed - 1) HUD_UpdateDisplayNav() end
 function PlayerHyperFly_GetSpeed	() return (gHyperFlySpeed == 0) and 0 or (((gHyperFlySpeed > 0) and 1 or -1) * math.pow(2,math.abs(gHyperFlySpeed))) end
 function PlayerHyperFly_GetExponent () return math.abs(gHyperFlySpeed) end
 

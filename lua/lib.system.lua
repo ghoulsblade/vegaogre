@@ -49,6 +49,7 @@ function VegaLoadSystem (systempath) -- systempath = sector/system e.g. "Crucibl
 	print("=================\nVegaLoadSystem",systempath)
 	
 	gCurSystemPath = systempath -- e.g. "Crucible/Cephid_17"
+	gCurSystemRadius = 0
 	
 	local system = VegaLoadSystemToXML (systempath)
 	assert(system)
@@ -117,6 +118,7 @@ function SpawnSystemEntry (child,parentloc,depth)
 			obj = cPlanet:New(loc,0,0,0	,r or 6371.0*km,GetPlanetMaterialNameFromNode(child),child)
 		end
 		if (obj) then 
+			gCurSystemRadius = max(gCurSystemRadius,obj:GetDistToRoot() + (obj.r or 0))
 			obj:SetRandomRot()
 			obj.name = ImproveObjectName(child.name)
 			--~ obj.name = "["..gSpawnSystemEntryID.."]"..obj.name

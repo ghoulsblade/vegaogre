@@ -92,6 +92,8 @@ function DockedStartRoom (roomname)
 	if (roomname == "LIFTOFF") then EndDockedMode() return end
 	ClearRoomGfx()
 	
+	gDockedCurRoomName = roomname
+	
 	local basetype = gDockedInfo.basetype
 	local rooms = basetype and gBaseRooms[basetype]
 	local room = rooms and rooms[roomname]
@@ -148,6 +150,13 @@ function StartDockedMode (base,force_basetype)
 	DockedStartRoom("hangar")
 end
 
+
+RegisterListener("Hook_MainWindowResized",function () DockedResizeScreen() end)
+
+function DockedResizeScreen () 
+	if (gDockedMode) then DockedStartRoom(gDockedCurRoomName) end
+end
+
 function GetTextureResolution (texname)
 	local tex = GetOgreTexture(texname) assert(tex)
 	return tex:getWidth(),tex:getHeight()
@@ -155,12 +164,14 @@ end
 
 function SetDockedBackground (texname)
 	if (gBaseBackground) then gBaseBackground:Destroy() gBaseBackground = nil end
+	if (gBaseBackgroundBlack) then gBaseBackgroundBlack:Destroy() gBaseBackgroundBlack = nil end
 	
 	if (not texname) then return end
 	-- texname = "ocean_concourse.dds"
 	-- texname = "military_concourse.dds"
 	local s = min(gViewportW,gViewportH) s = 1024
 	local w,h = s,s
+	gBaseBackgroundBlack = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","black.png"),gViewportW,gViewportH)})
 	gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base",texname),w,h)})
 	--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat",texname),w,h)})
 	local xoff,yoff = floor(gViewportW/2-w/2),floor(gViewportH/2-h/2)
@@ -170,6 +181,7 @@ function SetDockedBackground (texname)
 	local w_orig,h_orig = GetTextureResolution(texname) 
 	--~ print("docked bg orig",texname,w_orig,h_orig)
 	
+	gDockedInfo.texname = texname
 	gDockedInfo.bg_xoff = xoff
 	gDockedInfo.bg_yoff = yoff
 	gDockedInfo.bg_w = w

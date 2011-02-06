@@ -77,15 +77,21 @@ function cObject:DockIsJump () return false end
 function cObject:MoveToNewLoc (loc)
 	self.gfx:SetParent(loc.gfx)
 	self.loc = loc
-end 
-function cObject:GetPosFromSun () 
-	local p = self.loc
-	return self.x+p.x,self.y+p.y,self.z+p.z
 end
 function cObject:GetDistToPlayer () return gPlayerShip and self:GetDistToObject(gPlayerShip) or 0 end
 function cObject:GetDistToObject (o) return Vector.len(self:GetVectorToObject(o)) end
 
 function cObject:GetNumberOfParents () local loc = self.loc  return loc and (1 + loc:GetNumberOfParents()) or 0 end
+
+function cObject:GetDistToRoot () return Vector.len(self:GetVectorToRoot()) end
+function cObject:GetVectorToRoot ()
+	if (self.loc) then 
+		local ax,ay,az = self.loc:GetVectorToRoot()
+		return ax+self.x, ay+self.y, az+self.z
+	else 
+		return self.x, self.y, self.z
+	end
+end
 
 function cObject:GetVectorToObject (b)
 	local a = self

@@ -103,13 +103,11 @@ function VegaMainStep ()
 	for o,v in pairs(gObjects) do o:HUDStep(dt) end -- update hud markers, should be done AFTER moving objects and updating cam
 	
 	NotifyListener("Hook_PreRenderOneFrame")
-	
-	
-    if (gbNeedCorrectAspectRatio) then
-		gbNeedCorrectAspectRatio = false
-		local vp = GetMainViewport()
-		GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
-	end
 end
+
+RegisterListener("Hook_MainWindowResized",function () 
+	local vp = GetMainViewport()
+	GetMainCam():SetAspectRatio(vp:GetActualWidth() / vp:GetActualHeight())
+end)
 
 function GetHUDBaseWidget () return GetGUILayer_HUDFX() end 
