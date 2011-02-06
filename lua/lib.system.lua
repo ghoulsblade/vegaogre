@@ -78,8 +78,21 @@ function SpawnSystemEntry (child,parentloc,depth)
 	if (child._name == "Atmosphere") then return end  
 	assert(parentloc)
 	local s = gCurSystemScale
+	print("custom scale",gCurSystemScale)
 	local d = (GetOrbitMeanRadiusFromNode(child) or 0)*s
 	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
+	print("orbidist",GetDistText(d),GetDistText(Vector.len(x,y,z)))
+	if (child.x) then 
+		local ax = tonumber(child.x or 0) -- or (x/s)) * s
+		local ay = tonumber(child.y or 0) -- or (y/s)) * s
+		local az = tonumber(child.z or 0) -- or (z/s)) * s
+		if (ax and ay and az and Vector.len(ax,ay,az) ~= 0) then 
+			x = ax * s
+			y = ay * s
+			z = az * s
+		end
+		print("orbidist custompos (ignored if zero)",GetDistText(Vector.len(ax,ay,az)))
+	end
 	local loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnMajorLoc(parentloc,x,y,z,child.name)
 	local r = child.radius and tonumber(child.radius)
 	if (r) then r = r * s end

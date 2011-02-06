@@ -267,7 +267,7 @@ function TableCamViewMeshLoop (meshname,boundrad)
 	
 	MyNewLight()
 
-	local mesh_files = {
+	local mesh_files2 = {
 		"Starfortress/starfortress.mesh",
 		"Factory/factory.mesh",
 		"AsteroidFighterBase/asteroidfighterbase.mesh",
@@ -295,7 +295,7 @@ function TableCamViewMeshLoop (meshname,boundrad)
 		"Fighter_Barracks/fighter_barracks.mesh",
 		"Refinery/refinery.mesh",
 	}
-	local mesh_files2 = {
+	local mesh_files = {
 	"Sickle/sickle.mesh",
 	"Leonidas/yavok.mesh",
 	"Sartre/sartre.mesh",

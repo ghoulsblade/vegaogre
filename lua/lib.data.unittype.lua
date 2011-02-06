@@ -45,6 +45,8 @@ function GetHUDImageFromNode_Unit (node)
 		local filename = FindFirstFileInDir(GetVegaDataDir().."units/"..(t.Directory or ""),"hud.*%.dds") -- todo : cache result
 		print("GetHUDImageFromNode_Unit : ",t.Directory,filename)
 		if (filename) then return filename end
+	else
+		print("WARNING: GetHUDImageFromNode_Unit type not found",node and node.file)
 	end
 	-- node and GetHUDImageFromNode_Planet(node) or "planet-carribean-hud.dds"
 	return "Agricultural_Station_Agricultural_Station-hud.png.dds"
@@ -72,6 +74,8 @@ function GetUnitMeshNameFromNode (node)
 		local meshname = string.gsub(string.gsub(t.Mesh or "","%.bfxm.*",".mesh"),"^%{","")
 		print("GetUnitMeshNameFromNode",node.file,meshname)
 		if (string.find(meshname,"%.mesh") and MeshNameExists(meshname)) then return meshname end
+	else
+		print("WARNING: GetUnitMeshNameFromNode type not found",node and node.file)
 	end
 	return "MiningBase.mesh"  
 	--~ return GetRandomArrayElement({"starfortress","factory","asteroidfighterbase","uln_asteroid_refinery","diplomatic_center","uln_commerce_center","relay",
