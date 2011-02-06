@@ -789,7 +789,7 @@ end
 	function scale2		(x,y,s) return x*s,y*s end
 	function norm2		(x,y) local s = 1.0/len2(x,y) return x*s,y*s end
 	function tolen2		(x,y,l) local s = l/len2(x,y) return x*s,y*s end
-	function rotate2	(x,y,a) return x*math.cos(a)-y*math.sin(a), x*math.sin(a)+y*math.cos(a) end
+	function rotate2	(x,y,a) local vsin,vcos = sin(a),cos(a) return x*vcos-y*vsin, x*vsin+y*vcos end
 	
 	-- returns vec * scal
 	function Vector.scalarmult (x,y,z,f)

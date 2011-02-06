@@ -3,7 +3,7 @@ cHudMarker	= RegisterWidgetClass("HudMarker","Group")
 gSelectedObject = nil
 
 RegisterIntervalStepper(500,function () if (gHudMarkerMouseOver) then gHudMarkerMouseOver:IntervalStep() end end)
-	
+
 function cHudMarker:Init (parentwidget, params)
 	local o = params.obj
 	self.obj = o
@@ -13,6 +13,13 @@ function cHudMarker:Init (parentwidget, params)
 	self.gfxparam_init = gfxparam_init
 	tablemod(gfxparam_init,{r=r,g=g,b=b})
 	self.frame = self:_CreateChild("Image",{gfxparam_init=gfxparam_init})
+	
+	if (not gHudDirIndicator) then 
+		local matname = GetPlainTextureGUIMat("dir-indicator.png")
+		--~ local gfxparam_init = MakeSpritePanelParam_SingleSpriteSimple(matname,64,64)
+		--~ gHudDirIndicator = GetHUDBaseWidget():CreateContentChild("Image",{gfxparam_init=gfxparam_init})
+		gHudDirIndicator = GetHUDBaseWidget():CreateContentChild("WidgetRotateSprite",{matname=matname,w=64,h=64})
+	end
 	
 	--~ local w,h = 32,32
 	--~ self.img2 = self:_CreateChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetPlainTextureGUIMat("repulsor_beam.image.png"),w,h)})
@@ -88,6 +95,20 @@ function cHudMarker:Step (obj)
 	local x = max(b,min(vw-b,floor(vw * ( px+1)/2)))
 	local y = max(b,min(vw-b,floor(vh * (-py+1)/2)))
 	
+	if (self.obj == gSelectedObject) then
+		local bVisible = abs(x-vw/2)/(vw/2) > 0.6 or 
+						 abs(y-vh/2)/(vh/2) > 0.6
+		gHudDirIndicator:SetVisible(bVisible)
+		if (bVisible) then
+			local b = 20+32
+			local xd = max(b,min(vw-b,vw * ( px+1)/2))
+			local yd = max(b,min(vh-b,vh * (-py+1)/2))
+			gHudDirIndicator:SetPos(xd,yd)
+			--~ local ang = gMyTicks / 1000 * math.pi
+			local ang = math.atan2(px,py)
+			gHudDirIndicator:SetRotateAng(ang)
+		end
+	end
 	
 	self:SetPos(x, y)
 	self.frame:SetPos(-w/2,-h/2)

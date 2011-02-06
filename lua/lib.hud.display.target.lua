@@ -8,7 +8,7 @@ RegisterIntervalStepper(500,function () if (gHudTargetInfo) then gHudTargetInfo:
 
 
 
-cHudTargetInfo	= RegisterWidgetClass("HudTargetInfo","Group")
+cHudTargetInfo		= RegisterWidgetClass("HudTargetInfo","Group")
 
 function cHudTargetInfo:Init (parentwidget, params)
 	local w,h = 256,256
