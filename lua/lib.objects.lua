@@ -124,6 +124,8 @@ function cObject:SelectObject ()
 	if (self.guiMarker) then self.guiMarker:UpdateGfx() end
 	if (oldmarker) then oldmarker:UpdateGfx() end
 	NotifyListener("Hook_SelectObject",self)
+	local t = self.xmlnode and GetUnitTypeFromSectorXMLNode(self.xmlnode)
+	print("object selected",self.xmlnode and self.xmlnode.file,t and t.Directory,t and t.Hud_image)
 end
 
 function cObject:GetFileAttrTxt () return self.xmlnode and self.xmlnode.file end -- "planets/oceanBase.texture|planets/ocean.texture"

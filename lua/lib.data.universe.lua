@@ -3,7 +3,6 @@
 -- TODO : VegaStrike/data/units/factions/planets  subfolders contain buy/sell infos
 
 
-gUnitTypes = {}
 gUniv_SectorByName = {}
 gUniv_SystemByPath = {}
 kJumpTextureName = "jump.texture"

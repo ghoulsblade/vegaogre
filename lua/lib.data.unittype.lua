@@ -1,5 +1,7 @@
 -- units/units.csv   and utils
 
+gUnitTypes = {}
+gUnitTypesI = {} -- ignore case (lowercase)
 
 function MeshNameExists (meshname) print("TODO:MeshNameExists",meshname) return true end -- todo : check
 
@@ -16,7 +18,8 @@ function FindUnitTypeFromFileValue (file,factionhint)
 	--~ file = string.gsub(file,"|.*","")
 	file = string.gsub(file,".*|","")
 	--~ print("FindUnitTypeFromFileValue",file,file.."__neutral",GetPlanetUnitTypeIDFromTexture(file))
-	return (factionhint and gUnitTypes[file.."__"..factionhint]) or gUnitTypes[file] or gUnitTypes[file.."__neutral"] or gUnitTypes[GetPlanetUnitTypeIDFromTexture(file)]
+	return	(factionhint and gUnitTypes[file.."__"..factionhint])  or gUnitTypes[file]  or gUnitTypes[file.."__neutral"]  or gUnitTypes[GetPlanetUnitTypeIDFromTexture(file)] or 
+			(factionhint and gUnitTypesI[file.."__"..factionhint]) or gUnitTypesI[file] or gUnitTypesI[file.."__neutral"] -- ignore case, needed for Unit:factory,...
 end
 
 
@@ -39,7 +42,7 @@ end
 function GetHUDImageFromNode_Unit (node)
 	local t = GetUnitTypeFromSectorXMLNode(node)
 	if (t) then --  t.Hud_image: MininBase2-hud.spr -> MininBase2-hud.png MininBase2-hud.png	
-		local filename = FindFirstFileInDir(GetVegaDataDir().."units/"..(t.Directory or ""),"hud.*%.dds")
+		local filename = FindFirstFileInDir(GetVegaDataDir().."units/"..(t.Directory or ""),"hud.*%.dds") -- todo : cache result
 		print("GetHUDImageFromNode_Unit : ",t.Directory,filename)
 		if (filename) then return filename end
 	end
@@ -104,6 +107,7 @@ function LoadUnitTypes ()
 			local id = o.id or "???"
 			assert(not gUnitTypes[id])
 			gUnitTypes[id] = o
+			gUnitTypesI[string.lower(id)] = o
 			--~ if (string.find(id,"__planets$") or (not o.id)) then 
 			--~ if (string.find(id,"planet")) then 
 				--~ if (not gMyFirstPlanet) then gMyFirstPlanet = true print("units.csv.planet:",pad("ID",30),pad("Directory",30),pad("Name",25),"TYPE","Hud_image") end
