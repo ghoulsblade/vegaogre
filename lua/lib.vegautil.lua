@@ -9,6 +9,19 @@ km = 1000
 function rand2i (vmin,vmax) return vmin+math.random(floor(1+vmax-vmin))-1 end
 function rand2f (vmin,vmax) return vmin+(vmax-vmin)*math.random() end
 
+function ListFiles	(path) local res = dirlist(path,false,true) table.sort(res) return res end
+function ListDirs	(path)
+	local arr = dirlist(path,true,false) table.sort(arr)
+	local res = {} for k,dir in ipairs(arr) do if (dir ~= "." and dir ~= ".." and dir ~= ".svn") then table.insert(res,dir) end end 
+	return res
+end
+
+function FindFirstFileInDir (path,pattern)
+	for k,filename in ipairs(ListFiles(path)) do 
+		if (string.find(filename,pattern)) then return filename end
+	end
+end
+
 function GetDistText (d) 
 	local thres = 0.5
 	local u=au				if (d >= thres*u) then return sprintf("%0.2fau",d/u) end

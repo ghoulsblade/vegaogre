@@ -93,13 +93,6 @@ RegisterListener("Hook_CommandLine",function ()
 	if (not bSuccess) then print("import.xmesh error : ",sError) os.exit(0) end
 end)
 
-local function ListFiles	(path) local res = dirlist(path,false,true) table.sort(res) return res end
-local function ListDirs		(path)
-	local arr = dirlist(path,true,false) table.sort(arr)
-	local res = {} for k,dir in ipairs(arr) do if (dir ~= "." and dir ~= ".." and dir ~= ".svn") then table.insert(res,dir) end end 
-	return res
-end
-
 -- warning : mass convert expects empty destination. will delete existsing .xmesh and .bfxm files in destination
 function MyMassConvert (in_folder_path,out_folder_path) 
 	print("MyMassConvert",in_folder_path)

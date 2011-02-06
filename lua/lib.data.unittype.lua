@@ -36,10 +36,13 @@ function GetHUDImageFromNode_Planet (node)
 	return tex
 end
 
-
 function GetHUDImageFromNode_Unit (node)
-	--~ local t = GetUnitTypeFromSectorXMLNode(node)
-	--~ if (t and t.
+	local t = GetUnitTypeFromSectorXMLNode(node)
+	if (t) then --  t.Hud_image: MininBase2-hud.spr -> MininBase2-hud.png MininBase2-hud.png	
+		local filename = FindFirstFileInDir(GetVegaDataDir().."units/"..(t.Directory or ""),"hud.*%.dds")
+		print("GetHUDImageFromNode_Unit : ",t.Directory,filename)
+		if (filename) then return filename end
+	end
 	-- node and GetHUDImageFromNode_Planet(node) or "planet-carribean-hud.dds"
 	return "Agricultural_Station_Agricultural_Station-hud.png.dds"
 	--[[
