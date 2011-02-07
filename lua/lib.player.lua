@@ -11,9 +11,6 @@ SetMacro("n",function () 		Player_SelectNextNavTarget() end)
 SetMacro("alt+d",function () Player_DockToSelected() end)
 SetMacro("ctrl+d",function () Player_DockToSelected() end)
 
-SetMacro("alt+g",function () ToggleDockedMode(gSelectedObject) end)
-SetMacro("ctrl+g",function () ToggleDockedMode(gSelectedObject) end)
-
 gPlayerHyperKeyList = {
 	[key_npadd]	=1,
 	[key_npsub]	=-1,

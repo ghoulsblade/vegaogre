@@ -118,9 +118,6 @@ end
 
 
 function IsDockedModeActive () return gDockedMode end
-function ToggleDockedMode (o) 
-	if (gDockedMode) then EndDockedMode() else StartDockedMode(gSelectedObject) end
-end
 
 function EndDockedMode ()
 	gDockedMode = false
@@ -147,6 +144,8 @@ function StartDockedMode (base,force_basetype)
 	gDockedInfo.base		= base
 	gDockedInfo.basetype	= force_basetype or (base and base:GetFileAttrLastBase())
 	
+	Docked_InitTradeGoods(base)
+
 	DockedStartRoom("hangar")
 end
 

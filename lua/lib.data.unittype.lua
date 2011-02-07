@@ -87,27 +87,28 @@ end
 function LoadUnitTypes ()
 	local filepath = GetVegaDataDir().."units/units.csv"
 	local iLineNum = 0
+	gUnitTypeFieldNames = explode(",","id,Directory,Name,STATUS,Object_Type,Combat_Role,Textual_Description,Hud_image,Unit_Scale,"..
+		"Cockpit,CockpitX,CockpitY,CockpitZ,Mesh,Shield_Mesh,Rapid_Mesh,BSP_Mesh,Use_BSP,Use_Rapid,NoDamageParticles,"..
+		"Mass,Moment_Of_Inertia,Fuel_Capacity,Hull,"..
+		"Armor_Front_Top_Right,Armor_Front_Top_Left,Armor_Front_Bottom_Right,Armor_Front_Bottom_Left,Armor_Back_Top_Right,Armor_Back_Top_Left,Armor_Back_Bottom_Right,Armor_Back_Bottom_Left,"..
+		"Shield_Front_Top_Right,Shield_Back_Top_Left,Shield_Front_Bottom_Right,Shield_Front_Bottom_Left,Shield_Back_Top_Right,Shield_Front_Top_Left,Shield_Back_Bottom_Right,Shield_Back_Bottom_Left,"..
+		"Shield_Recharge,Shield_Leak,Warp_Capacitor,Primary_Capacitor,Reactor_Recharge,Jump_Drive_Present,Jump_Drive_Delay,Wormhole,"..
+		"Outsystem_Jump_Cost,Warp_Usage_Cost,Afterburner_Type,Afterburner_Usage_Cost,Maneuver_Yaw,Maneuver_Pitch,Maneuver_Roll,"..
+		"Yaw_Governor,Pitch_Governor,Roll_Governor,"..
+		"Afterburner_Accel,Forward_Accel,Retro_Accel,Left_Accel,Right_Accel,Top_Accel,Bottom_Accel,"..
+		"Afterburner_Speed_Governor,Default_Speed_Governor,ITTS,Radar_Color,Radar_Range,Tracking_Cone,Max_Cone,Lock_Cone,"..
+		"Hold_Volume,Can_Cloak,Cloak_Min,Cloak_Rate,Cloak_Energy,Cloak_Glass,Repair_Droid,ECM_Rating,ECM_Resist,Ecm_Drain,"..
+		"Hud_Functionality,Max_Hud_Functionality,Lifesupport_Functionality,Max_Lifesupport_Functionality,Comm_Functionality,Max_Comm_Functionality,"..
+		"FireControl_Functionality,Max_FireControl_Functionality,SPECDrive_Functionality,Max_SPECDrive_Functionality,Slide_Start,Slide_End,"..
+		"Activation_Accel,Activation_Speed,Upgrades,Prohibited_Upgrades,Sub_Units,Sound,Light,Mounts,Net_Comm,Dock,Cargo_Import,Cargo,"..
+		"Explosion,Num_Animation_Stages,Upgrade_Storage_Volume,Heat_Sink_Rating,Shield_Efficiency,Num_Chunks,Chunk_0,Collide_Subunits,Spec_Interdiction,Tractorability")
+	
 	for line in io.lines(filepath) do 
 		iLineNum = iLineNum + 1
 		local csv = ParseCSVLine(line)
 		if (iLineNum > 3) then 
 			local o = {}
-			o.id,o.Directory,o.Name,o.STATUS,o.Object_Type,o.Combat_Role,o.Textual_Description,o.Hud_image,o.Unit_Scale,
-				o.Cockpit,o.CockpitX,o.CockpitY,o.CockpitZ,o.Mesh,o.Shield_Mesh,o.Rapid_Mesh,o.BSP_Mesh,o.Use_BSP,o.Use_Rapid,o.NoDamageParticles,
-				o.Mass,o.Moment_Of_Inertia,o.Fuel_Capacity,o.Hull,
-				o.Armor_Front_Top_Right,o.Armor_Front_Top_Left,o.Armor_Front_Bottom_Right,o.Armor_Front_Bottom_Left,o.Armor_Back_Top_Right,o.Armor_Back_Top_Left,o.Armor_Back_Bottom_Right,o.Armor_Back_Bottom_Left,
-				o.Shield_Front_Top_Right,o.Shield_Back_Top_Left,o.Shield_Front_Bottom_Right,o.Shield_Front_Bottom_Left,o.Shield_Back_Top_Right,o.Shield_Front_Top_Left,o.Shield_Back_Bottom_Right,o.Shield_Back_Bottom_Left,
-				o.Shield_Recharge,o.Shield_Leak,o.Warp_Capacitor,o.Primary_Capacitor,o.Reactor_Recharge,o.Jump_Drive_Present,o.Jump_Drive_Delay,o.Wormhole,
-				o.Outsystem_Jump_Cost,o.Warp_Usage_Cost,o.Afterburner_Type,o.Afterburner_Usage_Cost,o.Maneuver_Yaw,o.Maneuver_Pitch,o.Maneuver_Roll,
-				o.Yaw_Governor,o.Pitch_Governor,o.Roll_Governor,
-				o.Afterburner_Accel,o.Forward_Accel,o.Retro_Accel,o.Left_Accel,o.Right_Accel,o.Top_Accel,o.Bottom_Accel,
-				o.Afterburner_Speed_Governor,o.Default_Speed_Governor,o.ITTS,o.Radar_Color,o.Radar_Range,o.Tracking_Cone,o.Max_Cone,o.Lock_Cone,
-				o.Hold_Volume,o.Can_Cloak,o.Cloak_Min,o.Cloak_Rate,o.Cloak_Energy,o.Cloak_Glass,o.Repair_Droid,o.ECM_Rating,o.ECM_Resist,o.Ecm_Drain,
-				o.Hud_Functionality,o.Max_Hud_Functionality,o.Lifesupport_Functionality,o.Max_Lifesupport_Functionality,o.Comm_Functionality,o.Max_Comm_Functionality,
-				o.FireControl_Functionality,o.Max_FireControl_Functionality,o.SPECDrive_Functionality,o.Max_SPECDrive_Functionality,o.Slide_Start,o.Slide_End,
-				o.Activation_Accel,o.Activation_Speed,o.Upgrades,o.Prohibited_Upgrades,o.Sub_Units,o.Sound,o.Light,o.Mounts,o.Net_Comm,o.Dock,o.Cargo_Import,o.Cargo,
-				o.Explosion,o.Num_Animation_Stages,o.Upgrade_Storage_Volume,o.Heat_Sink_Rating,o.Shield_Efficiency,o.Num_Chunks,o.Chunk_0,o.Collide_Subunits,o.Spec_Interdiction,o.Tractorability
-				= unpack(csv)
+			for k,fieldname in ipairs(gUnitTypeFieldNames) do o[fieldname] = csv[k] end
 			local id = o.id or "???"
 			assert(not gUnitTypes[id])
 			gUnitTypes[id] = o
