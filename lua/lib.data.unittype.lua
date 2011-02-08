@@ -1,8 +1,5 @@
 -- units/units.csv   and utils
 
-gUnitTypes = {}
-gUnitTypesI = {} -- ignore case (lowercase)
-
 function MeshNameExists (meshname) print("TODO:MeshNameExists",meshname) return true end -- todo : check
 
 function GetPlanetUnitTypeIDFromTexture (texture) 
@@ -84,7 +81,32 @@ function GetUnitMeshNameFromNode (node)
 end
 
 
+function LoadMasterPartList ()
+	gMasterPartList = {}
+	gMasterPartList_ByID = {}
+
+	local filepath = GetVegaDataDir().."master_part_list.csv"
+	local iLineNum = 0
+	gMasterPartListFieldNames = explode(",","file,categoryname,price,mass,volume,description")
+	
+	for line in io.lines(filepath) do 
+		iLineNum = iLineNum + 1
+		local csv = ParseCSVLine(line)
+		if (iLineNum > 1 and csv[1] ~= "") then 
+			local o = {}
+			for k,fieldname in ipairs(gMasterPartListFieldNames) do o[fieldname] = csv[k] end
+			local id = o.file or "???"
+			if (gMasterPartList[id]) then print("WARNING: LoadMasterPartList: dublicate id '"..tostring(id).."'") end
+			table.insert(gMasterPartList,o)
+			gMasterPartList_ByID[id] = o
+		end
+	end
+end
+
 function LoadUnitTypes ()
+	gUnitTypes = {}
+	gUnitTypesI = {} -- ignore case (lowercase)
+
 	local filepath = GetVegaDataDir().."units/units.csv"
 	local iLineNum = 0
 	gUnitTypeFieldNames = explode(",","id,Directory,Name,STATUS,Object_Type,Combat_Role,Textual_Description,Hud_image,Unit_Scale,"..
@@ -122,6 +144,8 @@ function LoadUnitTypes ()
 			--~ end
 		end
 	end
+	
+	LoadMasterPartList()
 	--[[
 	parse cargo import : 
 	

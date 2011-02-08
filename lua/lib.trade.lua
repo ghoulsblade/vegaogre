@@ -1,7 +1,17 @@
 -- handles trade stuff
 
--- TODO : stations, loaded via .py scripts in vega original ????
+-- TODO : stations, loaded via .py scripts in vega original ????    nope, units.csv : Cargo_Import
+--~ ./bases/bartender_mining.py
+--~ ./bases/mining_lib.py
+--~ ./bases/MiningBase.py
+--~ import Base
+--~ import VS
+-- see also data/modules/dynamic_mission.py
+-- see also data/modules/trading.py
+-- 2011.02.08: solved using units.csv : Cargo_Import and master_part_list.csv
 
+
+-- obsolete, planet only (no stations), use units.csv Cargo_Import instead
 function Trade_GetTradeGoodsFilePathFromUnitType (t)
 	return GetVegaDataDir().."units/"..t.Directory.."/"..string.gsub(t.Directory,".*/","")
 end
@@ -13,6 +23,7 @@ function Docked_InitTradeGoods (base) -- base= cStation or cPlanet
 	-- get unittype of base/station/planet
 	local t = base and GetUnitTypeFromSectorXMLNode(base.xmlnode) assert(t)
 	
+	--[[
 	-- get path to xml file
 	local filepath = Trade_GetTradeGoodsFilePathFromUnitType(t)
 	local xml = filepath and file_exists(filepath) and LuaXML_ParseFile(filepath)
@@ -27,8 +38,28 @@ function Docked_InitTradeGoods (base) -- base= cStation or cPlanet
 		local o = xml_cat.import[1] -- <import price=".75" pricestddev=".15" quantity="25" quantitystddev="25"/>
 		print("+",o.price,o.pricestddev,o.quantity,o.quantitystddev,cat_file) 
 	end
+	]]--
+	
+	for entry in string.gmatch(t.Cargo_Import,"{([^}]*)}") do
+		local cat,price,pricestddev,quant,quantstddev = unpack(explode(";",entry))
+		print("+",entry,cat) 
+		for k,o in pairs(gMasterPartList) do if (o.categoryname == cat) then 
+			print("   ",o.file,o.categoryname,o.price,o.mass,o.volume)
+		end end
+	end
+	
 	--~ os.exit(0)
 	
+	-- {Natural_Products/Food/Aera;1;.1;10000;.1}
+	--~ {Cat(string);price(percentage);pricestddev(percentage);quant(percentage);quantstddev(percentage)}
+--[[ 
+./master_part_list.csv:229:"Filtered_Water","Natural_Products/Food/Aera",40,3,3,"@cargo/fresh_water.image@The main building block of life. Fresh water is required by most animalistic species to maintain bodily function. A body will normally use water to carry nutrients to all cells of the body, and remove toxic wastes to avoid poisoning and death."
+./master_part_list.csv:230:"Aera_Ration","Natural_Products/Food/Aera",40,1.4,1,"@cargo/aera_ration.image@Containing utilitarian dehydrated meal bars with jerky for dessert, the Aera ration is human edible, but prolonged human consumption will result in eventual sickness and death due to alkaloid content."
+./master_part_list.csv:231:"Jhurlon","Natural_Products/Food/Aera",140,1.05,1,"@cargo/jhurlon.image@A native of the Bzbr world, the Jhurlon most closely resembles a boulder sized land dwelling abalone. While well protected against native predators, modern technology has made cutting through their shell somewhat easier."
+./master_part_list.csv:232:"Salted_Thok","Natural_Products/Food/Aera",130,1.2,1,"@cargo/salted_thok.image@Though the Aera destroyed their jungle forests, the seas fared better, and continue to produce this tasty fish-like creature."
+
+
+]]--
 	
 	--[[
 	--~ for k,fieldname in pairs(gUnitTypeFieldNames) do print(" "..pad(fieldname,30),t[fieldname]) end
@@ -51,4 +82,11 @@ function Docked_InitTradeGoods (base) -- base= cStation or cPlanet
 		--~ print("planet:",pad(id,30),file_exists(filepath),pad(t.Name,20),filepath,t.Directory) 
 	--~ end end
 	--~ os.exit(0)
+end
+
+
+if (1==2) then 
+	LoadUniverse()
+	Docked_InitTradeGoods({xmlnode={file="planets/oceanBase.texture|planets/ocean.texture",faction="klkk"}})
+	os.exit(0)
 end
