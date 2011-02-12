@@ -22,6 +22,15 @@ function FindFirstFileInDir (path,pattern)
 	end
 end
 
+-- utils
+function NiceNum (v) 
+	if (v >= 10*1000*1000) then return sprintf("%0.0fM",v/1000/1000) end
+	if (v >=    1000*1000) then return sprintf("%0.1fM",v/1000/1000) end
+	if (v >= 10*1000) then return sprintf("%0.0fK",v/1000) end
+	if (v >=    1000) then return sprintf("%0.1fK",v/1000) end
+	return v
+end
+
 function GetDistText (d) 
 	local thres = 0.5
 	local u=au				if (d >= thres*u) then return sprintf("%0.2fau",d/u) end

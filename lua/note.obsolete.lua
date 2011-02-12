@@ -91,3 +91,96 @@ function GetNodeHierarchyText (node)
 end
 
 
+-- obsolete, planet only (no stations), use units.csv Cargo_Import instead
+function Trade_GetTradeGoodsFilePathFromUnitType (t)
+	return GetVegaDataDir().."units/"..t.Directory.."/"..string.gsub(t.Directory,".*/","")
+end
+--[[
+local filepath = Trade_GetTradeGoodsFilePathFromUnitType(t)
+local xml = filepath and file_exists(filepath) and LuaXML_ParseFile(filepath) if (not xml) then return end -- uninhabitable etc, NOTE: stations use units:csv:Cargo_Import
+gTradeGoodXML = EasyXMLWrap(xml[1]) assert(gTradeGoodXML)
+local xml_hold = gTradeGoodXML.Hold[1] assert(xml_hold) -- <Hold volume="100000000000">
+print("xml_hold volume=",tonumber(xml_hold.volume or 1000))
+for k,xml_cat in ipairs(xml_hold) do -- <Category file="Natural_Products/Food">
+	local cat_file = xml_cat.file 
+	local o = xml_cat.import[1] -- <import price=".75" pricestddev=".15" quantity="25" quantitystddev="25"/>
+	print("+",o.price,o.pricestddev,o.quantity,o.quantitystddev,cat_file) 
+end
+-- note : VegaStrike/data/units/factions/planets  subfolders contain buy/sell infos		cargo,ware,price.  but apparently unused
+<Upgrade file="confed_missions"/>
+<Upgrade file="aera_missions"/>
+<Upgrade file="iso_missions"/>
+<Upgrade file="rlaan_missions"/>
+<Upgrade file="standard_missions"/>
+]]--
+
+
+-- obsolete, testing trade info loader
+function TradeInfoTest ()
+	print("========= CARGO TEST")
+	local myvolume = 2000
+	local mycash = 87*1000*1000
+	local minprofit_per_run = 150*1000
+	
+	local myvolume = 10*1000
+	--~ local mycash = 1080*1000
+	--~ local mycash = 3*1000*1000
+	
+	--~ local myvolume = 200
+	--~ local mycash = 880*1000
+	
+	-- results
+	local result_list = {}
+	local devmult = 0
+	
+	-- calc sell_list
+	local sell_list = {}
+	for k1,t in pairs(gUnitTypes) do
+		for k,trade in ipairs(GetTradeListForBaseType(t) or {}) do
+			local arr = sell_list[trade.path]
+			if (not arr) then arr = {{best_sell_price=trade.base_price,where="??any??"}} sell_list[trade.path] = arr end
+			local best_sell_price = ceil(trade.base_price * (trade.mult_price + devmult*trade.mult_pricestddev))
+			if (best_sell_price >= trade.base_price) then table.insert(arr,{best_sell_price=best_sell_price,where=t.id}) end
+		end 
+	end
+	for k,arr in pairs(sell_list) do table.sort(arr,function (a,b) return a.best_sell_price > b.best_sell_price end) end
+	
+	local function ID2Ingame (id) return GetPlanetTypeInGameName(id) or id end
+	
+	-- see where we can buy
+	for k1,t in pairs(gUnitTypes) do
+		for k,trade in ipairs(GetTradeListForBaseType(t) or {}) do
+			local best_sell_arr = sell_list[trade.path]
+			for i=1,min(999999999,#best_sell_arr) do 
+				local best_sell = best_sell_arr[i]
+				local cur_best_buy_price = floor(trade.base_price * (trade.mult_price - devmult*trade.mult_pricestddev))
+				local one_profit = (best_sell.best_sell_price - cur_best_buy_price)
+				local quant_min = max(0,floor(trade.quant - trade.quantstddev))
+				local quant_max = max(0,floor(trade.quant + trade.quantstddev))
+				local quant_run = min(floor(myvolume/trade.volume),floor(mycash/cur_best_buy_price),quant_max)
+				local per_run_profit = one_profit * quant_run
+				local total_profit = one_profit * (trade.quant + trade.quantstddev)
+				if (per_run_profit > minprofit_per_run) then 
+				if ((not string.find(trade.categoryname,"^upgrades/")) and t.id ~= best_sell.where) then 
+					table.insert(result_list,{
+						"run:"..NiceNum(per_run_profit),
+						"t:"..NiceNum(total_profit),
+						"1:"..NiceNum(one_profit),
+						"s1:"..NiceNum(best_sell.best_sell_price),
+						"s2:"..NiceNum(trade.base_price),
+						"b:"..NiceNum(cur_best_buy_price),
+						"mb:"..NiceNum(cur_best_buy_price*quant_run),
+						"c:"..NiceNum(trade.volume),
+						quant_min.."-"..quant_max,
+						pad(ID2Ingame(t.id),20).."->"..pad(ID2Ingame(best_sell.where),20),
+						trade.path,
+						per_run_profit=per_run_profit})
+				end
+				end
+			end
+		end
+	end
+	
+	table.sort(result_list,function (a,b) return a.per_run_profit > b.per_run_profit end)
+	for k,o in ipairs(result_list) do print(unpack(o)) end
+end

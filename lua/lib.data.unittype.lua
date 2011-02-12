@@ -20,6 +20,37 @@ function FindUnitTypeFromFileValue (file,factionhint)
 end
 
 
+function GetPlanetTypeInGameName (id) return gPlanetTypeInGameNames[id] end
+gPlanetTypeInGameNames = { -- units.csv -> ingame (universe:planet->file/texture->units.csv)
+				ocean__planets				="Oceanic",
+				tundra__planets				="Frozen_Ammonia",						
+				Snow__planets				="Ice",	
+				forest__planets				="Overgrown",	
+				frigid_mud__planets			="Arid_Methane",			
+				molten__planets				="Molten",	
+				ocean_ammonia__planets		="Oceanic_Ammonia",			
+				Lava__planets				="Volcanic",		
+				Dirt__planets				="Trantor_Class",	
+				k_class__planets			="Bio_Simple",		
+				n_class__planets			="Aera_Trantor",		
+				m_class__planets			="Bio_Diverse",		
+				rock__planets				="Rocky",	
+				desert__planets				="Arid",	
+				red_rocky__planets			="Bio_Diverse_Methane",		
+				toxic_disaster__planets		="Bio_Simple_Methane",			
+				carribean__planets			="Tropical",		
+				tkirsa__planets				="Rlaan_Trantor",	
+				forest_methane__planets		="forest_methane",			
+				university__planets			="University",		
+				j_class__planets			="Aera_Ice",
+				--~ mars__planets				="",		
+				--~ earth__planets				="",		
+				--~ moon__planets				="",	
+				--~ newdetroit__planets			="",			
+				--~ industrial__planets			="",					
+		}
+		
+
 function GetUnitTypeFromSectorXMLNode (node) return FindUnitTypeFromFileValue(node.file,node.faction) end
 
 
