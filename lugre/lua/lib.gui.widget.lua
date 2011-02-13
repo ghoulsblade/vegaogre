@@ -182,7 +182,13 @@ RegisterStepper(GuiSystem_ExecuteMarkedUpdates)
 
 
 function cWidget:CreateContentChild	(classname,...)
-	local w = self:GetContent():CreateChild(classname,...)
+	local content = self:GetContent()
+	local w
+	if (content == self) then
+		w = self:CreateChild(classname,...)
+	else
+		w = content:CreateContentChild(classname,...)
+	end
 	if (self.on_create_content_child) then self:on_create_content_child(w) end
 	return w
 end
@@ -391,6 +397,13 @@ function cWidget:GetRelBounds		()
 	if (w) then return l,t,max(r,w),max(b,h) end -- todo : bug : forced in c++ is from 0, not from l,t .. might not be needed here if in c ? .. override clip...
 	return l,t,r,b
 end
+
+function cWidget:GetRelLeft		() local l,t,r,b = self:GetRelBounds() return l end
+function cWidget:GetRelTop		() local l,t,r,b = self:GetRelBounds() return t end
+function cWidget:GetRelRight	() local l,t,r,b = self:GetRelBounds() return r end
+function cWidget:GetRelBottom	() local l,t,r,b = self:GetRelBounds() return b end
+function cWidget:GetWidth		() return self:GetRelRight() end -- warning, possibly confusing for negative top  border
+function cWidget:GetHeight		() return self:GetRelBottom() end -- warning, possibly confusing for negative left border
 
 -- set forced bounds, if they are set, GetRelBounds will be independent from the bounds calculated in c++ from the visuals
 -- useful for layouting, boxes and similar

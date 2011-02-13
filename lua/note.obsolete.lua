@@ -136,7 +136,7 @@ function TradeInfoTest ()
 	-- calc sell_list
 	local sell_list = {}
 	for k1,t in pairs(gUnitTypes) do
-		for k,trade in ipairs(GetTradeListForBaseType(t) or {}) do
+		for k,trade in pairs(GetTradeInfosForBaseType(t) or {}) do
 			local arr = sell_list[trade.path]
 			if (not arr) then arr = {{best_sell_price=trade.base_price,where="??any??"}} sell_list[trade.path] = arr end
 			local best_sell_price = ceil(trade.base_price * (trade.mult_price + devmult*trade.mult_pricestddev))
@@ -149,7 +149,7 @@ function TradeInfoTest ()
 	
 	-- see where we can buy
 	for k1,t in pairs(gUnitTypes) do
-		for k,trade in ipairs(GetTradeListForBaseType(t) or {}) do
+		for k,trade in pairs(GetTradeInfosForBaseType(t) or {}) do
 			local best_sell_arr = sell_list[trade.path]
 			for i=1,min(999999999,#best_sell_arr) do 
 				local best_sell = best_sell_arr[i]

@@ -38,6 +38,7 @@ function GetGUIRootWidget ()
 	
 	gRootWidget = CreateRootWidget(gRenderMan2DAsGroup) 
 	gRootWidget.hudfx		= gRootWidget:CreateLayer("hudfx")
+	gRootWidget.guiback		= gRootWidget:CreateLayer("guiback") -- vegaogre base background images
 	gRootWidget.dialogs		= gRootWidget:CreateLayer("dialogs")
 	gRootWidget.menus		= gRootWidget:CreateLayer("menus")
 	gRootWidget.tooltip		= gRootWidget:CreateLayer("tooltip")
@@ -45,6 +46,7 @@ function GetGUIRootWidget ()
 end
 
 function GetGUILayer_HUDFX		() return GetGUIRootWidget().hudfx end
+function GetGUILayer_GuiBack	() return GetGUIRootWidget().guiback end
 function GetGUILayer_Dialogs	() return GetGUIRootWidget().dialogs end
 function GetGUILayer_Menus		() return GetGUIRootWidget().menus end
 

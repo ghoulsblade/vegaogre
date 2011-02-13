@@ -203,6 +203,7 @@ function gGlyphListPrototype:VisitGlyphs(callbackfun,param,startindex,endindex,a
 	valign = valign or kGlyphList_LineVAlign_Bottom
 	local x,y = 0,0
 	local lineend,lineh,linew
+	local bIsFirstLine = true
 	
 	--~ print("VisitGlyphs start")
 	local totalw = autowrap_w or 0
@@ -211,12 +212,13 @@ function gGlyphListPrototype:VisitGlyphs(callbackfun,param,startindex,endindex,a
 			-- start of line
 			lineend,lineh,linew = self:GetLineInfos(i,endindex,autowrap_w)
 			--~ printf("VisitGlyphs line lineend=%d lineh=%d linew=%d\n",lineend,lineh,linew)
-			y = y + lineh
+			if (bIsFirstLine) then bIsFirstLine = false else y = y + lineh end
 			-- center and right align : local 0 pos is middle/right of text, this way we avoid calculating the total width of the text
 			x = math.floor( ((halign == kGlyphList_HAlign_Left  ) and (0					)) or	-- left
 							((halign == kGlyphList_HAlign_Center) and ((totalw - linew)*0.5	)) or	-- center
 																	  (totalw - linew    	) )		-- right
 		end
+		
 		local glyph = self.glyphs[i]
 		if (glyph.glyphtype == kGlyphType_SetHAlign) then halign = glyph.halign end
 		--~ printf("VisitGlyphs glyph: i=%d x=%d y=%d c=%s\n",i,x,y,glyph.charcode and string.format("%c",glyph.charcode) or "?")

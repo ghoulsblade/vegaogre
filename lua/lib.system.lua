@@ -79,10 +79,10 @@ function SpawnSystemEntry (child,parentloc,depth)
 	if (child._name == "Atmosphere") then return end  
 	assert(parentloc)
 	local s = gCurSystemScale
-	print("custom scale",gCurSystemScale)
+	--~ print("custom scale",gCurSystemScale)
 	local d = (GetOrbitMeanRadiusFromNode(child) or 0)*s
 	local x,y,z = GetRandomOrbitFlatXY(d,0.01*d)
-	print("orbidist",GetDistText(d),GetDistText(Vector.len(x,y,z)))
+	--~ print("orbidist",GetDistText(d),GetDistText(Vector.len(x,y,z)))
 	if (child.x) then 
 		local ax = tonumber(child.x or 0) -- or (x/s)) * s
 		local ay = tonumber(child.y or 0) -- or (y/s)) * s
@@ -92,7 +92,7 @@ function SpawnSystemEntry (child,parentloc,depth)
 			y = ay * s
 			z = az * s
 		end
-		print("orbidist custompos (ignored if zero)",GetDistText(Vector.len(ax,ay,az)))
+		--~ print("orbidist custompos (ignored if zero)",GetDistText(Vector.len(ax,ay,az)))
 	end
 	local loc = gVegaUniverseDebugNoGfx and {} or VegaSpawnMajorLoc(parentloc,x,y,z,child.name)
 	local r = child.radius and tonumber(child.radius)
@@ -100,7 +100,7 @@ function SpawnSystemEntry (child,parentloc,depth)
 	local file = child.file
 	local unittype = GetUnitTypeFromSectorXMLNode(child)
 	local dbg_unitname = unittype and unittype.id or (file and ("NOTFOUND:"..GetPlanetUnitTypeIDFromTexture(file)))
-	print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),pad(dbg_unitname,20),child.file)
+	--~ print(string.rep("+",depth),gSpawnSystemEntryID,pad(child._name or "",10),pad(child.name or "",10),pad(floor(d),10),pad(tostring(r and floor(r)),10),pad(dbg_unitname,20),child.file)
 	local unitid = child.file
 	
 	if (not gVegaUniverseDebugNoGfx) then

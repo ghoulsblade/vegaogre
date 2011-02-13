@@ -136,6 +136,7 @@ function cScrollPaneV:Init (parentwidget, params)
 	self:UpdateContent()
 	self:UpdateScroll(0,0)
 	RegisterIntervalStepper(dt,function () return self:ScrollStep() end)
+	self.content.UpdateContent = function () self:MarkForUpdateContent() end -- cascade 
 end
 
 function cScrollPaneV:ScrollStep				()
@@ -159,7 +160,7 @@ function cScrollPaneV:ThumbMoveStep			(x,y) -- returns x,y
 		if (newscrolly ~= self.scroll_y) then self:UpdateScroll(0,newscrolly,true) end
 		y = max(thumb_yoff,min(thumb_yoff+thumb_maxmove,y))
 	else
-		y = 0
+		y = thumb_yoff
 	end
 	return thumb_x,y
 end

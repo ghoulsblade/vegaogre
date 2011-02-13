@@ -109,7 +109,7 @@ function DockedStartRoom (roomname)
 		local b = 20
 		x = max(b,min(gViewportW-b,floor(xoff + sx*x)))
 		y = max(b,min(gViewportH-b,floor(yoff + sy*y)))
-		table.insert(gDockedRoomLinkWidgets,GetDesktopWidget():CreateContentChild("DockedRoomLink",{x=x,y=y,roomname=roomname,roomdata=rooms[roomname]}))
+		table.insert(gDockedRoomLinkWidgets,GetDockedBackgroundLayer():CreateContentChild("DockedRoomLink",{x=x,y=y,roomname=roomname,roomdata=rooms[roomname]}))
 	end
 end
 
@@ -126,7 +126,9 @@ function EndDockedMode ()
 	gMLocBaseGfx:SetRootAsParent()
 	GetHUDBaseWidget():SetVisible(true)
 	ClearRoomGfx()
+	TradeGui_Stop()
 	SetDockedBackground()
+	SetGuiMouseModeActive(false)
 end
 
 
@@ -145,8 +147,12 @@ function StartDockedMode (base,force_basetype)
 	gDockedInfo.basetype	= force_basetype or (base and base:GetFileAttrLastBase())
 	
 	Docked_InitTradeGoods(base)
-
+	
 	DockedStartRoom("hangar")
+	
+	SetGuiMouseModeActive(true)
+	
+	TradeGui_Start() -- todo : only when room-link is clicked
 end
 
 
@@ -161,6 +167,8 @@ function GetTextureResolution (texname)
 	return tex:getWidth(),tex:getHeight()
 end
 
+function GetDockedBackgroundLayer () return GetGUILayer_GuiBack() end
+
 function SetDockedBackground (texname)
 	if (gBaseBackground) then gBaseBackground:Destroy() gBaseBackground = nil end
 	if (gBaseBackgroundBlack) then gBaseBackgroundBlack:Destroy() gBaseBackgroundBlack = nil end
@@ -170,9 +178,9 @@ function SetDockedBackground (texname)
 	-- texname = "military_concourse.dds"
 	local s = min(gViewportW,gViewportH) s = 1024
 	local w,h = s,s
-	gBaseBackgroundBlack = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","black.png"),gViewportW,gViewportH)})
-	gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base",texname),w,h)})
-	--~ gBaseBackground = GetDesktopWidget():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat",texname),w,h)})
+	gBaseBackgroundBlack = GetDockedBackgroundLayer():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base","black.png"),gViewportW,gViewportH)})
+	gBaseBackground = GetDockedBackgroundLayer():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("background_base",texname),w,h)})
+	--~ gBaseBackground = GetDockedBackgroundLayer():CreateContentChild("Image",{gfxparam_init=MakeSpritePanelParam_SingleSpriteSimple(GetTexturedMat("guibasemat",texname),w,h)})
 	local xoff,yoff = floor(gViewportW/2-w/2),floor(gViewportH/2-h/2)
 	print("docked bg",xoff,yoff,gViewportW,gViewportH,w,h)
 	gBaseBackground:SetPos(xoff,yoff)

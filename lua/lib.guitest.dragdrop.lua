@@ -124,8 +124,9 @@ function StartDragDropTest ()
 		for i,v in ipairs(fixslots2) do	w2:CreateContentChild("EquipSlot",{x=ox+3*ex, y=oy+(i-1)*ey, type=v}) end
 end
 
-function ToggleGuiMouseMode ()
-	gGuiMouseModeActive = not gGuiMouseModeActive
+function SetGuiMouseModeActive (bState)
+	if (gGuiMouseModeActive == bState) then return end
+	gGuiMouseModeActive = bState
 	if (gGuiMouseModeActive) then 
 		if (gCrossHair) then gCrossHair:Destroy() gCrossHair = nil end
 		if (gMouseCross) then gMouseCross:SetVisible(false) end
@@ -136,4 +137,6 @@ function ToggleGuiMouseMode ()
 		GuiTest_InitCrossHair()
 	end
 end
+
+function ToggleGuiMouseMode () SetGuiMouseModeActive(not gGuiMouseModeActive) end
 

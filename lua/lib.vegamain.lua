@@ -23,6 +23,7 @@ dofile(libpath .. "lib.trade.lua")
 dofile(libpath .. "lib.gfx.hyper.lua")
 dofile(libpath .. "lib.gfx.jumppoint.lua")
 dofile(libpath .. "lib.import.xmesh.lua")
+dofile(libpath .. "widget.vegaitemlist.lua")
 
 sin		= math.sin
 cos		= math.cos

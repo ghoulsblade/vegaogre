@@ -1,6 +1,6 @@
 -- units/units.csv   and utils
 
-function MeshNameExists (meshname) print("TODO:MeshNameExists",meshname) return true end -- todo : check
+function MeshNameExists (meshname) return true end -- todo : check
 
 function GetPlanetUnitTypeIDFromTexture (texture) 
 	local a,b,basename = string.find(texture,"([^/.]+)[^/]*$")
@@ -58,7 +58,7 @@ function GetJumpDestinationFromNode (node) return node and node.destination end
 
 function GetHUDImageFromNode_Planet (node)
 	local t = GetUnitTypeFromSectorXMLNode(node)
-	print("GetHUDImageFromNode_Planet",node.file,t and ((t.Hud_image == "") and "TYPE:EMPTYHUD" or t.Hud_image) or "TYPE:MISSING") 
+	--~ print("GetHUDImageFromNode_Planet",node.file,t and ((t.Hud_image == "") and "TYPE:EMPTYHUD" or t.Hud_image) or "TYPE:MISSING") 
 	if (not t) then return end
 	local tex = t.Hud_image
 	if (tex == "") then return end
@@ -71,7 +71,7 @@ function GetHUDImageFromNode_Unit (node)
 	local t = GetUnitTypeFromSectorXMLNode(node)
 	if (t) then --  t.Hud_image: MininBase2-hud.spr -> MininBase2-hud.png MininBase2-hud.png	
 		local filename = FindFirstFileInDir(GetVegaDataDir().."units/"..(t.Directory or ""),"hud.*%.dds") -- todo : cache result
-		print("GetHUDImageFromNode_Unit : ",t.Directory,filename)
+		--~ print("GetHUDImageFromNode_Unit : ",t.Directory,filename)
 		if (filename) then return filename end
 	else
 		print("WARNING: GetHUDImageFromNode_Unit type not found",node and node.file)
@@ -100,7 +100,7 @@ function GetUnitMeshNameFromNode (node)
 	if (t) then 
 		-- o.id,o.Directory,o.Name,o.STATUS,o.Object_Type,o.Combat_Role,o.Textual_Description,o.Hud_image,o.Unit_Scale, ... o.Mesh,o.Shield_Mesh
 		local meshname = string.gsub(string.gsub(t.Mesh or "","%.bfxm.*",".mesh"),"^%{","")
-		print("GetUnitMeshNameFromNode",node.file,meshname)
+		--~ print("GetUnitMeshNameFromNode",node.file,meshname)
 		if (string.find(meshname,"%.mesh") and MeshNameExists(meshname)) then return meshname end
 	else
 		print("WARNING: GetUnitMeshNameFromNode type not found",node and node.file)
@@ -114,7 +114,7 @@ end
 
 function LoadMasterPartList ()
 	gMasterPartList = {}
-	gMasterPartList_ByID = {}
+	gMasterPartList_ByPath = {}
 
 	local filepath = GetVegaDataDir().."master_part_list.csv"
 	local iLineNum = 0
@@ -126,10 +126,11 @@ function LoadMasterPartList ()
 		if (iLineNum > 1 and csv[1] ~= "") then 
 			local o = {}
 			for k,fieldname in ipairs(gMasterPartListFieldNames) do o[fieldname] = csv[k] end
-			local id = o.file or "???"
-			if (gMasterPartList[id]) then print("WARNING: LoadMasterPartList: dublicate id '"..tostring(id).."'") end
+			local path = (o.categoryname or "???").."/"..(o.file or "???")
+			o.path = path
+			if (gMasterPartList_ByPath[path]) then print("WARNING: LoadMasterPartList: dublicate path '"..tostring(path).."'") end
 			table.insert(gMasterPartList,o)
-			gMasterPartList_ByID[id] = o
+			gMasterPartList_ByPath[path] = o
 		end
 	end
 end
