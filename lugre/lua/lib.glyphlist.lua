@@ -212,7 +212,7 @@ function gGlyphListPrototype:VisitGlyphs(callbackfun,param,startindex,endindex,a
 			-- start of line
 			lineend,lineh,linew = self:GetLineInfos(i,endindex,autowrap_w)
 			--~ printf("VisitGlyphs line lineend=%d lineh=%d linew=%d\n",lineend,lineh,linew)
-			if (bIsFirstLine) then bIsFirstLine = false else y = y + lineh end
+			if (bIsFirstLine) then bIsFirstLine = false else y = y + lineh end -- bIsFirstLine added in vegaogre:ogrefont. firstline: y=0 and glyph=down. careful if glyph=up:yoff<0
 			-- center and right align : local 0 pos is middle/right of text, this way we avoid calculating the total width of the text
 			x = math.floor( ((halign == kGlyphList_HAlign_Left  ) and (0					)) or	-- left
 							((halign == kGlyphList_HAlign_Center) and ((totalw - linew)*0.5	)) or	-- center
