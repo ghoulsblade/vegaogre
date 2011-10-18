@@ -26,6 +26,7 @@ dofile(lugreluapath .. "lugre.lua")
 lugre_include_libs(lugreluapath)
 
 dofile(libpath .. "lib.vegamain.lua")
+dofile(libpath .. "lib.servermode.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##
@@ -102,6 +103,9 @@ function Main ()
 	
     NotifyListener("Hook_CommandLine")
 	
+	-- commandline arg for server mode ? 
+	local serverport = gCommandLineSwitchArgs["-server"]
+	if (serverport) then return StartServerMode(tonumber(serverport)) end
 	
     NotifyListener("Hook_PluginsLoaded")
 	
