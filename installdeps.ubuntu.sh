@@ -5,6 +5,7 @@ DEPS="$OGREDEPS nvidia-cg-toolkit libwxbase2.8-dev libwxgtk2.8-dev wx2.8-headers
 #~ echo "libboost-dev included in libboost-thread1.37-dev ?"
 DEPS2="libboost-thread1.37-dev" # ubuntu jaunty
 DEPS2="libboost-thread1.40-dev" # ubuntu karmic
+DEPS2="libboost-thread1.42-dev" # ubuntu natty
 echo apt-get install $DEPS
 echo apt-get install $DEPS2
 sudo apt-get install $DEPS
