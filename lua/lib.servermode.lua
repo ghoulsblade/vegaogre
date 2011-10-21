@@ -1,8 +1,13 @@
 -- server mode
 
-gProxyHost = "67.212.92.235"
+
+-- to run local server, grab cd into vegastrike-trunk (the dir containing data and vegastrike) and run vegaserver
+
+gProxyHost = "localhost"
+--~ gProxyHost = "67.212.92.235"
 gProxyPort = 6777
 local proxyprint = print
+
 
 function StartServerMode (port) 
 	print("starting servermode",port)
@@ -52,6 +57,7 @@ function VegaProxyOneConnection (newcon)
 	
 	local bProxyDumb = true
 	
+	
 	local bAlive = true
 	while bAlive do
 		-- receive
@@ -63,8 +69,29 @@ function VegaProxyOneConnection (newcon)
 			local datasize_from_server = gProxyServerRecvFifo:Size()
 			local datasize_from_client = gProxyClientRecvFifo:Size()
 			
-			if (datasize_from_server > 0) then proxyprint("datasize_from_server",datasize_from_server) proxyprint(FIFOHexDump(gProxyServerRecvFifo)) end
-			if (datasize_from_client > 0) then proxyprint("datasize_from_client",datasize_from_client) proxyprint(FIFOHexDump(gProxyClientRecvFifo)) end
+			local function MyPacket (title,size,bFromServer,fifo) 
+				if (size <= 0) then return end 
+				local s2 = size-VNet.PreHeaderLen
+				local s3 = size-VNet.PreHeaderLen-VNet.HeaderLen
+				proxyprint(title,size.."="..Hex(size),"noprehead="..s2.."="..Hex(s2),"data="..s3.."="..Hex(s3))
+				if (size >= VNet.PreHeaderLen+VNet.HeaderLen) then
+					local fifo2 = CreateFIFO()
+					fifo2:PushFIFOPartRaw(fifo)
+					local ph = VNet.PopPreHeader(fifo2)
+					print("preheader: _len="..ph._len.."="..Hex(ph._len).." _pri="..ph._pri.." _flags="..Hex(ph._flags))
+					local h = VNet.PopHeader(fifo2)
+					print("packet: cmd="..h.command.."="..(VNet.GetCmdName(h.command) or "??").." ser="..h.serial.." time="..h.timestamp.." len="..h.data_length.."="..Hex(h.data_length).." flags="..Hex(h.flags).." restlen="..fifo2:Size().."="..Hex(fifo2:Size()))
+					proxyprint(FIFOHexDump(fifo))
+					--~ proxyprint(FIFOHexDump(fifo2))
+					fifo2:Destroy()
+				else
+					proxyprint(FIFOHexDump(fifo))
+				end
+				
+				-- Packet::Packet( PacketMem &buffer ) : note . packet data (but not header) might be compressed : packet_uncompress( _packet,...)
+			end
+			MyPacket("datasize_from_server",datasize_from_server,true ,gProxyServerRecvFifo)
+			MyPacket("datasize_from_client",datasize_from_client,false,gProxyClientRecvFifo)
 			
 			gProxyClientSendFifo:PushFIFOPartRaw(gProxyServerRecvFifo) 
 			gProxyServerRecvFifo:Clear()

@@ -558,6 +558,8 @@ function vardump_rec (x,aux,maxdepth)
 	end 
 end
 
+function Hex (v) return sprintf("0x%x",tonumber(v) or 0) end
+
 -- vardump2 : no hexadecimal display of numbers
 function vardump2 (x) return vardump(x,function (a) return tostring(a) end) end
 
