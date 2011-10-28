@@ -245,12 +245,15 @@ cVegaNetBuf = CreateClass()
 
 -- init
 function cVegaNetBuf:Init(fifo)			self.fifo = fifo end
+function cVegaNetBuf:ReInit(fifo)		self.fifo = fifo end -- reinit object for reuse with different fifo
 function cVegaNetBuf:ADD_NB(nbtype)		self:addType(nbtype) end -- see Net.NBType
 function cVegaNetBuf:CHECK_NB(nbtype)	assert(self:getType() == nbtype) end -- see Net.NBType
 
 -- raw helpers
 function cVegaNetBuf:_raw_addString(v,len)	self.fifo:PushFilledString(v,len) end -- PushPlainText: doesn't push size-int
 function cVegaNetBuf:_raw_getString(len)	return self.fifo:PopFilledString(len) end -- PushPlainText: doesn't push size-int
+function cVegaNetBuf:_raw_addfifo(fifo,offset,len)	self.fifo:PushFIFOPartRaw(fifo,offset,len) end -- PushFIFOPartRaw: doesn't push size-int, offset-default=0 len-default=full
+function cVegaNetBuf:_raw_getfifo(fifo,len)	fifo:PushFIFOPartRaw(self.fifo,0,len) self.fifo:PopRaw(len) end -- pops data and adds it at the end of param:fifo
 
 -- primitive push
 function cVegaNetBuf:addType(v)				self.fifo:PushNetUint8(v) end
@@ -277,11 +280,24 @@ function cVegaNetBuf:addString(v)
 		self:_raw_addString(v,len)
 	end
 end
-function cVegaNetBuf:getString(v)
+function cVegaNetBuf:getString()
 	self:CHECK_NB(NBType.NB_STRING)
 	local len = self:getShort()
 	if (len == 0xffff) then len = self:getInt32() end
 	return self:_raw_getString(len)
+end
+
+-- complex : buffer
+
+-- offset-default=0, len-default=full
+function cVegaNetBuf:addBuffer(fifo,offset,len) 
+	self:ADD_NB(NBType.NB_BUFFER) 
+	self:_raw_addfifo(fifo,offset,len) 
+end
+-- extract data and push onto paramter fifo, len parameter has to be set since NetBuf at this point doesn't contain this info
+function cVegaNetBuf:getBuffer(fifo,len) 
+	self:CHECK_NB(NBType.NB_BUFFER) 
+	self:_raw_getfifo(fifo,len) 
 end
 
 -- complex : xxx

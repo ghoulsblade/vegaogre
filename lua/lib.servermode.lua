@@ -6,7 +6,6 @@
 gProxyHost = "localhost"
 --~ gProxyHost = "67.212.92.235"
 gProxyPort = 6777
-local proxyprint = print
 
 gNetCmdFromClient = {} -- packet handler for packets received FROM client (e.g sent by server to client)
 gNetCmdFromServer = {} -- packet handler for packets received FROM server (e.g sent by client to server)
@@ -29,15 +28,15 @@ function StartProxyMode (port)
 		while true do
 			local newcon = listener:IsAlive() and listener:PopAccepted()
 			if (not newcon) then break end
-			proxyprint("###############################")
-			proxyprint("#### PROXY : connection started, listener=",(listener == gServerListenerTCP) and "A" or "B")
-			proxyprint("###############################")
+			print("###############################")
+			print("#### PROXY : connection started, listener=",(listener == gServerListenerTCP) and "A" or "B")
+			print("###############################")
 			VegaProxyOneConnection(newcon)
-			proxyprint("###############################")
-			proxyprint("#### PROXY : connection ended")
-			proxyprint("###############################")
+			print("###############################")
+			print("#### PROXY : connection ended")
+			print("###############################")
 			--~ listener = gServerListenerTCP2
-			--~ proxyprint("proxy end") return
+			--~ print("proxy end") return
 			bDone = true
 		end
 		Client_USleep(10) 
@@ -54,14 +53,14 @@ function VegaProxyOpenListener (port)
 	local listener
 	repeat
 		listener = NetListen(port)
-		if (not listener) then proxyprint("port listen bind fail, retrying...") Client_USleep(1 * 1000) end
+		if (not listener) then print("port listen bind fail, retrying...") Client_USleep(1 * 1000) end
 	until listener or Client_GetTicks() > timeout 
 	assert(listener,"failed to bind to local port "..(port or 0))
 	return listener
 end
 
 function VegaProxyOneConnection (newcon)
-	proxyprint("VegaProxyOneConnection : start")
+	print("VegaProxyOneConnection : start")
 	gProxyClientCon = newcon NetReadAndWrite() -- read initial data from client
 	gProxyServerCon = NetConnect(gProxyHost,gProxyPort)
 	
@@ -71,7 +70,7 @@ function VegaProxyOneConnection (newcon)
 	
 	assert(gProxyClientCon)
 	assert(gProxyServerCon,"failed to connect to real server")
-	proxyprint("VegaProxyOneConnection : servercon established")
+	print("VegaProxyOneConnection : servercon established")
 	
 	gProxyClientSendFifo			= CreateFIFO()
 	gProxyServerSendFifo			= CreateFIFO()
@@ -82,6 +81,7 @@ function VegaProxyOneConnection (newcon)
 	gProxyServerRecvDecodeFifo		= CreateFIFO()
 	gPayloadBuffer					= CreateFIFO()
 	
+	gVegaHandlerNetBuf = cVegaNetBuf:New()
 	
 	local bProxyDumb = true
 	
@@ -115,19 +115,28 @@ function VegaProxyOneConnection (newcon)
 				
 				-- handler
 				local handlerlist = bFromServer and gNetCmdFromServer or gNetCmdFromClient
+				local packetformats = bFromServer and gPacketFormatFromServer or gPacketFormatFromClient
 				local handler = handlerlist[h.command]
-				if (handler) then 
+				if (handler) then
+					local packetformat = packetformats[h.command]
 					gPayloadBuffer:Clear()
 					gPayloadBuffer:PushFIFOPartRaw(fifo,0,min(datalen,fifo:Size()))
+					gVegaHandlerNetBuf:ReInit(gPayloadBuffer)
 					-- TODO : global handle time from header ?
-					handler(gPayloadBuffer,h,ph)
+					if (packetformat) then -- if packet format is fixed and known, extract parameters
+						handler(gVegaHandlerNetBuf,h,ph,PacketFormatExtract(gVegaHandlerNetBuf,unpack(packetformat)))
+					else
+						handler(gVegaHandlerNetBuf,h,ph)
+					end
+					local restlen = gPayloadBuffer:Size()
+					if (restlen > 0) then print("unhandled payload rest:",restlen,FIFOHexDump(gPayloadBuffer)) end
 				else	
 					print("warning, no handler for packet")
 				end
 				
 				-- remove data
 				if (datalen >= 0 and datalen <= fifo:Size()) then
-					--~ proxyprint("payload:"..FIFOHexDump(fifo,0,datalen))
+					--~ print("payload:"..FIFOHexDump(fifo,0,datalen))
 					if (datalen > 0) then fifo:PopRaw(datalen) end
 					print("removing payload data. removed,remaining=",datalen,fifo:Size())
 				else
@@ -142,9 +151,9 @@ function VegaProxyOneConnection (newcon)
 				if (size <= 0) then return end 
 				local s2 = size-VNet.PreHeaderLen
 				local s3 = size-VNet.PreHeaderLen-VNet.HeaderLen
-				proxyprint(title,size.."="..Hex(size),"noprehead="..s2.."="..Hex(s2),"data="..s3.."="..Hex(s3))
+				print(title,size.."="..Hex(size),"noprehead="..s2.."="..Hex(s2),"data="..s3.."="..Hex(s3))
 				while MyDecodePacket(decodefifo,decodefifo:Size()) do end
-				proxyprint(FIFOHexDump(fifo))
+				--~ print(FIFOHexDump(fifo))
 			end
 			
 			
@@ -167,8 +176,8 @@ function VegaProxyOneConnection (newcon)
 		gProxyServerCon:Push(gProxyServerSendFifo)
 		gProxyServerSendFifo:Clear()
 		
-		if (not gProxyClientCon:IsConnected()) then proxyprint("disconnected:client") bAlive = false end
-		if (not gProxyServerCon:IsConnected()) then proxyprint("disconnected:server") bAlive = false end
+		if (not gProxyClientCon:IsConnected()) then print("disconnected:client") bAlive = false end
+		if (not gProxyServerCon:IsConnected()) then print("disconnected:server") bAlive = false end
 		
 		-- hardware-step
 		Client_USleep(10)
@@ -177,7 +186,7 @@ function VegaProxyOneConnection (newcon)
 	
 	
 	NetReadAndWrite() -- one final netstep to make sure that the last data before conloss is still delivered
-	proxyprint("VegaProxyOneConnection ended.")
+	print("VegaProxyOneConnection ended.")
 	gProxyClientCon:Destroy()
 	gProxyServerCon:Destroy()
 	gProxyClientSendFifo:Destroy()
@@ -248,25 +257,51 @@ function ClientSend.CMD_CONNECT	()								NetSendPacket({cmd=CMD_CONNECT}) end
 function ClientSend.CMD_LOGIN	(str_callsign,str_passwd)		NetSendPacket({cmd=CMD_LOGIN,data={{str=str_callsign},{str=str_passwd}}}) end
 
 
--- ***** ***** ***** ***** ***** gPacketFormat
+-- ***** ***** ***** ***** ***** gPacketFormat...
 
-gPacketFormatFromClient = {} -- TODO : for packets with fixed structure this is used to decode packet data, so the results are passed as params to handler
-gPacketFormatFromClient.CMD_CONNECT		= ""
-gPacketFormatFromClient.CMD_LOGIN		= "str,str"
+-- for packets with fixed structure this is used to decode packet data, so the results are passed as params to handler
+
+local netcmd = VNet.Cmd
+
+-- client -> server
+gPacketFormatFromClient = {
+	[netcmd.CMD_CONNECT]	= {}, 				-- h.ser=CLIENT_NETVERSION,empty
+	[netcmd.CMD_LOGIN]		= {"str","str"},		-- h.ser=0,str:callsign,str:passwd
+	[netcmd.CMD_CHOOSESHIP]	= {"short","str"},		-- h.ser=0,short:shipidx,str:shipname
+	[netcmd.CMD_TXTMESSAGE]	= {"str"},			-- h.ser=0,str:chat
+}
+
+-- server -> client
+gPacketFormatFromServer = {
+	[netcmd.CMD_CONNECT]		= {"serial","str"},	-- h.ser=0,serial:netversion,str:clientip
+	[netcmd.CMD_CHOOSESHIP]		= false,			-- h.ser=0,short:#shipnames,str:shipnames[1],str:shipnames[2],...
+	[netcmd.LOGIN_ACCEPT]		= false,			-- h.ser=X,str:stardate,str:savegame[0],str:savegame[1],str:systemname.system,short:crypto-hash-size,data:crypto-hash,short:zoneid,..) -- big data, 9k in sample
+	[netcmd.CMD_TXTMESSAGE]		= {"str","str"},	-- h.ser=0,str:from,str:text	(header : ser=XXX)  also weird crypto/broadcast frequency thing in vega/networkcomm.cpp, might be different
+}
+
+-- recursively extract format  (lua multiple return and recursive variable argument count handling)
+function PacketFormatExtract (netbuf,curf,...)
+	if (curf == nil) then return -- recursion end or empty packet
+	elseif (curf == "str"		) then return netbuf:getString()	,PacketFormatExtract(netbuf,...) 
+	elseif (curf == "serial"	) then return netbuf:getSerial()	,PacketFormatExtract(netbuf,...) 
+	elseif (curf == "short"		) then return netbuf:getShort()		,PacketFormatExtract(netbuf,...) 
+	else print("PacketFormatExtract:unknown format:",curf) end
+end
+
 
 -- ***** ***** ***** ***** ***** gNetCmdFromClient
 
-function gNetCmdFromClient:CMD_CONNECT (fifo,h,ph,client)
+function gNetCmdFromClient:CMD_CONNECT (netbuf,h,ph,client)
 	local netversion = h.serial
-	print("CMD_CONNECT netversion=",netversion)
+	print("C:CMD_CONNECT netversion=",netversion)
 	assert(VNet.NetVersion == netversion)
 	client.netversion = netversion
 	-- reply with client ip
 	client:SendPacket({cmd=CMD_CONNECT,data={{serial=VNet.NetVersion},{str=client.ip}}}) -- see vega class NetBuffer
 end
 
-function gNetCmdFromClient:CMD_LOGIN (fifo,h,ph,client,callsign,password)
-	
+function gNetCmdFromClient:CMD_LOGIN (netbuf,h,ph,client,callsign,password)
+	print("C:CMD_LOGIN callsign,password=",callsign,password)
 end
 
 -- ***** ***** ***** ***** ***** gNetCmdFromServer
