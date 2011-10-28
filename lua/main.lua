@@ -105,8 +105,8 @@ function Main ()
     NotifyListener("Hook_CommandLine")
 	
 	-- commandline arg for server mode ? 
-	local serverport = gCommandLineSwitchArgs["-server"]
-	if (serverport) then return StartServerMode(tonumber(serverport)) end
+	local a = gCommandLineSwitchArgs["-proxy"]	if (a) then return StartProxyMode(tonumber(a)) end
+	local a = gCommandLineSwitchArgs["-server"]	if (a) then return StartServerMode(tonumber(a)) end
 	
     NotifyListener("Hook_PluginsLoaded")
 	

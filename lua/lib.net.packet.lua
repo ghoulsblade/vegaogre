@@ -3,6 +3,7 @@
 VNet = {}
 
 -- vega/vsnet_cmd.h enum Cmd
+VNet.NetVersion = 4995 -- 2011-10-23 vegastrike svn trunk
 VNet.Cmd = {
     ---------- 0x0* Login commands ----------
     CMD_SERVERTIME=0x00,                --Client side : Request the most up-to-date server time.
@@ -183,6 +184,9 @@ preheader :
 hex16: 00  00  00  10  01  00  00  00
 ]]--
 
+function VNet.PeekPreHeaderLen	(fifo,startoff) return fifo:PeekNetUint32((startoff or 0)+0) end
+function VNet.PeekHeaderLen		(fifo,startoff) return fifo:PeekNetUint32((startoff or 0)+1+1+2+4) end
+
 function VNet.PopPreHeader (fifo) -- vega: VsnetTCPSocket::Header, comes before a complete "Packet"
 	local res = {}
 	res._len		= fifo:PopNetUint32() 
@@ -205,3 +209,79 @@ function VNet.PopHeader (fifo) -- vega: Packet::Header, the first part of a "Pac
 	return res
 end
 
+-- TODO : vega NetBuffer : typed packet data, default active in svn trunk : vegastrike/src/networking/lowlevel/netbuffer.cpp:253:#define ADD_NB( type ) addType( type )
+
+-- ***** ***** ***** ***** ***** cVegaNetBuf, see vegastrike code class NetBuffer
+
+
+VNet.NBType = {
+    NB_CHAR					=187, -- set
+    NB_SHORT				=188,
+    NB_SERIAL				=189,
+    NB_INT32				=190,
+    NB_UINT32				=191,
+	
+    NB_FLOAT 				=123, -- set
+    NB_DOUBLE				=124,
+	
+    NB_STRING				=33	, -- set
+    NB_BUFFER				=44	, -- set
+    NB_CLIENTSTATE			=211, -- set
+    NB_TRANSFORMATION		=212,
+    NB_VECTOR				=213,
+    NB_QVECTOR				=214,
+    NB_COLOR				=215,
+    NB_MATRIX				=216,
+    NB_QUATERNION			=217,
+    NB_SHIELD				=218,
+    NB_ARMOR				=219,
+    NB_GFXMAT				=220,
+    NB_GFXLIGHT				=221,
+    NB_GFXLIGHTLOCAL		=222,
+}
+
+local NBType = VNet.NBType
+cVegaNetBuf = CreateClass()
+
+-- init
+function cVegaNetBuf:Init(fifo)			self.fifo = fifo end
+function cVegaNetBuf:ADD_NB(nbtype)		self:addType(nbtype) end -- see Net.NBType
+function cVegaNetBuf:CHECK_NB(nbtype)	assert(self:getType() == nbtype) end -- see Net.NBType
+
+-- raw helpers
+function cVegaNetBuf:_raw_addString(v,len)	self.fifo:PushFilledString(v,len) end -- PushPlainText: doesn't push size-int
+function cVegaNetBuf:_raw_getString(len)	return self.fifo:PopFilledString(len) end -- PushPlainText: doesn't push size-int
+
+-- primitive push
+function cVegaNetBuf:addType(v)				self.fifo:PushNetUint8(v) end
+function cVegaNetBuf:addShort(v)			self:ADD_NB(NBType.NB_SHORT) self.fifo:PushNetUint16(v) end
+function cVegaNetBuf:addInt32(v)			self:ADD_NB(NBType.NB_INT32) self.fifo:PushNetInt32(v) end
+function cVegaNetBuf:addSerial(v)			self:ADD_NB(NBType.NB_SERIAL) self.fifo:addShort(v) end
+
+-- primitive pop
+function cVegaNetBuf:getType(v)				return self.fifo:PopNetUint8(v) end
+function cVegaNetBuf:getShort(v)			self:CHECK_NB(NBType.NB_SHORT) return self.fifo:PopNetUint16(v) end
+function cVegaNetBuf:getInt32(v)			self:CHECK_NB(NBType.NB_INT32) return self.fifo:PopNetInt32(v) end
+function cVegaNetBuf:getSerial(v)			self:CHECK_NB(NBType.NB_SERIAL) return self.fifo:getShort(v) end
+
+-- complex : string
+function cVegaNetBuf:addString(v)
+	self:ADD_NB(NBType.NB_STRING)
+	local len = #v
+	if (len < 0xffff) then 
+		self:addShort(len)
+		self:_raw_addString(v,len)
+	else 
+		self:addShort(0xffff)
+		self:addInt32(len)
+		self:_raw_addString(v,len)
+	end
+end
+function cVegaNetBuf:getString(v)
+	self:CHECK_NB(NBType.NB_STRING)
+	local len = self:getShort()
+	if (len == 0xffff) then len = self:getInt32() end
+	return self:_raw_getString(len)
+end
+
+-- complex : xxx
