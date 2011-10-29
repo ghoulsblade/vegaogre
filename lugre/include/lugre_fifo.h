@@ -82,6 +82,7 @@ public:
 	inline	void	Push	(const int					a) { PushRawEndian((const char*)&a,sizeof(int)); }
 	inline	void	PushU	(const uint32				a) { PushRawEndian((const char*)&a,sizeof(uint32)); }
 	inline	void	PushF	(const float				a) { PushRawEndian((const char*)&a,sizeof(float)); }
+	inline	void	PushD	(const double				a) { PushRawEndian((const char*)&a,sizeof(double)); }
 	inline	void	Push	(const Ogre::Vector3&		a) { PushF(a.x); PushF(a.y); PushF(a.z); }
 	inline	void	Push	(const Ogre::Quaternion&	a) { PushF(a.x); PushF(a.y); PushF(a.z); PushF(a.w); }
 	inline	void	Push	(const std::string& 		a) { PushNetUint32(a.length());	PushRaw(a.c_str(),a.length()); }
@@ -163,6 +164,7 @@ public:
 	inline	void	Pop		(int& 				a) { PopRawEndian((char*)&a,sizeof(int)); }
 	inline	void	PopU	(uint32& 			a) { PopRawEndian((char*)&a,sizeof(uint32)); }
 	inline	void	PopF	(float& 			a) { PopRawEndian((char*)&a,sizeof(float)); }
+	inline	void	PopD	(double& 			a) { PopRawEndian((char*)&a,sizeof(double)); }
 	inline	void	Pop		(Ogre::Vector3& 	a) { float x,y,z; PopF(x); PopF(y); PopF(z); a.x = x; a.y = y; a.z = z; }
 	inline	void	Pop		(Ogre::Quaternion&	a) { float x,y,z,w; PopF(x); PopF(y); PopF(z); PopF(w); a.x = x; a.y = y; a.z = z; a.w = w; }
 	inline	void	Pop		(std::string& 	 	a) {
@@ -224,6 +226,7 @@ public:
 	inline	int					PopI	() { int				x; Pop(x);	return x; }
 	inline	uint32				PopU	() { uint32				x; PopU(x);	return x; }
 	inline	float				PopF	() { float				x; PopF(x);	return x; }
+	inline	double				PopD	() { double				x; PopD(x);	return x; }
 	inline	Ogre::Vector3		PopV	() { Ogre::Vector3		x; Pop(x);	return x; }
 	inline	Ogre::Quaternion	PopQ	() { Ogre::Quaternion	x; Pop(x);	return x; }
 	inline	std::string			PopS	() { std::string		x; Pop(x);	return x; }
@@ -270,6 +273,7 @@ public:
 	inline	void	PeekNetUint32	(uint32& 		a,const uint32 offset=-1) { PeekRawEndian((char*)&a,sizeof(uint32),		offset); a = ntohl(a); }
 	inline	void	PeekPointer		(void*& 		a,const uint32 offset=-1) { PeekRawEndian((char*)&a,sizeof(void*),		offset); }
 	inline	void	PeekFloat		(float& 		a,const uint32 offset=-1) { PeekRawEndian((char*)&a,sizeof(float),		offset); }
+	inline	void	PeekDouble		(double& 		a,const uint32 offset=-1) { PeekRawEndian((char*)&a,sizeof(double),		offset); }
 
 	// peek cluster with return values
 	inline	int		PeekI	(const uint32 offset=-1) { int		x; Peek(x,offset);	return x; }
@@ -282,6 +286,7 @@ public:
 	inline	int16	PeekInt16	(const uint32 offset=-1) { int16	x; PeekInt16(x,offset);	return x; }
 	inline	int32	PeekInt32	(const uint32 offset=-1) { int32	x; PeekInt32(x,offset);	return x; }
 	inline	float	PeekFloat		(const uint32 offset=-1) { float	x; PeekFloat(x,offset);	return x; }
+	inline	float	PeekDouble		(const uint32 offset=-1) { double	x; PeekDouble(x,offset);	return x; }
 	
 	inline	uint8	PeekNetUint8	(const uint32 offset=-1) { uint8	x; PeekNetUint8(x,offset);	return x; }
 	inline	uint16	PeekNetUint16	(const uint32 offset=-1) { uint16	x; PeekNetUint16(x,offset);	return x; }

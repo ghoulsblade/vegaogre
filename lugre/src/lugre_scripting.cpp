@@ -397,7 +397,7 @@ cScripting::cScripting	() : L(0) {}
 
 void	cScripting::Init () { PROFILE
 	if (sizeof(lua_Number) <= 4) {
-		printf("sizeof(lua_Number) = %d, but must be greater than 4 (32 bit) for bitwise ops\n",sizeof(lua_Number));
+		printf("sizeof(lua_Number) = %d, but must be greater than 4 (32 bit) for bitwise ops\n",(int)sizeof(lua_Number));
 		DisplayErrorMessage("ERROR : lua-precision wrong");
 		exit(43);
 	}

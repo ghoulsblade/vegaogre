@@ -275,19 +275,37 @@ function cVegaNetBuf:_raw_addfifo(fifo,offset,len)	self.fifo:PushFIFOPartRaw(fif
 function cVegaNetBuf:_raw_getfifo(fifo,len)	fifo:PushFIFOPartRaw(self.fifo,0,len) self.fifo:PopRaw(len) end -- pops data and adds it at the end of param:fifo
 function cVegaNetBuf:_raw_pop(len)			 self.fifo:PopRaw(len) end -- remove data
 
+-- todo: little/big-endian
+function VegaNetPushFloat	(fifo,v) fifo:PushF(v) end
+function VegaNetPushDouble	(fifo,v) fifo:PushD(v) end
+function VegaNetPopFloat	(fifo) return fifo:PopF() end
+function VegaNetPopDouble	(fifo) return fifo:PopD() end
+
 -- primitive push
-function cVegaNetBuf:addType(v)				self.fifo:PushNetUint8(v) end
-function cVegaNetBuf:addChar(v)				self:ADD_NB(NBType.NB_CHAR) self.fifo:PushNetInt8(v) end
-function cVegaNetBuf:addShort(v)			self:ADD_NB(NBType.NB_SHORT) self.fifo:PushNetUint16(v) end
-function cVegaNetBuf:addInt32(v)			self:ADD_NB(NBType.NB_INT32) self.fifo:PushNetInt32(v) end
-function cVegaNetBuf:addSerial(v)			self:ADD_NB(NBType.NB_SERIAL) self:addShort(v) end
+function cVegaNetBuf:addType(v)								self.fifo:PushNetUint8(v) end
+function cVegaNetBuf:addChar(v)								self:ADD_NB(NBType.NB_CHAR) self.fifo:PushNetInt8(v) end
+function cVegaNetBuf:addShort(v)							self:ADD_NB(NBType.NB_SHORT) self.fifo:PushNetUint16(v) end
+function cVegaNetBuf:addInt32(v)							self:ADD_NB(NBType.NB_INT32) self.fifo:PushNetInt32(v) end
+function cVegaNetBuf:addFloat(v)							self:ADD_NB(NBType.NB_FLOAT) VegaNetPushFloat(self.fifo,v) end
+function cVegaNetBuf:addDouble(v)							self:ADD_NB(NBType.NB_DOUBLE) VegaNetPushDouble(self.fifo,v) end
+function cVegaNetBuf:addSerial(v)							self:ADD_NB(NBType.NB_SERIAL) self:addShort(v) end
+function cVegaNetBuf:addTransformation(qs,qx,qy,qz,x,y,z)	self:ADD_NB(NBType.NB_TRANSFORMATION) self:addQuaternion(qs,qx,qy,qz) self:addQVector(x,y,z) end -- orientation,pos  TODO : quaternion s=w ? or different encoding?
+function cVegaNetBuf:addQuaternion(s,x,y,z)					self:ADD_NB(NBType.NB_QUATERNION) self:addFloat(s) self:addVector(x,y,z) end
+function cVegaNetBuf:addVector(x,y,z)						self:ADD_NB(NBType.NB_VECTOR)  self:addFloat(x) self:addFloat(y) self:addFloat(z) end
+function cVegaNetBuf:addQVector(x,y,z)						self:ADD_NB(NBType.NB_QVECTOR) self:addDouble(x) self:addDouble(y) self:addDouble(z) end
 
 -- primitive pop
 function cVegaNetBuf:getType()				return self.fifo:PopNetUint8() end
 function cVegaNetBuf:getChar()				self:CHECK_NB(NBType.NB_CHAR) return self.fifo:PopNetInt8() end
 function cVegaNetBuf:getShort()				self:CHECK_NB(NBType.NB_SHORT) return self.fifo:PopNetUint16() end
 function cVegaNetBuf:getInt32()				self:CHECK_NB(NBType.NB_INT32) return self.fifo:PopNetInt32() end
+function cVegaNetBuf:getFloat()				self:CHECK_NB(NBType.NB_FLOAT) return VegaNetPopFloat(self.fifo) end
+function cVegaNetBuf:getDouble()			self:CHECK_NB(NBType.NB_DOUBLE) return VegaNetPopDouble(self.fifo) end
 function cVegaNetBuf:getSerial()			self:CHECK_NB(NBType.NB_SERIAL) return self:getShort() end
+function cVegaNetBuf:getTransformation()	self:CHECK_NB(NBType.NB_TRANSFORMATION) local qs,qx,qy,qz = self:getQuaternion() local x,y,z = self:getQVector() return qw,qx,qy,qz,x,y,z end -- orientation,pos
+function cVegaNetBuf:getQuaternion()		self:CHECK_NB(NBType.NB_QUATERNION) local s = self:getFloat() local x,y,z = self:getVector() return s,x,y,z end
+function cVegaNetBuf:getVector()			self:CHECK_NB(NBType.NB_VECTOR)  local x,y,z = self:getFloat(),self:getFloat(),self:getFloat() return x,y,z end
+function cVegaNetBuf:getQVector()			self:CHECK_NB(NBType.NB_QVECTOR) local x,y,z = self:getDouble(),self:getDouble(),self:getDouble() return x,y,z end
 
 -- complex : string
 function cVegaNetBuf:addString(v)

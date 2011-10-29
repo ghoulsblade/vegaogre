@@ -82,10 +82,12 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 				}
 			
 			FIFO_STATIC_PUSH(PushF				,((float)		luaL_checknumber(L,paramidx)))
+			FIFO_STATIC_PUSH(PushD				,((double)		luaL_checknumber(L,paramidx)))
 			FIFO_STATIC_PUSH(PushS				,(				luaL_checkstring(L,paramidx))) /// auto-includes size, for PopS
 			FIFO_STATIC_PUSH(PushPlainText		,((std::string)	luaL_checkstring(L,paramidx))) /// doesn't add size
 			                
 			FIFO_STATIC_POP(PopF				,lua_pushnumber,,			()			)
+			FIFO_STATIC_POP(PopD				,lua_pushnumber,,			()			)
 			FIFO_STATIC_POP(PopS				,lua_pushstring,,			().c_str()	)
 			FIFO_STATIC_POP(PopFilledString		,lua_pushstring,,			(luaL_checkint(L,paramidx)).c_str()	)
 			
@@ -125,6 +127,7 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 			FIFO_STATIC_PEEK(PeekInt16	    ,lua_pushnumber,(double))
 			FIFO_STATIC_PEEK(PeekInt32	    ,lua_pushnumber,(double))
 			FIFO_STATIC_PEEK(PeekFloat	    ,lua_pushnumber,(double))
+			FIFO_STATIC_PEEK(PeekDouble	    ,lua_pushnumber,(double))
 			FIFO_STATIC_PEEK(PeekNetUint8   ,lua_pushnumber,(double))
 			FIFO_STATIC_PEEK(PeekNetUint16  ,lua_pushnumber,(double))
 			FIFO_STATIC_PEEK(PeekNetUint32  ,lua_pushnumber,(double))
@@ -146,6 +149,7 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 			REGISTER_METHOD(PushI);
 			REGISTER_METHOD(PushU);
 			REGISTER_METHOD(PushF);
+			REGISTER_METHOD(PushD);
 			REGISTER_METHOD(PushS);
 			REGISTER_METHOD(PushFIFO);
 			REGISTER_METHOD(PushPlainText);
@@ -169,6 +173,7 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 			REGISTER_METHOD(PopI);
 			REGISTER_METHOD(PopU);
 			REGISTER_METHOD(PopF);
+			REGISTER_METHOD(PopD);
 			REGISTER_METHOD(PopS);
 			REGISTER_METHOD(PopFIFO);
 			REGISTER_METHOD(PopFilledString);
@@ -194,6 +199,7 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 			REGISTER_METHOD(PeekNetUint16);
 			REGISTER_METHOD(PeekNetUint32);
 			REGISTER_METHOD(PeekFloat);
+			REGISTER_METHOD(PeekDouble);
 			
 			REGISTER_METHOD(CRC);
 
@@ -287,6 +293,7 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 		static int	PushI			(lua_State *L) { PROFILE checkudata_alive(L)->Push((int32)luaL_checknumber(L,2));	return 0; }
 		static int	PushU			(lua_State *L) { PROFILE checkudata_alive(L)->PushU((uint32)luaL_checknumber(L,2));	return 0; }
 		static int	PushF			(lua_State *L) { PROFILE checkudata_alive(L)->PushF((float)luaL_checknumber(L,2));	return 0; }
+		static int	PushD			(lua_State *L) { PROFILE checkudata_alive(L)->PushD((double)luaL_checknumber(L,2));	return 0; }
 		static int	PushS			(lua_State *L) { PROFILE checkudata_alive(L)->PushS(luaL_checkstring(L,2));	return 0; }
 		static int	PushFIFO		(lua_State *L) { PROFILE checkudata_alive(L)->Push(*checkudata_alive(L,2));	return 0; }
 		static int PushPlainText	(lua_State *L) { PROFILE checkudata_alive(L)->PushPlainText(std::string(luaL_checkstring(L,2)));	return 0; }
@@ -364,6 +371,7 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 		static int	PopI			(lua_State *L) { PROFILE lua_pushnumber(	L,checkudata_alive(L)->PopI());			return 1; }
 		static int	PopU			(lua_State *L) { PROFILE lua_pushnumber(	L,checkudata_alive(L)->PopU());			return 1; }
 		static int	PopF			(lua_State *L) { PROFILE lua_pushnumber(	L,checkudata_alive(L)->PopF());			return 1; }
+		static int	PopD			(lua_State *L) { PROFILE lua_pushnumber(	L,checkudata_alive(L)->PopD());			return 1; }
 		static int	PopS			(lua_State *L) { PROFILE 
 			std::string mystr = checkudata_alive(L)->PopS();
 			lua_pushstring(	L,mystr.c_str());	
@@ -553,6 +561,11 @@ class cFIFO_L : public cLuaBind<cFIFO> { public:
 		static int	PeekFloat	(lua_State *L) { PROFILE 
 			cFIFO* target = checkudata_alive(L); 
 			lua_pushnumber(	L,target->PeekFloat(std::max(0,std::min((int)target->size()-4,luaL_checkint(L,2)))));	
+			return 1; 
+		}
+		static int	PeekDouble	(lua_State *L) { PROFILE 
+			cFIFO* target = checkudata_alive(L); 
+			lua_pushnumber(	L,target->PeekDouble(std::max(0,std::min((int)target->size()-4,luaL_checkint(L,2)))));	
 			return 1; 
 		}
 		static int	PeekNetUint32	(lua_State *L) { PROFILE 

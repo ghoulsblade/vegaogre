@@ -351,7 +351,7 @@ void	cGfx2D::SetTextAlignment	(const size_t iTextAlign) {
 		case kGfx2DAlign_Left:		ogrealign = Ogre::GHA_LEFT; break;
 		case kGfx2DAlign_Center:	ogrealign = Ogre::GHA_CENTER; break;
 		case kGfx2DAlign_Right:		ogrealign = Ogre::GHA_RIGHT; break;
-		default : printf("cGfx2D::SetTextAlignment : unknown iTextAlign %d\n",iTextAlign);
+		default : printf("cGfx2D::SetTextAlignment : unknown iTextAlign %d\n",(int)iTextAlign);
 	}
 	if (mpCCTO) mpCCTO->setAlignment(ogrealign);
 	
@@ -372,13 +372,13 @@ void	cGfx2D::SetAlignment	(const size_t iHAlign,const size_t iVAlign) { PROFILE
 		case kGfx2DAlign_Left:		mpOverlayElement->setHorizontalAlignment(Ogre::GHA_LEFT); break;
 		case kGfx2DAlign_Center:	mpOverlayElement->setHorizontalAlignment(Ogre::GHA_CENTER); break;
 		case kGfx2DAlign_Right:		mpOverlayElement->setHorizontalAlignment(Ogre::GHA_RIGHT); break;
-		default : printf("cGfx2D::SetAlignment : unknown halign %d\n",iHAlign);
+		default : printf("cGfx2D::SetAlignment : unknown halign %d\n",(int)iHAlign);
 	}
 	switch (iVAlign) {
 		case kGfx2DAlign_Top:		mpOverlayElement->setVerticalAlignment(Ogre::GVA_TOP); break;
 		case kGfx2DAlign_Center:	mpOverlayElement->setVerticalAlignment(Ogre::GVA_CENTER); break;
 		case kGfx2DAlign_Bottom:	mpOverlayElement->setVerticalAlignment(Ogre::GVA_BOTTOM); break;
-		default : printf("cGfx2D::SetAlignment : unknown valign %d\n",iVAlign);
+		default : printf("cGfx2D::SetAlignment : unknown valign %d\n",(int)iVAlign);
 	}
 }
 

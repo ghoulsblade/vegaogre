@@ -467,7 +467,7 @@ void	cGfx3D::CreateMergedMesh(const char *szMeshname){
 			// TODO see staticgeometry ogre
 		}
 		
-		printf("material=%s submeshes=%d\n",material.c_str(),list.size());
+		printf("material=%s submeshes=%d\n",material.c_str(),(int)list.size());
 	}
 }
 

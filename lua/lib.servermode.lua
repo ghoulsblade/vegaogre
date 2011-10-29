@@ -111,7 +111,7 @@ function VegaProxyOneConnection (newcon)
 				print("--preheader: _len="..ph._len.."="..Hex(ph._len).." _pri="..ph._pri.." _flags="..Hex(ph._flags))
 				local h = VNet.PopHeader(fifo)
 				local cmdname = VNet.GetCmdName(h.command)
-				print("{ packet: cmd="..h.command.."="..(cmdname or "??").." ser="..h.serial.." time="..h.timestamp.." len="..h.data_length.."="..Hex(h.data_length).." flags="..Hex(h.flags).." restlen="..fifo:Size().."="..Hex(fifo:Size()))
+				print("{ "..(bFromServer and "fromserver" or "fromclient")..": cmd="..h.command.."="..(cmdname or "??").." ser="..h.serial.." time="..h.timestamp.." len="..h.data_length.."="..Hex(h.data_length).." flags="..Hex(h.flags).." restlen="..fifo:Size().."="..Hex(fifo:Size()))
 				local datalen = h.data_length
 				
 				-- handler
@@ -276,9 +276,11 @@ local netcmd = VNet.Cmd
 -- client -> server
 gPacketFormatFromClient = {
 	[netcmd.CMD_CONNECT]	= {}, 				-- h.ser=CLIENT_NETVERSION,empty
-	[netcmd.CMD_LOGIN]		= {"str","str"},		-- h.ser=0,str:callsign,str:passwd
-	[netcmd.CMD_CHOOSESHIP]	= {"short","str"},		-- h.ser=0,short:shipidx,str:shipname
+	[netcmd.CMD_LOGIN]		= {"str","str"},	-- h.ser=0,str:callsign,str:passwd
+	[netcmd.CMD_CHOOSESHIP]	= {"short","str"},	-- h.ser=0,short:shipidx,str:shipname
 	[netcmd.CMD_TXTMESSAGE]	= {"str"},			-- h.ser=0,str:chat
+	[netcmd.CMD_SERVERTIME]	= {"short"},		-- h.ser=0,short:port -- (udp?)
+	[netcmd.CMD_ADDCLIENT]	= {},				-- h.ser=ownserial?,empty
 }
 
 -- server -> client
@@ -287,14 +289,16 @@ gPacketFormatFromServer = {
 	[netcmd.CMD_CHOOSESHIP]		= false,			-- h.ser=0,short:#shipnames,str:shipnames[1],str:shipnames[2],...
 	[netcmd.LOGIN_ACCEPT]		= false,			-- h.ser=X,str:stardate,str:savegame[0],str:savegame[1],str:systemname.system,short:crypto-hash-size,data:crypto-hash,short:zoneid,..) -- big data, 9k in sample
 	[netcmd.CMD_TXTMESSAGE]		= {"str","str"},	-- h.ser=0,str:from,str:text	(header : ser=XXX)  also weird crypto/broadcast frequency thing in vega/networkcomm.cpp, might be different
+	[netcmd.CMD_ADDEDYOU]		= {"transform"},	-- h.ser=X,transform:pos
 }
 
 -- recursively extract format  (lua multiple return and recursive variable argument count handling)
 function PacketFormatExtract (netbuf,curf,...)
 	if (curf == nil) then return -- recursion end or empty packet
-	elseif (curf == "str"		) then return netbuf:getString()	,PacketFormatExtract(netbuf,...) 
-	elseif (curf == "serial"	) then return netbuf:getSerial()	,PacketFormatExtract(netbuf,...) 
-	elseif (curf == "short"		) then return netbuf:getShort()		,PacketFormatExtract(netbuf,...) 
+	elseif (curf == "str"		) then return netbuf:getString()			,PacketFormatExtract(netbuf,...) 
+	elseif (curf == "serial"	) then return netbuf:getSerial()			,PacketFormatExtract(netbuf,...) 
+	elseif (curf == "short"		) then return netbuf:getShort()				,PacketFormatExtract(netbuf,...) 
+	elseif (curf == "transform"	) then return {netbuf:getTransformation()}	,PacketFormatExtract(netbuf,...) 
 	else print("PacketFormatExtract:unknown format:",curf) return end
 end
 
@@ -313,6 +317,8 @@ end
 function gNetCmdFromClient.CMD_LOGIN		(netbuf,h,ph,client,callsign,password) print("C:CMD_LOGIN callsign,password=",callsign,password) end
 function gNetCmdFromClient.CMD_CHOOSESHIP	(netbuf,h,ph,client,shipidx,shipname) print("C:CMD_CHOOSESHIP shipidx,shipname=",shipidx,shipname) end
 function gNetCmdFromClient.CMD_TXTMESSAGE	(netbuf,h,ph,client,txt) print("C:CMD_TXTMESSAGE txt=",txt) end
+function gNetCmdFromClient.CMD_SERVERTIME	(netbuf,h,ph,client,port) print("C:CMD_SERVERTIME port=",port) end
+function gNetCmdFromClient.CMD_ADDCLIENT	(netbuf,h,ph,client) print("C:CMD_ADDCLIENT ser=",h.serial) end
 
 function gNetCmdFromClient.CMD_DOWNLOAD	(netbuf,h,ph,client) 
 	local sc = netbuf:getChar()
@@ -343,6 +349,8 @@ end
 
 function gNetCmdFromServer.CMD_CONNECT		(netbuf,h,ph,netversion,clientip)	print("S:CMD_CONNECT netversion,clientip=",netversion,clientip) end
 function gNetCmdFromServer.CMD_TXTMESSAGE	(netbuf,h,ph,from,text)				print("S:CMD_TXTMESSAGE from,text=",from,text) end
+function gNetCmdFromServer.CMD_ADDEDYOU		(netbuf,h,ph,t)						print("S:CMD_ADDEDYOU ser,transform=",h.serial,unpack(t)) end
+
 
 function gNetCmdFromServer.CMD_CHOOSESHIP	(netbuf,h,ph)
 	print("S:CMD_CHOOSESHIP")
@@ -354,6 +362,7 @@ function gNetCmdFromServer.CMD_CHOOSESHIP	(netbuf,h,ph)
 		print("+",i,name)
 	end
 end
+
 function gNetCmdFromServer.LOGIN_ACCEPT		(netbuf,h,ph)
 	print("S:LOGIN_ACCEPT (complex)")
 	local		stardate 	= netbuf:getString()	print("+ stardate=",stardate)
