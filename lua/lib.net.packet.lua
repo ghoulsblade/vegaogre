@@ -211,6 +211,25 @@ end
 
 -- TODO : vega NetBuffer : typed packet data, default active in svn trunk : vegastrike/src/networking/lowlevel/netbuffer.cpp:253:#define ADD_NB( type ) addType( type )
 
+-- ***** ***** ***** ***** ***** enums
+
+-- namespace VsnetDownload : enum Subcommand
+
+VNet.Download_Subcommand = {
+    ResolveRequest			= 0,
+    ResolveResponse			= 1,
+    DownloadRequest			= 2,
+    DownloadError			= 3,
+    Download				= 4,
+    DownloadFirstFragment	= 5,
+    DownloadFragment		= 6,
+    DownloadLastFragment	= 7,
+    UnexpectedSubcommand	= 8,
+}
+VNet.Download_SubcommandToName = {} for k,v in pairs(VNet.Download_Subcommand) do VNet.Download_SubcommandToName[v] = k end
+
+function VNet.GetDownloadSubCmdName (subcmd) return VNet.Download_SubcommandToName[subcmd] end
+
 -- ***** ***** ***** ***** ***** cVegaNetBuf, see vegastrike code class NetBuffer
 
 
@@ -254,18 +273,21 @@ function cVegaNetBuf:_raw_addString(v,len)	self.fifo:PushFilledString(v,len) end
 function cVegaNetBuf:_raw_getString(len)	return self.fifo:PopFilledString(len) end -- PushPlainText: doesn't push size-int
 function cVegaNetBuf:_raw_addfifo(fifo,offset,len)	self.fifo:PushFIFOPartRaw(fifo,offset,len) end -- PushFIFOPartRaw: doesn't push size-int, offset-default=0 len-default=full
 function cVegaNetBuf:_raw_getfifo(fifo,len)	fifo:PushFIFOPartRaw(self.fifo,0,len) self.fifo:PopRaw(len) end -- pops data and adds it at the end of param:fifo
+function cVegaNetBuf:_raw_pop(len)			 self.fifo:PopRaw(len) end -- remove data
 
 -- primitive push
 function cVegaNetBuf:addType(v)				self.fifo:PushNetUint8(v) end
+function cVegaNetBuf:addChar(v)				self:ADD_NB(NBType.NB_CHAR) self.fifo:PushNetInt8(v) end
 function cVegaNetBuf:addShort(v)			self:ADD_NB(NBType.NB_SHORT) self.fifo:PushNetUint16(v) end
 function cVegaNetBuf:addInt32(v)			self:ADD_NB(NBType.NB_INT32) self.fifo:PushNetInt32(v) end
-function cVegaNetBuf:addSerial(v)			self:ADD_NB(NBType.NB_SERIAL) self.fifo:addShort(v) end
+function cVegaNetBuf:addSerial(v)			self:ADD_NB(NBType.NB_SERIAL) self:addShort(v) end
 
 -- primitive pop
-function cVegaNetBuf:getType(v)				return self.fifo:PopNetUint8(v) end
-function cVegaNetBuf:getShort(v)			self:CHECK_NB(NBType.NB_SHORT) return self.fifo:PopNetUint16(v) end
-function cVegaNetBuf:getInt32(v)			self:CHECK_NB(NBType.NB_INT32) return self.fifo:PopNetInt32(v) end
-function cVegaNetBuf:getSerial(v)			self:CHECK_NB(NBType.NB_SERIAL) return self.fifo:getShort(v) end
+function cVegaNetBuf:getType()				return self.fifo:PopNetUint8() end
+function cVegaNetBuf:getChar()				self:CHECK_NB(NBType.NB_CHAR) return self.fifo:PopNetInt8() end
+function cVegaNetBuf:getShort()				self:CHECK_NB(NBType.NB_SHORT) return self.fifo:PopNetUint16() end
+function cVegaNetBuf:getInt32()				self:CHECK_NB(NBType.NB_INT32) return self.fifo:PopNetInt32() end
+function cVegaNetBuf:getSerial()			self:CHECK_NB(NBType.NB_SERIAL) return self:getShort() end
 
 -- complex : string
 function cVegaNetBuf:addString(v)

@@ -28,13 +28,13 @@ function StartProxyMode (port)
 		while true do
 			local newcon = listener:IsAlive() and listener:PopAccepted()
 			if (not newcon) then break end
-			print("###############################")
-			print("#### PROXY : connection started, listener=",(listener == gServerListenerTCP) and "A" or "B")
-			print("###############################")
+			print("--###############################")
+			print("--#### PROXY : connection started, listener=",(listener == gServerListenerTCP) and "A" or "B")
+			print("--###############################")
 			VegaProxyOneConnection(newcon)
-			print("###############################")
-			print("#### PROXY : connection ended")
-			print("###############################")
+			print("--###############################")
+			print("--#### PROXY : connection ended")
+			print("--###############################")
 			--~ listener = gServerListenerTCP2
 			--~ print("proxy end") return
 			bDone = true
@@ -60,7 +60,7 @@ function VegaProxyOpenListener (port)
 end
 
 function VegaProxyOneConnection (newcon)
-	print("VegaProxyOneConnection : start")
+	print("--VegaProxyOneConnection : start")
 	gProxyClientCon = newcon NetReadAndWrite() -- read initial data from client
 	gProxyServerCon = NetConnect(gProxyHost,gProxyPort)
 	
@@ -70,7 +70,7 @@ function VegaProxyOneConnection (newcon)
 	
 	assert(gProxyClientCon)
 	assert(gProxyServerCon,"failed to connect to real server")
-	print("VegaProxyOneConnection : servercon established")
+	print("--VegaProxyOneConnection : servercon established")
 	
 	gProxyClientSendFifo			= CreateFIFO()
 	gProxyServerSendFifo			= CreateFIFO()
@@ -108,28 +108,39 @@ function VegaProxyOneConnection (newcon)
 				if (VNet.PeekHeaderLen(fifo,VNet.PreHeaderLen)	> size) then print("packet incomplete, datalen head") return false end
 				
 				local ph = VNet.PopPreHeader(fifo)
-				print("preheader: _len="..ph._len.."="..Hex(ph._len).." _pri="..ph._pri.." _flags="..Hex(ph._flags))
+				print("--preheader: _len="..ph._len.."="..Hex(ph._len).." _pri="..ph._pri.." _flags="..Hex(ph._flags))
 				local h = VNet.PopHeader(fifo)
-				print("packet: cmd="..h.command.."="..(VNet.GetCmdName(h.command) or "??").." ser="..h.serial.." time="..h.timestamp.." len="..h.data_length.."="..Hex(h.data_length).." flags="..Hex(h.flags).." restlen="..fifo:Size().."="..Hex(fifo:Size()))
+				local cmdname = VNet.GetCmdName(h.command)
+				print("{ packet: cmd="..h.command.."="..(cmdname or "??").." ser="..h.serial.." time="..h.timestamp.." len="..h.data_length.."="..Hex(h.data_length).." flags="..Hex(h.flags).." restlen="..fifo:Size().."="..Hex(fifo:Size()))
 				local datalen = h.data_length
 				
 				-- handler
 				local handlerlist = bFromServer and gNetCmdFromServer or gNetCmdFromClient
 				local packetformats = bFromServer and gPacketFormatFromServer or gPacketFormatFromClient
-				local handler = handlerlist[h.command]
+				local handler = cmdname and handlerlist[cmdname]
 				if (handler) then
 					local packetformat = packetformats[h.command]
 					gPayloadBuffer:Clear()
 					gPayloadBuffer:PushFIFOPartRaw(fifo,0,min(datalen,fifo:Size()))
 					gVegaHandlerNetBuf:ReInit(gPayloadBuffer)
 					-- TODO : global handle time from header ?
-					if (packetformat) then -- if packet format is fixed and known, extract parameters
-						handler(gVegaHandlerNetBuf,h,ph,PacketFormatExtract(gVegaHandlerNetBuf,unpack(packetformat)))
+					if (bFromServer) then
+						-- from server
+						if (packetformat) then -- if packet format is fixed and known, extract parameters
+							handler(gVegaHandlerNetBuf,h,ph,PacketFormatExtract(gVegaHandlerNetBuf,unpack(packetformat)))
+						else
+							handler(gVegaHandlerNetBuf,h,ph)
+						end
 					else
-						handler(gVegaHandlerNetBuf,h,ph)
+						-- from client, add client param
+						if (packetformat) then -- if packet format is fixed and known, extract parameters
+							handler(gVegaHandlerNetBuf,h,ph,client,PacketFormatExtract(gVegaHandlerNetBuf,unpack(packetformat)))
+						else
+							handler(gVegaHandlerNetBuf,h,ph,client)
+						end
 					end
 					local restlen = gPayloadBuffer:Size()
-					if (restlen > 0) then print("unhandled payload rest:",restlen,FIFOHexDump(gPayloadBuffer)) end
+					if (restlen > 0) then print("--#### unhandled payload rest:",restlen,FIFOHexDump(gPayloadBuffer)) end
 				else	
 					print("warning, no handler for packet")
 				end
@@ -143,6 +154,7 @@ function VegaProxyOneConnection (newcon)
 					print("failed to remove payload data, clearing fifo for recovery. payload request, actual size",datalen,fifo:Size())
 					fifo:Clear()
 				end
+				print("}")
 				return true
 			end
 			
@@ -152,13 +164,13 @@ function VegaProxyOneConnection (newcon)
 				local s2 = size-VNet.PreHeaderLen
 				local s3 = size-VNet.PreHeaderLen-VNet.HeaderLen
 				print(title,size.."="..Hex(size),"noprehead="..s2.."="..Hex(s2),"data="..s3.."="..Hex(s3))
-				while MyDecodePacket(decodefifo,decodefifo:Size()) do end
+				while MyDecodePacket(decodefifo,decodefifo:Size(),bFromServer) do end
 				--~ print(FIFOHexDump(fifo))
 			end
 			
 			
-			MyHandlePacketDirect("datasize_from_server",datasize_from_server,true ,gProxyServerRecvFifo,gProxyServerRecvDecodeFifo)
-			MyHandlePacketDirect("datasize_from_client",datasize_from_client,false,gProxyClientRecvFifo,gProxyClientRecvDecodeFifo)
+			MyHandlePacketDirect("--datasize_from_server",datasize_from_server,true ,gProxyServerRecvFifo,gProxyServerRecvDecodeFifo)
+			MyHandlePacketDirect("--datasize_from_client",datasize_from_client,false,gProxyClientRecvFifo,gProxyClientRecvDecodeFifo)
 			
 			gProxyClientSendFifo:PushFIFOPartRaw(gProxyServerRecvFifo) 
 			gProxyServerRecvFifo:Clear()
@@ -247,8 +259,6 @@ S:CMD_CUSTOM		...mission_lib!...AddNewMission
 S:CMD_CUSTOM		a few times, missions ?
 
 
-next 2011-10-27 : use netbuffer type-chars to decode better, don't rely on it tho, could be compiled off, or might not work for buffer.
-next 2011-10-27 : better : message dependent decoders
 ]]--
 -- ***** ***** ***** ***** ***** client send
 
@@ -285,13 +295,13 @@ function PacketFormatExtract (netbuf,curf,...)
 	elseif (curf == "str"		) then return netbuf:getString()	,PacketFormatExtract(netbuf,...) 
 	elseif (curf == "serial"	) then return netbuf:getSerial()	,PacketFormatExtract(netbuf,...) 
 	elseif (curf == "short"		) then return netbuf:getShort()		,PacketFormatExtract(netbuf,...) 
-	else print("PacketFormatExtract:unknown format:",curf) end
+	else print("PacketFormatExtract:unknown format:",curf) return end
 end
 
 
 -- ***** ***** ***** ***** ***** gNetCmdFromClient
 
-function gNetCmdFromClient:CMD_CONNECT (netbuf,h,ph,client)
+function gNetCmdFromClient.CMD_CONNECT (netbuf,h,ph,client)
 	local netversion = h.serial
 	print("C:CMD_CONNECT netversion=",netversion)
 	assert(VNet.NetVersion == netversion)
@@ -300,9 +310,109 @@ function gNetCmdFromClient:CMD_CONNECT (netbuf,h,ph,client)
 	client:SendPacket({cmd=CMD_CONNECT,data={{serial=VNet.NetVersion},{str=client.ip}}}) -- see vega class NetBuffer
 end
 
-function gNetCmdFromClient:CMD_LOGIN (netbuf,h,ph,client,callsign,password)
-	print("C:CMD_LOGIN callsign,password=",callsign,password)
+function gNetCmdFromClient.CMD_LOGIN		(netbuf,h,ph,client,callsign,password) print("C:CMD_LOGIN callsign,password=",callsign,password) end
+function gNetCmdFromClient.CMD_CHOOSESHIP	(netbuf,h,ph,client,shipidx,shipname) print("C:CMD_CHOOSESHIP shipidx,shipname=",shipidx,shipname) end
+function gNetCmdFromClient.CMD_TXTMESSAGE	(netbuf,h,ph,client,txt) print("C:CMD_TXTMESSAGE txt=",txt) end
+
+function gNetCmdFromClient.CMD_DOWNLOAD	(netbuf,h,ph,client) 
+	local sc = netbuf:getChar()
+	print("C:CMD_DOWNLOAD ",sc,VNet.GetDownloadSubCmdName(sc))
+	local sc_enum = VNet.Download_Subcommand
+	
+	-- switch sc
+		if (sc == sc_enum.ResolveRequest) then 
+		-- TODO
+	elseif (sc == sc_enum.DownloadRequest) then 
+		-- TODO
+	else -- default
+		
+	end
+	
+	-- (ser=0,char:ResolveRequest,short:listlen,{char:filetype,str:filename}*)
+	-- (ser=0,char:DownloadRequest,short:listlen,{char:filetype,str:filename}*)
+	-- (ser=0,char:ResolveResponse,short:listlen,{str:file,char:ok_or_not}*)
+	-- (ser=0,char:UnexpectedSubcommand,char:c)
+	-- (ser=0,char:DownloadError,str:file)
+	-- (ser=0,char:Download,str:file									,short:remainingSize,rawdata...)
+	-- (ser=0,char:DownloadLastFragment									,short:remainingSize,rawdata...)
+	-- (ser=0,char:DownloadFirstFragment,str:file,Int32:remainingSize	,short:L,rawdata...)
+	-- (ser=0,char:DownloadFragment										,short:L,rawdata...)
 end
 
 -- ***** ***** ***** ***** ***** gNetCmdFromServer
+
+function gNetCmdFromServer.CMD_CONNECT		(netbuf,h,ph,netversion,clientip)	print("S:CMD_CONNECT netversion,clientip=",netversion,clientip) end
+function gNetCmdFromServer.CMD_TXTMESSAGE	(netbuf,h,ph,from,text)				print("S:CMD_TXTMESSAGE from,text=",from,text) end
+
+function gNetCmdFromServer.CMD_CHOOSESHIP	(netbuf,h,ph)
+	print("S:CMD_CHOOSESHIP")
+	-- h.ser=0,short:#shipnames,str:shipnames[1],str:shipnames[2],...
+	local num = netbuf:getShort()
+	print("num ships:",num)
+	for i=0,num-1 do 
+		local name = netbuf:getString()
+		print("+",i,name)
+	end
+end
+function gNetCmdFromServer.LOGIN_ACCEPT		(netbuf,h,ph)
+	print("S:LOGIN_ACCEPT (complex)")
+	local		stardate 	= netbuf:getString()	print("+ stardate=",stardate)
+	local		savegame1	= netbuf:getString()	print("+ savegame1=",savegame1)
+	local		savegame2	= netbuf:getString()	print("+ savegame2=",savegame2)
+	local		systemname	= netbuf:getString()	print("+ systemname=",systemname)
+	local		hashsize	= netbuf:getShort()		print("+ hashsize=",hashsize)
+	if (hashsize > 0) then 
+		local fifo = CreateFifo()
+		netbuf:getBuffer(fifo,hashsize)
+		-- TODO: use data
+		fifo:Destroy()
+	end
+	local		zoneid	= netbuf:getShort()	print("+ zoneid=",zoneid)
+	
+	-- h.ser=X,str:stardate,str:savegame[0],str:savegame[1],str:systemname.system,short:crypto-hash-size,data:crypto-hash,short:zoneid,..) -- big data, 9k in sample
+end
+
+function gNetCmdFromServer.CMD_DOWNLOAD	(netbuf,h,ph) 
+	local sc = netbuf:getChar()
+	print("S:CMD_DOWNLOAD ",sc,VNet.GetDownloadSubCmdName(sc))
+	local sc_enum = VNet.Download_Subcommand
+	
+	-- switch sc
+	if (sc == sc_enum.ResolveResponse		) then 
+		print("+ private_eval_resolve_response")
+		local num = netbuf:getShort()
+		print("+ num=",num)
+		for i=0,num-1 do 
+			local file	= netbuf:getString()
+			local ok	= netbuf:getChar()
+			print("+ entry=",i,ok,file)
+		end
+    elseif (sc == sc_enum.DownloadError			) then 
+		print("+ private_eval_download_error")
+		local file	= netbuf:getString()
+		print("+ file=",file)
+	elseif (sc == sc_enum.Download
+		 or sc == sc_enum.DownloadFirstFragment
+		 or sc == sc_enum.DownloadFragment
+		 or sc == sc_enum.DownloadLastFragment	) then 
+		 print("+ private_eval_download")
+		 
+		 local filename,len,sz
+		 local buf = CreateFIFO()
+		 
+		 if (sc == sc_enum.Download				) then filename = netbuf:getString()							sz = netbuf:getShort() netbuf:getBuffer(buf,sz) end
+		 if (sc == sc_enum.DownloadFirstFragment) then filename = netbuf:getString() len = netbuf:getInt32()	sz = netbuf:getShort() netbuf:getBuffer(buf,sz) end
+		 if (sc == sc_enum.DownloadFragment		) then 															sz = netbuf:getShort() netbuf:getBuffer(buf,sz) end
+		 if (sc == sc_enum.DownloadLastFragment	) then 															sz = netbuf:getShort() netbuf:getBuffer(buf,sz) end
+		 
+		 print("+ filename,len,sz",tostring(filename),tostring(len),tostring(sz))
+		 buf:Destroy()
+	elseif (sc == sc_enum.DownloadRequest
+		 or sc == sc_enum.UnexpectedSubcommand
+		 or sc == sc_enum.ResolveRequest
+		 or true								) then
+		 print("+ unexpected subcommand "..sc..", ignoring") -- or true:default from switch case
+	end
+end
+
 -- ***** ***** ***** ***** ***** end
