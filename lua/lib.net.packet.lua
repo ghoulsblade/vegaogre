@@ -302,7 +302,7 @@ function cVegaNetBuf:getInt32()				self:CHECK_NB(NBType.NB_INT32) return self.fi
 function cVegaNetBuf:getFloat()				self:CHECK_NB(NBType.NB_FLOAT) return VegaNetPopFloat(self.fifo) end
 function cVegaNetBuf:getDouble()			self:CHECK_NB(NBType.NB_DOUBLE) return VegaNetPopDouble(self.fifo) end
 function cVegaNetBuf:getSerial()			self:CHECK_NB(NBType.NB_SERIAL) return self:getShort() end
-function cVegaNetBuf:getTransformation()	self:CHECK_NB(NBType.NB_TRANSFORMATION) local qs,qx,qy,qz = self:getQuaternion() local x,y,z = self:getQVector() return qw,qx,qy,qz,x,y,z end -- orientation,pos
+function cVegaNetBuf:getTransformation()	self:CHECK_NB(NBType.NB_TRANSFORMATION) local qs,qx,qy,qz = self:getQuaternion() local x,y,z = self:getQVector() return qs,qx,qy,qz,x,y,z end -- orientation,pos
 function cVegaNetBuf:getQuaternion()		self:CHECK_NB(NBType.NB_QUATERNION) local s = self:getFloat() local x,y,z = self:getVector() return s,x,y,z end
 function cVegaNetBuf:getVector()			self:CHECK_NB(NBType.NB_VECTOR)  local x,y,z = self:getFloat(),self:getFloat(),self:getFloat() return x,y,z end
 function cVegaNetBuf:getQVector()			self:CHECK_NB(NBType.NB_QVECTOR) local x,y,z = self:getDouble(),self:getDouble(),self:getDouble() return x,y,z end
