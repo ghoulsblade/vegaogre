@@ -334,15 +334,7 @@ function gNetCmdFromClient.CMD_DOWNLOAD	(netbuf,h,ph,client)
 		
 	end
 	
-	-- (ser=0,char:ResolveRequest,short:listlen,{char:filetype,str:filename}*)
-	-- (ser=0,char:DownloadRequest,short:listlen,{char:filetype,str:filename}*)
-	-- (ser=0,char:ResolveResponse,short:listlen,{str:file,char:ok_or_not}*)
-	-- (ser=0,char:UnexpectedSubcommand,char:c)
-	-- (ser=0,char:DownloadError,str:file)
-	-- (ser=0,char:Download,str:file									,short:remainingSize,rawdata...)
-	-- (ser=0,char:DownloadLastFragment									,short:remainingSize,rawdata...)
-	-- (ser=0,char:DownloadFirstFragment,str:file,Int32:remainingSize	,short:L,rawdata...)
-	-- (ser=0,char:DownloadFragment										,short:L,rawdata...)
+	-- TODO: send packets for fragments
 end
 
 -- ***** ***** ***** ***** ***** gNetCmdFromServer
@@ -350,7 +342,6 @@ end
 function gNetCmdFromServer.CMD_CONNECT		(netbuf,h,ph,netversion,clientip)	print("S:CMD_CONNECT netversion,clientip=",netversion,clientip) end
 function gNetCmdFromServer.CMD_TXTMESSAGE	(netbuf,h,ph,from,text)				print("S:CMD_TXTMESSAGE from,text=",from,text) end
 function gNetCmdFromServer.CMD_ADDEDYOU		(netbuf,h,ph,t)						print("S:CMD_ADDEDYOU ser,transform=",h.serial,unpack(t)) end
-
 
 function gNetCmdFromServer.CMD_CHOOSESHIP	(netbuf,h,ph)
 	print("S:CMD_CHOOSESHIP")
@@ -422,6 +413,18 @@ function gNetCmdFromServer.CMD_DOWNLOAD	(netbuf,h,ph)
 		 or true								) then
 		 print("+ unexpected subcommand "..sc..", ignoring") -- or true:default from switch case
 	end
+	
+	-- TODO: store fragments and assemble file
+end
+
+
+function gNetCmdFromServer.CMD_ENTERCLIENT	(netbuf,h,ph)
+	print("S:CMD_ENTERCLIENT ser",h.serial,"TODO : big data chunk from ZoneMgr::getZoneBuffer : unitlists etc")
+	-- TODO: parse unit list
+end
+function gNetCmdFromServer.CMD_SNAPCARGO	(netbuf,h,ph)
+	print("S:CMD_SNAPCARGO ser",h.serial,"TODO : big cargo data : addUnitCargoSnapshot")
+	-- TODO: parse unit list
 end
 
 -- ***** ***** ***** ***** ***** end
