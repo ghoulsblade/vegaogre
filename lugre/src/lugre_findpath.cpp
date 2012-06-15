@@ -144,7 +144,7 @@ namespace Lugre {
 
 	std::string FindBasePaths::getLugreLuaPath(){
 		for(StringList::const_iterator i = mPossibleLugreLuaPaths.begin(); i != mPossibleLugreLuaPaths.end(); ++i){
-			std::cout << "probing: " << *i << std::endl;
+			//~ std::cout << "probing: " << *i << std::endl;
 			if(file_exists(strprintf("%s/lugre.lua",(*i).c_str()))){
 				std::string res = *i;
 				// append slash
@@ -157,7 +157,7 @@ namespace Lugre {
 
 	std::string FindBasePaths::getMainLuaPath(){
 		for(StringList::const_iterator i = mPossibleMainLuaPaths.begin(); i != mPossibleMainLuaPaths.end(); ++i){
-			std::cout << "probing: " << *i << std::endl;
+			//~ std::cout << "probing: " << *i << std::endl;
 			if(file_exists(*i)){
 				return *i;
 			}

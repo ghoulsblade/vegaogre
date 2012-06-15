@@ -20,13 +20,14 @@ gFrameCounter = 0
 --###############################
 
 -- utils first
-print("MainWorkingDir",gMainWorkingDir)
-print("lugreluapath",lugreluapath)
+--~ print("MainWorkingDir",gMainWorkingDir)
+--~ print("lugreluapath",lugreluapath)
 dofile(lugreluapath .. "lugre.lua")
 lugre_include_libs(lugreluapath)
 
 dofile(libpath .. "lib.vegamain.lua")
 dofile(libpath .. "lib.net.packet.lua")
+dofile(libpath .. "lib.net.proxy.lua")
 dofile(libpath .. "lib.servermode.lua")
 
 --###############################
@@ -95,11 +96,11 @@ RegisterStepper(function () if (gbMainWindowResized) then gbMainWindowResized = 
 --###############################
 
 function Main () 
-	print("welcome to vegaogre")
-	print("pwd on Main start:",os.getenv("PWD"))
+	--~ print("welcome to vegaogre")
+	--~ print("pwd on Main start:",os.getenv("PWD"))
     local luaversion = string.sub(_VERSION, 5, 7)
-    print("Lua version : "..luaversion)
-    print("Ogre platform : "..OGRE_PLATFORM)
+    --~ print("Lua version : "..luaversion)
+    --~ print("Ogre platform : "..OGRE_PLATFORM)
     gMyTicks = Client_GetTicks()
 	
     NotifyListener("Hook_CommandLine")

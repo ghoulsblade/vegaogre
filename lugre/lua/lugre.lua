@@ -172,6 +172,6 @@ end
 -- called after Main function ends to shutdown all lugre parts
 -- you should not call this manually!
 function LugreShutdown ()
-	print("shutting down lugre ...")
+	--~ print("shutting down lugre ...")
 	NotifyListener("LugreShutdown")
 end

@@ -18,7 +18,7 @@ INT WINAPI	WinMain		(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR strCmdLine,
 int			main		(int argc, char* argv[]) {
 #endif
 
-	printf("MAIN_WORKING_DIR=%s\n",(const char*)MAIN_WORKING_DIR);
+	//~ printf("MAIN_WORKING_DIR=%s\n",(const char*)MAIN_WORKING_DIR);
 	
 	std::string s;
 	s += "Whoops, we crashed, sorry about that =(\n";

@@ -251,9 +251,9 @@ void	Lugre_Run	(int argc, char* argv[]) { PROFILE
 		sMainWorkingDir = "./";
 	}
 
-	printf("lua main file: %s\n",sLuaMainPath.c_str());
-	printf("lua lugre dir: %s\n",sLugreLuaPath.c_str());
-	printf("main working dir: %s\n",sMainWorkingDir.c_str());
+	//~ printf("lua main file: %s\n",sLuaMainPath.c_str());
+	//~ printf("lua lugre dir: %s\n",sLugreLuaPath.c_str());
+	//~ printf("main working dir: %s\n",sMainWorkingDir.c_str());
 
 	// see http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vclib/html/_crt_signal.asp for details
 	signal(SIGSEGV,MySignalHandler); // seems to be cross platform
