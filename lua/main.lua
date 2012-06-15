@@ -28,7 +28,7 @@ lugre_include_libs(lugreluapath)
 dofile(libpath .. "lib.vegamain.lua")
 dofile(libpath .. "lib.net.packet.lua")
 dofile(libpath .. "lib.net.proxy.lua")
-dofile(libpath .. "lib.servermode.lua")
+dofile(libpath .. "lib.net.servermode.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##

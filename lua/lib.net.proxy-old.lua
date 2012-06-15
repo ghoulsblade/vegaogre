@@ -1,4 +1,8 @@
 
+gProxyHost = "localhost"
+--~ gProxyHost = "67.212.92.235"
+gProxyPort = 6777
+
 function StartProxyMode (port) 
 	print("starting servermode",port)
 	gServerListenerTCP = VegaProxyOpenListener(port)

@@ -1,16 +1,11 @@
 -- server mode
 
-
 -- to run local server, grab cd into vegastrike-trunk (the dir containing data and vegastrike) and run vegaserver
-
-gProxyHost = "localhost"
---~ gProxyHost = "67.212.92.235"
-gProxyPort = 6777
 
 gNetCmdFromClient = {} -- packet handler for packets received FROM client (e.g sent by server to client)
 gNetCmdFromServer = {} -- packet handler for packets received FROM server (e.g sent by client to server)
 
-
+-- ***** ***** ***** ***** ***** server mode
 
 function StartServerMode (port) 
 	print("StartServerMode not yet implemented")
