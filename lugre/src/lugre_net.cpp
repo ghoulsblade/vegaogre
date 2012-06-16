@@ -437,6 +437,7 @@ cNetListener::cNetListener	(int iListenSocket,int iPort) : miPort(iPort), miList
 
 cNetListener::~cNetListener	() { PROFILE
 	if (miListenSocket != INVALID_SOCKET) {
+		printf("cNetListener:: destructor close socket %d\n",(int)miListenSocket);
 		closesocket(miListenSocket);
 		miListenSocket = INVALID_SOCKET;
 	}
