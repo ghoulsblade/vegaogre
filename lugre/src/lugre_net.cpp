@@ -31,8 +31,10 @@ fd_set	sSelectSet_Read;
 fd_set	sSelectSet_Write;
 fd_set	sSelectSet_Except;
 
-#define kConMinRecvSpace (1024*32)
-#define kConStartSpace (1024*32*2)
+//~ #define kConMinRecvSpace (1024*32)
+//~ #define kConStartSpace (1024*32*2)
+#define kConMinRecvSpace (1024*256)
+#define kConStartSpace (1024*256*2)
 
 #ifndef WIN32
 void closesocket(int socket){
@@ -63,6 +65,33 @@ cNet::~cNet	() { PROFILE
 	for (std::set<cConnection*>::iterator	itor=mlDeadCons.begin();itor!=mlDeadCons.end();	++itor) delete (*itor);
 	for (std::set<cConnection*>::iterator	itor=mlDyingCons.begin();itor!=mlDyingCons.end();	++itor) delete (*itor);
 }
+
+void	cNet::StepOne	(cConnection* p) { PROFILE
+	int res,mysocket,imax=0;
+	timeval	timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+
+	FD_ZERO(&sSelectSet_Read);
+	FD_ZERO(&sSelectSet_Write);
+	FD_ZERO(&sSelectSet_Except);
+
+	mysocket = p->miSocket;
+	if (mysocket != INVALID_SOCKET) {
+		if (imax < mysocket)
+			imax = mysocket;
+		FD_SET((unsigned int)mysocket,&sSelectSet_Read);
+		FD_SET((unsigned int)mysocket,&sSelectSet_Write);
+		FD_SET((unsigned int)mysocket,&sSelectSet_Except);
+	}
+
+	res = select(imax+1,&sSelectSet_Read,&sSelectSet_Write,&sSelectSet_Except,&timeout);
+
+	p->Step(	FD_ISSET((unsigned int)p->miSocket,&sSelectSet_Read) != 0,
+				FD_ISSET((unsigned int)p->miSocket,&sSelectSet_Write) != 0,
+				FD_ISSET((unsigned int)p->miSocket,&sSelectSet_Except) != 0 );
+}
+
 
 void	cNet::Step	() { PROFILE
 	// step listeners
@@ -217,6 +246,10 @@ cNetListener*	cNet::Listen	(const int iPort) { PROFILE
 		printf("cNet::Listen : Socket Creation Failed\n");
 		return 0;
 	}
+	// bignote: socket will be blocked for 1-2 minutes after closing to prevent unintended data coming to app, see http://stackoverflow.com/questions/2208581/socket-listen-doesnt-unbind-in-c-under-linux
+	// possible workaround : setsockopt to set the SO_REUSEADDR, see also SO_LINGER
+	int myparam = 1;
+	setsockopt(iListenSocket, SOL_SOCKET, SO_REUSEADDR, &myparam, sizeof(myparam));  // note: level = SOL_SOCKET or IPPROTO_TCP ?
 
 	// bind the socket
 	sockaddr_in sa;
@@ -335,6 +368,10 @@ void	cConnection::SendPush		(cFIFO& source,const bool bWrite) { PROFILE
 	}
 }
 
+void	cConnection::StepOne		() { PROFILE
+	cNet::GetSingleton().StepOne(this);
+}
+	
 void	cConnection::Step		(const bool bRead,const bool bWrite, const bool bExcept) { PROFILE
 	if (miSocket == INVALID_SOCKET) return;
 	assert(mpOutBuffer);
@@ -437,7 +474,9 @@ cNetListener::cNetListener	(int iListenSocket,int iPort) : miPort(iPort), miList
 
 cNetListener::~cNetListener	() { PROFILE
 	if (miListenSocket != INVALID_SOCKET) {
-		printf("cNetListener:: destructor close socket %d\n",(int)miListenSocket);
+		//~ printf("cNetListener:: destructor close socket %d\n",(int)miListenSocket);
+		// bignote: socket will still be blocked for 1-2 minutes in limbo to prevent unintended data coming to app, see http://stackoverflow.com/questions/2208581/socket-listen-doesnt-unbind-in-c-under-linux
+		// possible workaround : setsockopt to set the SO_REUSEADDR
 		closesocket(miListenSocket);
 		miListenSocket = INVALID_SOCKET;
 	}

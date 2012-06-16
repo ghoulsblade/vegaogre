@@ -1,5 +1,6 @@
 
-gProxyHost = "localhost"
+--~ gProxyHost = "localhost"
+gProxyHost = "192.168.178.26"
 --~ gProxyHost = "67.212.92.235"
 gProxyPort = 6777
 

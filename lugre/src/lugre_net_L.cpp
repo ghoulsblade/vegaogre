@@ -35,6 +35,7 @@ class cConnection_L : public cLuaBind<cConnection> { public:
 			REGISTER_METHOD(Push);
 			REGISTER_METHOD(Pop);
 			REGISTER_METHOD(IsConnected);
+			REGISTER_METHOD(StepOne);
 			
 			#undef REGISTER_METHOD
 		}
@@ -133,6 +134,11 @@ class cConnection_L : public cLuaBind<cConnection> { public:
 			if(target)r = target->IsConnected();
 			lua_pushboolean(L,r);
 			return 1; 
+		}
+		
+		static int	StepOne				(lua_State *L) { PROFILE 
+			checkudata_alive(L)->StepOne();
+			return 0; 
 		}
 
 		/// for lua : void	Push	(fifo)

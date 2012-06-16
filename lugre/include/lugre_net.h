@@ -77,6 +77,7 @@ public:
 	}
 	/// call this twice if using local connections, needs to recheck for read availability after writing
 	void	Step	();
+	void	StepOne		(cConnection* p); ///< step just 1 connection
 
 	cConnection*	Connect	(const char* szHost,const int iPort);
 	cConnection*	Connect	(const unsigned int iHost,const int iPort);
@@ -120,6 +121,7 @@ public:
 	/// close the connection
 	void	Close		();
 	void	SendPush	(cFIFO& source,const bool bWrite);
+	void	StepOne		();
 	void	Step		(const bool bRead,const bool bWrite, const bool bExcept);
 	bool	IsLocal		();
 	/// check if the connection is still alive/connected

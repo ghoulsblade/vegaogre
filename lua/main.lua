@@ -28,6 +28,7 @@ lugre_include_libs(lugreluapath)
 dofile(libpath .. "lib.vegamain.lua")
 dofile(libpath .. "lib.net.packet.lua")
 dofile(libpath .. "lib.net.proxy.lua")
+--~ dofile(libpath .. "lib.net.proxy-old.lua")
 dofile(libpath .. "lib.net.servermode.lua")
 
 --###############################

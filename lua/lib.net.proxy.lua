@@ -32,7 +32,7 @@ function StartProxyMode (port)
 	cProxyTCP_Bind:New(port,"vega")
 	cProxyTCP_Bind:New(gProxyPort_TCP_Acc,"accsrv")
 	cProxyTCP_Bind:New(port+100,kProxyChannelName_Comment) -- optional netcat port for comments
-	for port = gProxyPort_UDP_Min,gProxyPort_UDP_Max do cProxyUDP:New(port) end
+	--~ for port = gProxyPort_UDP_Min,gProxyPort_UDP_Max do cProxyUDP:New(port) end  -- NOTE 2012-06-16 23:12 : currently it WORKS without udp, but client gets segfault when udp is enabled  ... prolly prevents client from listening on portnum
 	
 	gProxyAlive = true
 	while gProxyAlive do 
@@ -174,13 +174,17 @@ function cProxyTCP:Step ()
 	
 	if (self.proxy_con) then
 		if (fifo:Size() > 0) then
+			self.proxy_con:StepOne()
 			self.proxy_con:Push(fifo)
+			self.proxy_con:StepOne()
 		end
 		
 		fifo:Clear()
 		self.proxy_con:Pop(fifo)
 		if (fifo:Size() > 0) then
+			self.con:StepOne()
 			self.con:Push(fifo)
+			self.con:StepOne()
 			self:Event("Send",MyDumpFifoForNet(fifo))
 		end
 	end
@@ -232,13 +236,13 @@ function cProxyUDP:Step ()
 	if (fifo:Size() > 0) then
 		self:Event("Recv",MyDumpFifoForNet(fifo)..","..tostring(resultcode)..","..tostring(remoteaddr))
 		
-		if (self.socket_send) then 
-				if (remoteaddr == addr_client) then local resultcode = self.socket_send:Send(addr_server,self.port,fifo)
-			elseif (remoteaddr == addr_server) then local resultcode = self.socket_send:Send(addr_client,self.port,fifo)
-			else
-				print("cProxyUDP:Step: got unknown address, don't know where to send",tostring(remoteaddr))
-			end
-		end
+		--~ if (self.socket_send) then 
+				--~ if (remoteaddr == addr_client) then local resultcode = self.socket_send:Send(addr_server,self.port,fifo)
+			--~ elseif (remoteaddr == addr_server) then local resultcode = self.socket_send:Send(addr_client,self.port,fifo)
+			--~ else
+				--~ print("cProxyUDP:Step: got unknown address, don't know where to send",tostring(remoteaddr))
+			--~ end
+		--~ end
 	end
 	
 	fifo:Destroy()
