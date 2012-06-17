@@ -4,6 +4,7 @@
 -- note wireshark : capture filter : host 192.168.178.26     (gets to and from server)
 -- note wireshark : (!udp.length && data.data) && (frame.time_relative >= 414.150733)		time by rightclick on time column for packet > "prepare filter" > "... and"  
 -- note wireshark : follow tcp > c arrays = parseable hexdump
+-- accserver create new : http://192.168.178.26:8080
 
 --~ gProxyHost = "localhost"
 --~ gProxyHost = "67.212.92.235"
