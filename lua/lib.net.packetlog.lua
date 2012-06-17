@@ -5,9 +5,12 @@ local kFromTxtClient = "client"
 local kFromTxtServer = "server"
 
 function PacketLogParse (path)
+	print("-- "..path)
 	local packetconvert_lua = {}
 	for line in io.lines(gMainWorkingDir..path) do
 		-- char peer0_0[] = { 0x00, 0x00, 0x00, 0x34, 0x01, 0x00, 0x00, 0x00 };
+		local a,b,comment = string.find(line,"(//.*)")
+		if (comment) then print("-- "..comment) end
 		line = string.gsub(line,"//.*","") -- remove comment
 		line = string.gsub(line,"^[ \t]+","") -- trim
 		line = string.gsub(line,"[ \t]+$","") -- trum
@@ -19,7 +22,6 @@ function PacketLogParse (path)
 			--~ print(line)
 		end
 	end
-	print("-- "..path)
 	function MyClient (data) PacketLog_Arr(data,kFromTxtClient) end
 	function MyServer (data) PacketLog_Arr(data,kFromTxtServer) end
 	
@@ -40,6 +42,7 @@ function PacketLog_Arr (data,fromtxt)
 	while (MyDecodePacket(fifo,fromtxt)) do end
 end
 
+local netbuf = cVegaNetBuf:New()
 local fifo_payload = CreateFIFO()
 function MyDecodePacket (fifo,fromtxt)
 	-- check if packet is complete
@@ -74,8 +77,14 @@ function MyDecodePacket (fifo,fromtxt)
 	local txt_head		= "{cmd="..h.command..",serial="..h.serial..",datalen="..h.data_length..",flags="..Hex(h.flags).."}"
 	local txt_add = ""
 	--~ txt_add = txt_add .. ",fifolen_full="..fifolen_full..",fifolen_data="..fifolen_data..",fifolen_left="..fifo:Size()
+	local txt_subcmd = ""
+	if (h.command == VNet.Cmd.CMD_DOWNLOAD) then 
+		netbuf:ReInit(fifo_payload)
+		local sc = netbuf:getChar() -- todo: this removes data, make copy if buffer is analyzed
+		txt_subcmd = ",submd="..VNet.GetDownloadSubCmdName(sc)
+	end
 	
-	print("Packet({from="..fromtxt..",cmd="..(cmdname or h.command)..",head={"..txt_prehead..","..txt_head.."}"..txt_add.."})")
+	print("Packet({from="..fromtxt..",cmd="..(cmdname or h.command)..txt_subcmd..",head={"..txt_prehead..","..txt_head.."}"..txt_add.."})")
 
 	
 	return true
