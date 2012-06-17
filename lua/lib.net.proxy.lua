@@ -1,5 +1,9 @@
 -- proxy mode for debugging, sits between original client and original server
 -- see also lib.net.proxy-old.lua
+-- ./start.sh -proxy 6777
+-- note wireshark : capture filter : host 192.168.178.26     (gets to and from server)
+-- note wireshark : (!udp.length && data.data) && (frame.time_relative >= 414.150733)		time by rightclick on time column for packet > "prepare filter" > "... and"  
+-- note wireshark : follow tcp > c arrays = parseable hexdump
 
 --~ gProxyHost = "localhost"
 --~ gProxyHost = "67.212.92.235"
@@ -79,6 +83,24 @@ end
 
 function MyDumpFifoForNet (fifo)
 	local hexbytes,ascibytes = MyDumpFifo(fifo)
+	
+	local bShortenLongData = true -- easier to read, but doesn't work for reproduction
+	if (bShortenLongData) then
+		local shortlen = 128
+		local abbrevlen = 512 
+		if (string.len(ascibytes) > abbrevlen) then 
+			ascibytes = string.sub(ascibytes,1,shortlen) .. "...." .. string.sub(ascibytes,-shortlen)
+			local len = #hexbytes
+			if (len > abbrevlen) then 
+				local partarr = {}
+				for i=1,shortlen do table.insert(partarr,hexbytes[i]) end
+				table.insert(partarr,"....")
+				for i=abbrevlen-shortlen,abbrevlen do table.insert(partarr,hexbytes[i]) end
+				hexbytes = partarr
+			end
+		end
+	end
+
 	hexbytes = "{"..table.concat(hexbytes,",").."}"
 	ascibytes = sprintf("%q",(ascibytes))
 	return "Data("..fifo:Size()..","..hexbytes..","..ascibytes..")"

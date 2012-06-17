@@ -30,6 +30,7 @@ dofile(libpath .. "lib.net.packet.lua")
 dofile(libpath .. "lib.net.proxy.lua")
 --~ dofile(libpath .. "lib.net.proxy-old.lua")
 dofile(libpath .. "lib.net.servermode.lua")
+dofile(libpath .. "lib.net.packetlog.lua")
 
 --###############################
 --##  OGRE RESOURCE LOCATIONS  ##
@@ -109,6 +110,7 @@ function Main ()
 	-- commandline arg for server mode ? 
 	local a = gCommandLineSwitchArgs["-proxy"]	if (a) then return StartProxyMode(tonumber(a)) end
 	local a = gCommandLineSwitchArgs["-server"]	if (a) then return StartServerMode(tonumber(a)) end
+	local a = gCommandLineSwitchArgs["-packetlog"]	if (a) then return PacketLogParse(a) end
 	
     NotifyListener("Hook_PluginsLoaded")
 	

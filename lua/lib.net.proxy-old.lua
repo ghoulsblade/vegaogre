@@ -90,9 +90,17 @@ function VegaProxyOneConnection (newcon)
 			-- handle one packet, returns false if packet incomplete, otherwise returns true and pops packet from fifo
 			local function MyDecodePacket (fifo,size,bFromServer)
 				if (size <= 0) then return end 
-				if (VNet.PreHeaderLen+VNet.HeaderLen			> size) then print("packet incomplete, headers") return false end
-				if (VNet.PeekPreHeaderLen(fifo)					> size) then print("packet incomplete, datalen prehead") return false end
-				if (VNet.PeekHeaderLen(fifo,VNet.PreHeaderLen)	> size) then print("packet incomplete, datalen head") return false end
+				--~ if (VNet.PreHeaderLen+VNet.HeaderLen			> size) then print("packet incomplete, headers") return false end
+				--~ if (VNet.PeekPreHeaderLen(fifo)					> size) then print("packet incomplete, datalen prehead") return false end
+				--~ if (VNet.PeekHeaderLen(fifo,VNet.PreHeaderLen)	> size) then print("packet incomplete, datalen head") return false end
+				
+				local fromtxt = (bFromServer and "server" or "client")
+				--~ local bPrintIncomplete = false
+				local bPrintIncomplete = true
+				local lmin = VNet.PreHeaderLen+VNet.HeaderLen												if (lmin > size) then if (bPrintIncomplete) then print("-- from:"..fromtxt.." packet incomplete, headers",lmin,size) end return false end
+				local lmin = VNet.PreHeaderLen+VNet.PeekPreHeaderLen(fifo)									if (lmin > size) then if (bPrintIncomplete) then print("-- from:"..fromtxt.." packet incomplete, datalen prehead",lmin,size) end return false end
+				local lmin = VNet.PreHeaderLen+VNet.HeaderLen+VNet.PeekHeaderLen(fifo,VNet.PreHeaderLen)	if (lmin > size) then if (bPrintIncomplete) then print("-- from:"..fromtxt.." packet incomplete, datalen head",lmin,size) end return false end
+				
 				
 				local ph = VNet.PopPreHeader(fifo)
 				print("--preheader: _len="..ph._len.."="..Hex(ph._len).." _pri="..ph._pri.." _flags="..Hex(ph._flags))
