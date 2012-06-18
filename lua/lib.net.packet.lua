@@ -261,12 +261,13 @@ VNet.NBType = {
 
 local NBType = VNet.NBType
 cVegaNetBuf = CreateClass()
+function GetNBTypeName (id) for k,v in pairs(NBType) do if (v == id) then return k end end end
 
 -- init
 function cVegaNetBuf:Init(fifo)			self.fifo = fifo end
 function cVegaNetBuf:ReInit(fifo)		self.fifo = fifo end -- reinit object for reuse with different fifo
 function cVegaNetBuf:ADD_NB(nbtype)		self:addType(nbtype) end -- see Net.NBType
-function cVegaNetBuf:CHECK_NB(nbtype)	assert(self:getType() == nbtype) end -- see Net.NBType
+function cVegaNetBuf:CHECK_NB(nbtype)	local t = self:getType() assert(t == nbtype) end -- see Net.NBType
 
 -- raw helpers
 function cVegaNetBuf:_raw_addString(v,len)	self.fifo:PushFilledString(v,len) end -- PushPlainText: doesn't push size-int
@@ -306,6 +307,25 @@ function cVegaNetBuf:getTransformation()	self:CHECK_NB(NBType.NB_TRANSFORMATION)
 function cVegaNetBuf:getQuaternion()		self:CHECK_NB(NBType.NB_QUATERNION) local s = self:getFloat() local x,y,z = self:getVector() return s,x,y,z end
 function cVegaNetBuf:getVector()			self:CHECK_NB(NBType.NB_VECTOR)  local x,y,z = self:getFloat(),self:getFloat(),self:getFloat() return x,y,z end
 function cVegaNetBuf:getQVector()			self:CHECK_NB(NBType.NB_QVECTOR) local x,y,z = self:getDouble(),self:getDouble(),self:getDouble() return x,y,z end
+
+function cVegaNetBuf:getNextPair() -- returns type,data...  if known and complete
+	if (self.fifo:Size() <= 0) then return end
+	local c = self.fifo:PeekNetUint8(0)
+	if (c == NBType.NB_CHAR				) then return c,self:getChar() end
+	if (c == NBType.NB_SHORT			) then return c,self:getShort() end
+	if (c == NBType.NB_INT32			) then return c,self:getInt32() end
+	if (c == NBType.NB_FLOAT			) then return c,self:getFloat() end
+	if (c == NBType.NB_DOUBLE			) then return c,self:getDouble() end
+	if (c == NBType.NB_SERIAL			) then return c,self:getSerial() end
+	if (c == NBType.NB_TRANSFORMATION	) then return c,self:getTransformation() end
+	if (c == NBType.NB_QUATERNION		) then return c,self:getQuaternion() end
+	if (c == NBType.NB_VECTOR			) then return c,self:getVector() end
+	if (c == NBType.NB_QVECTOR			) then return c,self:getQVector() end
+	if (c == NBType.NB_STRING			) then return c,self:getString() end
+	--~ if (c == NBType.NB_BUFFER			) then return c,self:getBuffer(fifo,MAGICALLY_DETERMINE_LEN) end
+	if (c == NBType.NB_BUFFER			) then print("cVegaNetBuf:getNextPair() NB_BUFFER: cannot decode automatically, need length param") return end
+	print("cVegaNetBuf:getNextPair() unknown type",c,GetNBTypeName(c) or "???")
+end
 
 -- complex : string
 function cVegaNetBuf:addString(v)

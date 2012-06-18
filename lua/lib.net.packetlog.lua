@@ -72,15 +72,42 @@ function MyDecodePacket (fifo,fromtxt)
 		fifo:Clear()
 	end
 	
+	-- extract chunks from data
+	netbuf:ReInit(fifo_payload)
+	local chunks = {}
+	local txt_chunks = {}
+	while true do 
+		local chunk = {netbuf:getNextPair()}
+		if (not chunk[1]) then break end
+		table.insert(chunks,chunk)
+		
+		-- produce human readable text
+		local txt_chunk = ""
+		local c = chunk[1]
+		for k,v in ipairs(chunk) do 
+			if (k == 1) then 
+				txt_chunk = GetNBTypeName(v) or (tostring(v))
+			else
+				if (type(v) == "string") then v = sprintf("%q",v) end
+				if (c == .NBType.NB_BUFFER) then v = "RawData("..v:Size()..",\"...\")" end -- TODO: hex+asci dump ?
+				txt_chunk = txt_chunk..","..tostring(v)
+			end
+		end
+		table.insert(txt_chunks,"("..txt_chunk..")")
+	end
+	local s = fifo_payload:Size() if (s > 0) then table.insert(txt_chunks,"data:"..s) end
+	txt_chunks = "{"..table.concat(txt_chunks,",").."}"
+	
 	-- print output
 	local txt_prehead	= "{len="..ph._len..",pri="..ph._pri..",flags="..Hex(ph._flags).."}"
 	local txt_head		= "{cmd="..h.command..",serial="..h.serial..",datalen="..h.data_length..",flags="..Hex(h.flags).."}"
 	local txt_add = ""
 	--~ txt_add = txt_add .. ",fifolen_full="..fifolen_full..",fifolen_data="..fifolen_data..",fifolen_left="..fifo:Size()
+	txt_add = txt_add .. ","..txt_chunks
 	local txt_subcmd = ""
 	if (h.command == VNet.Cmd.CMD_DOWNLOAD) then 
-		netbuf:ReInit(fifo_payload)
-		local sc = netbuf:getChar() -- todo: this removes data, make copy if buffer is analyzed
+		--~ local sc = netbuf:getChar() -- todo: this removes data, make copy if buffer is analyzed
+		local sc = chunks[1][2] -- 1st chunk, 2=data
 		txt_subcmd = ",submd="..VNet.GetDownloadSubCmdName(sc)
 	end
 	
