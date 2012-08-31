@@ -89,7 +89,7 @@ function MyDecodePacket (fifo,fromtxt)
 				txt_chunk = GetNBTypeName(v) or (tostring(v))
 			else
 				if (type(v) == "string") then v = sprintf("%q",v) end
-				if (c == .NBType.NB_BUFFER) then v = "RawData("..v:Size()..",\"...\")" end -- TODO: hex+asci dump ?
+				if (c == NBType.NB_BUFFER) then v = "RawData("..v:Size()..",\"...\")" end -- TODO: hex+asci dump ?
 				txt_chunk = txt_chunk..","..tostring(v)
 			end
 		end
