@@ -286,7 +286,7 @@ public:
 	inline	int16	PeekInt16	(const uint32 offset=-1) { int16	x; PeekInt16(x,offset);	return x; }
 	inline	int32	PeekInt32	(const uint32 offset=-1) { int32	x; PeekInt32(x,offset);	return x; }
 	inline	float	PeekFloat		(const uint32 offset=-1) { float	x; PeekFloat(x,offset);	return x; }
-	inline	float	PeekDouble		(const uint32 offset=-1) { double	x; PeekDouble(x,offset);	return x; }
+	inline	double	PeekDouble		(const uint32 offset=-1) { double	x; PeekDouble(x,offset);	return x; }
 	
 	inline	uint8	PeekNetUint8	(const uint32 offset=-1) { uint8	x; PeekNetUint8(x,offset);	return x; }
 	inline	uint16	PeekNetUint16	(const uint32 offset=-1) { uint16	x; PeekNetUint16(x,offset);	return x; }
